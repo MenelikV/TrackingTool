@@ -52,6 +52,14 @@ module.exports.datastores = {
     // url: 'mysql://user:password@host:port/database',
 
   },
+  user: {
+    adapter: "sails-disk",
+    filePath: "C:\\Users\\mvero-ext\\Documents\\GitHub\\TrackingTool\\TrackingTool\\local_databases\\user.db"
+  },
+  data: {
+    adapter: "sails-disk",
+    filePath: "C:\\Users\\mvero-ext\\Documents\\GitHub\\TrackingTool\\TrackingTool\\local_databases\\data.db"
+  }
 
 
 };

@@ -1,0 +1,4 @@
+{"$$indexCreated":{"fieldName":"id","unique":true,"sparse":false}}
+{"$$indexCreated":{"fieldName":"emailAddress","unique":true,"sparse":false}}
+{"createdAt":1539854609487,"updatedAt":1539854609487,"id":1,"emailAddress":"admin@example.com","password":"$2a$10$xJ31.MfmtkMOuerf8PMR4OsceDNlyMBtTqwMLjQikL8p7YkZn5DUO","fullName":"Ryan Dahl","isSuperAdmin":true,"passwordResetToken":"","passwordResetTokenExpiresAt":0,"emailProofToken":"","emailProofTokenExpiresAt":0,"emailStatus":"confirmed","emailChangeCandidate":"","lastSeenAt":0,"_id":1}
+{"createdAt":1539857248346,"updatedAt":1539860316332,"id":2,"emailAddress":"mvero-ext@assystemtechnologies.com","password":"$2a$10$hdlXrKpSOPJeN7FjHZpy5uSpr6LiuXHNIxRdQjj.Gf4uUk0wympn.","fullName":"Menelik Vero","isSuperAdmin":false,"passwordResetToken":"","passwordResetTokenExpiresAt":0,"emailProofToken":"","emailProofTokenExpiresAt":0,"emailStatus":"confirmed","emailChangeCandidate":"","lastSeenAt":1539860316317,"_id":2}
