@@ -1,22 +1,27 @@
 module.exports = {
-    friendlyName: 'View available aircraft data',
 
 
-    description: 'Display a table "DATA" Page',
-  
-  
-    exits: {
-  
-      success: {
-        viewTemplatePath: 'pages/table/available-data'
-      }
-  
-    },
-    fn: async function(inputs, exits){
-        // var url = require("url");
-        // Get the list of data
-        var aircrafts = await Data.find({})
-        return exits.success({aircrafts: aircrafts})
+  friendlyName: 'View homepage or redirect',
+
+
+  description: 'Display or redirect to the appropriate homepage, depending on login status.',
+
+  viewTemplatePath: 'pages/faq',
+  exits: {
+
+    success: {
+      statusCode: 200,
+      description: 'Requesting user is a guest, so show the public landing page.',
+      viewTemplatePath: 'pages/faq'
     }
+  },
+  render : async function (inputs, exits) {
+    var data = await Data.findOne({Flight:2});
+    if(!data){
+      return exits.notFound("The Flight was NOT Found");
+    }
+    exits.view("profile", {data});
+    // TODO
+  }
 
 };
