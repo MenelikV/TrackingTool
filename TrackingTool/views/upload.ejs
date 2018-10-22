@@ -33,7 +33,7 @@
                var fd = new FormData();
                fd.append('file', file);
             
-               $http.post("http://127.0.0.1:1337/Admin/uploadFile", fd, {
+               $http.post("http://127.0.0.1:1337/FileUpload/uploadFile", fd, {
                   transformRequest: angular.identity,
                   headers: {'Content-Type': undefined}
                }).success(function(res){

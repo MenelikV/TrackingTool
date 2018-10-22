@@ -1,0 +1,26 @@
+<h1 class="display-4">Files</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+     
+
+        <% result.forEach(function(file){ %>
+
+            <tr>
+                <td><%= file.filename %></td>
+
+                <td><%= file.path %></td>
+
+                <td></td>
+
+            </tr>
+       <% }) %>
+    </tbody>
+</table>
