@@ -3,7 +3,6 @@ module.exports = {
         Aircraft: {
             type: "string",
             required: true,
-            unique: false,
             description: "Aircraft",
             example: "A320-251N"
         },
@@ -22,7 +21,7 @@ module.exports = {
             type: "string",
             isIn: ["Massic", "Volumic"]
         },
-        FuelCharacteristics :  {
+        FuelCharacteristics:  {
             type: "string",
             isIn: ["Measured", "Estimated"]
         },
@@ -57,7 +56,8 @@ module.exports = {
         },
         ResultsStatus: {
             type: "string",
-            isIn: ["Preliminary", "Definitive", "Investigation Ongoing"]
+            isIn: ["Preliminary", "Definitive", "Investigation Ongoing"],
+            defaultsTo: "Preliminary"
         },
         ValidatedStatus: {
             type: "boolean",

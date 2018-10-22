@@ -1,27 +1,38 @@
 module.exports = {
 
 
-  friendlyName: 'View homepage or redirect',
+  friendlyName: 'Table display',
 
 
-  description: 'Display or redirect to the appropriate homepage, depending on login status.',
+  description: 'Display the table, finally',
 
-  viewTemplatePath: 'pages/faq',
   exits: {
 
     success: {
-      statusCode: 200,
-      description: 'Requesting user is a guest, so show the public landing page.',
-      viewTemplatePath: 'pages/faq'
-    }
+      viewTemplatePath: 'pages/table/available-data',
+      description: 'Display the table'
+    },
+
   },
-  render : async function (inputs, exits) {
-    var data = await Data.findOne({Flight:2});
-    if(!data){
-      return exits.notFound("The Flight was NOT Found");
-    }
-    exits.view("profile", {data});
-    // TODO
+
+  fn: async function (inputs, exits) {
+     var data = await Data.find();
+     if(data){
+       headers = Object.keys(data[0]);
+       // Remove some fields
+       hidden_fields = ["id", "createdAt", "updatedAt"]
+       for(var k=0; k<hidden_fields.length; k++){
+        var index = headers.indexOf(hidden_fields[k]);
+        if (index > -1) {
+          headers.splice(index, 1);
+        }
+       }
+     }
+     else{
+       // Test Headers
+       headers = ["TEST1", "TEST3", "TEST4"]
+     }
+    return exits.success({data:data, headers:headers});
   }
 
 };

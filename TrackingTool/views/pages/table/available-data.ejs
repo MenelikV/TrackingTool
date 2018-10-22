@@ -1,31 +1,20 @@
-<table class="table table-dark" id="available-data" v-cloak>
-    <thead>
-    <% for(var i=0, i < headers.length; i++){ %>
-      <tr>
-        <th scope="col"><%=headers[i]%></th>
-      </tr>
+<div class="table-container">
+<table class="table table-hover table-striped" id="available-data" style="width:100%">
+    <thead class="table-dark"> 
+    <tr>
+    <% for(var i=0; i < headers.length; i++){ %>
+        <th scope="col" data-sortable="true"><%=headers[i]%></th>
     <%}%>
+      </tr>
     </thead>
     <tbody>
-    <% for(var j=0, j < data.length; j++){ %>
+    <% for(var j=0; j < data.length; j++){ %>
+      <!-- TODO Put some color when status bla bla is not avaible-->
       <tr>
-        <th scope="row">i</th>
-        <td><%=data[i].Aircraft%></td>
-        <td><%=data[i].Msn%></td>
-        <td><%=data[i].Flight%></td>
-        <td><%=data[i].FuelFlowmeters%></td>
-        <td><%=data[i].FuelCharacteristics%></td>
-        <td><%=data[i].AircraftIdentification%></td>
-        <td><%=data[i].Airline%></td>
-        <td><%=data[i].Results%></td>
-        <!-- TODO Put some color when status bla bla is not avaible-->
-        <td><%=data[i].ParametersValidation%></td>
-        <td><%=data[i].FleetFollowUp%></td>
-        <td><%=data[i].TRA%></td>
-        <td><%=data[i].CTR%></td>
-        <td><%=data[i].Preliminary%></td>
-        <td><%=data[i].ValidatedStatus%></td>
+      <% for(var i=0; i < headers.length; i++){%>
+        <th scope="col"><%=data[j][headers[i]]%></th><%}%>
       </tr>
     <%}%>
     </tbody>
-  </table>
+</table>
+</div>
