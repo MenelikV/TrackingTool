@@ -28,6 +28,14 @@
   <body>
     <div id="page-wrap">
       <header id="page-header" class="navbar navbar-expand-sm navbar-dark bg-dark flex-column flex-md-row justify-content-between">
+        <% if(me) {%> 
+        <!-- TEST -->
+        <ul class="navbar-nav mr-2">
+            <div class="form-inline" >
+                <a class="btn btn-outline-info" href="/table">Table</a>
+              </div>
+        </ul>
+        <%}%>
         <div class="navbar-nav flex-row ml-auto">
           <!-- LOGGED-IN NAVIGATION -->
           <% if(me) { %>
@@ -49,10 +57,6 @@
           <!-- Only in desktop nav -->
           <div class="form-inline d-none ml-2 d-md-block" >
             <a class="btn btn-outline-info" href="/signup">Sign up</a>
-          </div>
-          <!-- TEST -->
-          <div class="form-inline d-none ml-2 d-md-block" >
-            <a class="btn btn-outline-info" href="/table">Table</a>
           </div>
           <!-- Only in mobile nav -->
           <a class="nav-item nav-link text-info ml-2 d-block d-md-none" href="/signup">Sign up</a>

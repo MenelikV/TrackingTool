@@ -1,9 +1,10 @@
-<div class="table-container">
-<table class="table table-hover table-striped" id="available-data" style="width:100%">
+<!-- Better use d-flex ? -->
+<div class="table-responsive" style="height:500px; overflow-y:auto">
+<table class="table table-hover table-striped table-responsive table-condensed tasks-table table-body" id="available-data" style="overflow-x: scroll">
     <thead class="table-dark"> 
     <tr>
     <% for(var i=0; i < headers.length; i++){ %>
-        <th scope="col" data-sortable="true"><%=headers[i]%></th>
+        <th scope="col" data-sortable="true" style ="width: auto !important"><%=headers[i]%></th>
     <%}%>
       </tr>
     </thead>
@@ -12,7 +13,7 @@
       <!-- TODO Put some color when status bla bla is not avaible-->
       <tr>
       <% for(var i=0; i < headers.length; i++){%>
-        <th scope="col"><%=data[j][headers[i]]%></th><%}%>
+        <th scope="col" style ="width: auto !important"><%=data[j][headers[i]]%></th><%}%>
       </tr>
     <%}%>
     </tbody>
