@@ -21,14 +21,16 @@ module.exports.routes = {
 
   '/upload':                { view: 'pages/account/upload-files'},
 
-  'POST /file/upload':      'FileController.upload',
+  'POST /account/file/upload':      'account/FileController.upload',
 
-  'POST /file/search':      'FileController.search',
+  'POST /account/file/search':      'account/FileController.search',
 
   'GET /files': {
+
     view: 'pages/account/view-files',
-    controller: 'FileController',
+    controller: 'account/FileController',
     action: 'view'
+
   },
 
 
@@ -48,7 +50,7 @@ module.exports.routes = {
   'GET /account':            { action: 'account/view-account-overview' },
   'GET /account/password':   { action: 'account/view-edit-password' },
   'GET /account/profile':    { action: 'account/view-edit-profile' },
-  'GET /account/upload':     { action: 'account/upload-files'},
+  //'POST /account/upload':    { action: 'account/upload-files'},
 
 
 

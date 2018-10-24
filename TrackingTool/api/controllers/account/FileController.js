@@ -12,10 +12,13 @@ module.exports = {
             if(err){
                 res.send(500, {error: 'DB error'});
             }
-            return res.view( 'pages/account/view-files', {result:files});
+            if(files==undefined){
+              res.send('no files found');
+            }
+            return res.view('pages/account/view-files', {result:files});
         })
     },
-
+ 
     search: function(req,res) {
       //Search for files by the MSN 
       var results = File.find({
@@ -35,7 +38,7 @@ module.exports = {
     upload: function(req, res) {
       req.file('file').upload({
           //Change according to local dirname
-          dirname: 'C:/Users/vmasiero/fileUploader/.tmp/uploads'
+          dirname: 'C:/Users/vmasiero/Documents/GitHub/TrackingTool/TrackingTool/.tmp/uploads'
         }, function(err, uploads) {
 
           if(uploads.length > 5) {
