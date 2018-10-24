@@ -76,7 +76,7 @@ and exposed as \`req.me\`.)`
     // regardless of which database we're using)
     var userRecord = await User.findOne({
       emailAddress: inputs.emailAddress.toLowerCase(),
-    });
+    }); 
 
     // If there was no matching user, respond thru the "badCombo" exit.
     if(!userRecord) {
@@ -94,6 +94,7 @@ and exposed as \`req.me\`.)`
     // this to work.)
     if (inputs.rememberMe) {
       if (this.req.isSocket) {
+        console.log('socket')
         sails.log.warn(
           'Received `rememberMe: true` from a virtual request, but it was ignored\n'+
           'because a browser\'s session cookie cannot be reset over sockets.\n'+
@@ -102,11 +103,13 @@ and exposed as \`req.me\`.)`
       } else {
         this.req.session.cookie.maxAge = sails.config.custom.rememberMeCookieMaxAge;
       }
-    }//ﬁ
-
+    }//ﬁ 
+ 
     // Modify the active session instance.
+    console.log(userRecord.id)
+    console.log(this.req.session.userId)
     this.req.session.userId = userRecord.id;
-
+    console.log(this.req.session)
     // Send success response (this is where the session actually gets persisted)
     return exits.success();
 

@@ -1,11 +1,13 @@
-<h1 class="display-4">Files</h1>
+<h1 class="display-4">Uploaded Files</h1>
+<h5 ><a href="/upload">Upload a File</a></h5>
 
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>#</th>
-            <th>Title</th>
-            <th></th>
+            <th>Name</th>
+            <th>Path</th> 
+            <th>Aircraft</th>
+            <th>Doc</th>
         </tr>
     </thead>
     <tbody>
@@ -18,9 +20,18 @@
 
                 <td><%= file.path %></td>
 
-                <td></td>
+                <td><%= file.aircraft %></td>
+
+                <td><%= file.doc %></td>
 
             </tr>
        <% }) %>
     </tbody>
 </table>
+
+<form method="post" action="/file/search">
+    <input type="text" placeholder="Search.." name="aircraft">
+    <button type="submit"><i class="fa fa-search"></i></button>
+</form>
+
+</body>

@@ -7,17 +7,24 @@
 
 module.exports = {
 
-    attributes: {
-        
-      filename: {
-        type: 'string'
-      },
-  
-      path: {
-        type: 'string'
-      }
-  
+  attributes: {
+
+    filename: {
+      type: 'string'
     },
-  
-  };
-  
+
+    aircraft: {
+      type: 'string'
+    },
+
+    path:{
+      type: 'string'
+    },
+
+    doc:{
+      type: 'string'
+    }
+
+  },
+
+};
