@@ -30,7 +30,6 @@ module.exports = {
         if(results !== undefined){
           return res.view('pages/account/view-results', {result: results})
         }   
-
       })
     },
 

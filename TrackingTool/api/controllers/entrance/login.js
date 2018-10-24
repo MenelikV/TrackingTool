@@ -106,10 +106,8 @@ and exposed as \`req.me\`.)`
     }//ﬁ 
  
     // Modify the active session instance.
-    console.log(userRecord.id)
-    console.log(this.req.session.userId)
+    
     this.req.session.userId = userRecord.id;
-    console.log(this.req.session)
     // Send success response (this is where the session actually gets persisted)
     return exits.success();
 
