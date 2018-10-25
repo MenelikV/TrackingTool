@@ -32,19 +32,138 @@ module.exports = {
         }   
       })
     },
+    fields: function(req, res) {
+      var _fields = ["Results", "Identification", "Tabulated Results","Airline", "Fleet Follow-Up", "Aircraft Identitifcation", "Parameter Validation"]
+      return res.view("/pages/account/upload-files", {fields: _fields})
+    },
 
+    pdf_fields: function(){
+      return _fields.slice(3)
+    },
+
+    crawl_table: function (start, sheet, res)
+    {
+        res['Test n°'] = []
+        res['Hp (ft)'] = []
+        res["W/delta (tons)"] = []
+        res["Mach"] = []
+        res["D Specific Range (%)"] = []
+        var data = sheet[start].v
+        var idx = start;
+        var start_idx = start;
+        while(data !== "")
+        {
+            res['Test n°'].push(data);
+            idx = column_shift(start_idx)
+            res['Hp (ft)'].push(sheet[idx].v);
+            idx = column_shift(idx)
+            res["W/delta (tons)"].push(sheet[idx].v)
+            idx = column_shift(idx)
+            res["Mach"].push(sheet[idx])
+            idx = column_shift(idx)
+            res["D Specific Range (%)"].push(sheet[idx].v)
+            start_idx = row_shift(start_idx);
+            data = sheet[start_idx].v;
+        }
+    },
+
+    column_shift: function(idx)
+    {
+        idx_number = idx.match(/\d+/)[0]
+        idx_stripped = idx.replace(idx_number, '')
+        next_idx = nextChar(idx_stripped)
+        return next_idx+idx_number
+
+    }, 
+
+    row_shift: function(idx)
+    {
+        idx_number = parseInt(idx.match(/\d+/)[0])
+        idx_stripped = idx.replace(idx_number, '')
+        return idx_stripped+String(idx_number+1)
+    },
+
+    nextChar: function(c) 
+    {
+        var u = c.toUpperCase();
+        if (same(u,'Z')){
+            var txt = '';
+            var i = u.length;
+            while (i--) {
+                txt += 'A';
+            }
+            return (txt+'A');
+        } else {
+            var p = "";
+            var q = "";
+            if(u.length > 1){
+                p = u.substring(0, u.length - 1);
+                q = String.fromCharCode(p.slice(-1).charCodeAt(0));
+            }
+            var l = u.slice(-1).charCodeAt(0);
+            var z = nextLetter(l);
+            if(z==='A'){
+                return p.slice(0,-1) + nextLetter(q.slice(-1).charCodeAt(0)) + z;
+            } else {
+                return p + z;
+            }
+        }
+    },
+
+    nextLetter: function(l){
+      if(l<90){
+          return String.fromCharCode(l + 1);
+      }
+      else{
+          return 'A';
+      }
+  },
+  
+  same: function(str,char){
+      var i = str.length;
+      while (i--) {
+          if (str[i]!==char){
+              return false;
+          }
+      }
+      return true;
+  },
+
+    identification_crawl: function(err, file){
+      
+    },
+    pdf_crawl: function(err, file){
+
+    },
+    results_crawl: function(err, file){
+
+    },
 
     upload: function(req, res) {
-      req.file('file').upload({
+      // TODO
+      var XLSX = require("js-xlsx")
+      var config_data = require("./config.json")
+      var idendification_data = require("./ident_config.json")
+      var dirname = 'C:/Users/mvero-ext/Documents/GitHub/TrackingTool/TrackingTool/.tmp/uploads'
+      res = {}
+      res.push(req.file("Results").upload(dirname, this.results_crawl(err, file)))
+      res.push(req.file("Identification").upload(dirname, this.identification_crawl(err, file)))
+      var pdf_field_list = this.pdf_fields()
+      for(var i=0; i<pdf_field_list.length; i++){
+        req.file(pdf_field_list[i]).upload(dirname, this.pdf_crawl)
+      }
           //Change according to local dirname
-          dirname: 'C:/Users/vmasiero/Documents/GitHub/TrackingTool/TrackingTool/.tmp/uploads'
+          dirname: 'C:/Users/mvero-ext/Documents/GitHub/TrackingTool/TrackingTool/.tmp/uploads'
         }, function(err, uploads) {
+          console.log(uploads)
+          if(uploads === undefined){ console.log('No Upload defined')
+          return res.serverError(err)}
 
-          if(uploads.length > 5) {
-            return res.send('Maximum 5 files can be uploaded')
+          if(uploads.length > 7) {
+            return res.send('Maximum 7 files can be uploaded')
           }
           //Upload multiple files
-          uploads.forEach(file => {  
+          uploads.forEach(file => {
             //Get doctype of uploaded file          
             var data = file.filename.slice(file.filename.length-9,file.filename.length-4)
             console.log(data) 

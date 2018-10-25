@@ -19,7 +19,7 @@ module.exports.routes = {
 
   'GET /welcome':           { view: 'pages/dashboard/welcome'},
 
-  '/upload':                { view: 'pages/account/upload-files'},
+  '/upload':                { view: 'pages/account/upload-files', controlleer: "fields"},
 
   'POST /account/file/upload':      'account/FileController.upload',
 
