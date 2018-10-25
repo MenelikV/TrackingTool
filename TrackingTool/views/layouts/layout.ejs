@@ -159,6 +159,7 @@
         <div class="navbar-nav flex-row ml-auto">
           <!-- LOGGED-IN NAVIGATION -->
           <% if(me) { %>
+          <a href="#" class="nav-item"> <%= me %> </a>
           <a class="nav-item nav-link ml-2 ml-md-0 mr-2 mr-md-0" href="/contact">Help</a>
           <!-- Only in desktop nav -->
           <div class="nav-item dropdown d-none d-sm-block">
@@ -211,15 +212,6 @@
       </footer>
     </div>
 
-
-    <% /*
-      Client-side JavaScript
-      ========================
-
-      Scripts can be hard-coded as «script» tags, automatically injected
-      by the asset pipeline between "SCRIPTS" and "SCRIPTS END", or both.
-      (https://sailsjs.com/docs/concepts/assets/task-automation)
-    */ %>
 
     <% /* Load Stripe Checkout */ %>
     <script src="https://checkout.stripe.com/checkout.js"></script>

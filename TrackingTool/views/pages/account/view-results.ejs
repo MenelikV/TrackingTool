@@ -1,0 +1,29 @@
+<h1 class="display-4">Analysis of aircraft  <%= result[0].aircraft %> </h1>
+<h5 ><a href="/welcome">Home</a></h5>
+
+<body>
+    
+<table class="table table-striped text-center">
+        
+    <thead>
+            
+        <tr>
+            <% result.forEach(function(item){ %>
+            <th><%= item.doc %></th>
+            <% }) %>
+        </tr>
+       
+    </thead>
+
+    <tbody>            
+            <tr>
+            <% result.forEach(function(item){ %>                           
+            <td>  
+                <a href="#"> <%= item.path %> </a>
+            </td>
+            <% }) %>            
+            </tr>  
+       
+    </tbody>
+</table>
+</body>

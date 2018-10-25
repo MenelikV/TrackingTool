@@ -14,8 +14,25 @@ module.exports.routes = {
   //  ╦ ╦╔═╗╔╗ ╔═╗╔═╗╔═╗╔═╗╔═╗
   //  ║║║║╣ ╠╩╗╠═╝╠═╣║ ╦║╣ ╚═╗
   //  ╚╩╝╚═╝╚═╝╩  ╩ ╩╚═╝╚═╝╚═╝
-  'GET /':                   { action: 'view-homepage-or-redirect' },
-  'GET /welcome':            { action: 'dashboard/view-welcome' },
+ 
+  'GET /':                  { action: 'view-homepage-or-redirect' },
+
+  'GET /welcome':           { view: 'pages/dashboard/welcome'},
+
+  '/upload':                { view: 'pages/account/upload-files'},
+
+  'POST /account/file/upload':      'account/FileController.upload',
+
+  'POST /account/file/search':      'account/FileController.search',
+
+  'GET /files': {
+
+    view: 'pages/account/view-files',
+    controller: 'account/FileController',
+    action: 'view'
+
+  },
+
 
   'GET /faq':                { view:   'pages/faq' },
   'GET /legal/terms':        { view:   'pages/legal/terms' },

@@ -1,0 +1,36 @@
+<h1 class="display-4">Uploaded Files</h1>
+<h5 ><a href="/upload">Upload a File</a></h5>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Path</th> 
+            <th>Aircraft</th>
+            <th>Doc</th>
+        </tr>
+    </thead>
+    <tbody>
+     
+
+        <% result.forEach(function(file){ %>
+
+            <tr>
+                <td><%= file.filename %></td>
+
+                <td><%= file.path %></td>
+
+                <td><%= file.aircraft %></td>
+
+                <td><%= file.doc %></td>
+
+            </tr>
+       <% }) %>
+    </tbody>
+</table>
+
+<form method="post" action="account/file/search">
+    <input type="text" placeholder="Search.." name="aircraft">
+    <button type="submit"><i class="fa fa-search"></i></button>
+</form>
+</body>
