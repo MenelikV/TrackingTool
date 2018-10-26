@@ -1,8 +1,9 @@
-<body>
-    <main role="main">
+
+    <div class="container-fluid space">
+    <main role="main"> 
         <!-- Main jumbotron -->
-        <div class="jumbotron">
-            <div class="container">
+        <div class="jumbotron shadow p-3 mb-5 bg-white rounded">
+            <div class="container ">
                 <h1 class="display-3 space">Hello,
                     <%= me.fullName %>
                 </h1>
@@ -74,6 +75,6 @@
             <hr>
         </div> <!-- /container -->
     </main>
-</body>
+</div>
 
 <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>
