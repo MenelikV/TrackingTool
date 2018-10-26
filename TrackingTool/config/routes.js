@@ -26,11 +26,13 @@ module.exports.routes = {
   'POST /account/file/search':      'account/FileController.search',
 
   'GET /files': {
-
     view: 'pages/account/view-files',
     controller: 'account/FileController',
     action: 'view'
+  },
 
+  'GET /results': {
+    view: 'pages/account/view-results'
   },
 
 
