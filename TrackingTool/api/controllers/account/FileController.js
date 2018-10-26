@@ -15,20 +15,26 @@ module.exports = {
             if(files==undefined){
               res.send('no files found');
             }
+            console.log(req.me);
             return res.view('pages/account/view-files', {result:files});
         })
     },
  
     search: function(req,res) {
       //Search for files by the MSN 
+      
       var results = File.find({
         aircraft: req.param('aircraft').toUpperCase()}).exec(function(err,results){
          
         if (err) {return res.serverError(err)}
         
         //If successful show corresponding files in a table
+        if(results[0] == undefined){
+          return res.send('No data entered')
+        }
+
         if(results !== undefined){
-          return res.view('pages/account/view-results', {result: results})
+          return res.view('pages/account/view-results', {result: results, me: req.me})
         }   
       })
     },
