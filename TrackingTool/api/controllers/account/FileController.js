@@ -30,7 +30,7 @@ module.exports = {
         
         //If successful show corresponding files in a table
         if(results[0] == undefined){
-          return res.send('No data entered')
+          return res.send('No data')
         }
 
         if(results !== undefined){
