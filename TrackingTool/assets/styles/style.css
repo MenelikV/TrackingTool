@@ -40,6 +40,15 @@ body {
   font-size: .9rem;
 }
 
+.modal-body {
+  background-color: #f6f6f6;
+}
+
+.space {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
 h3.heading {
   text-align: center;
   font-size: 1.9rem;
