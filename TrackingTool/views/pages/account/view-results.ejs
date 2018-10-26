@@ -1,7 +1,7 @@
 <div class="container-fluid space">
     <div class="jumbotron">
 
-<h1 class="display-5">Analysis of aircraft  <%= result[0].aircraft %> </h1>
+<h1 class="display-5">Analysis of MSN  <%= result[0].aircraft %> </h1>
 
 <body>
 <div class="container">
@@ -17,11 +17,11 @@
        
     </thead>
 
-    <tbody>            
+    <tbody>             
             <tr>
             <% result.forEach(function(item){ %>                           
             <td>  
-                <a href="#"> <%= item.path %> </a>
+                <a href="#"> <%= item.filename %> </a>
             </td>
             <% }) %>            
             </tr>  
