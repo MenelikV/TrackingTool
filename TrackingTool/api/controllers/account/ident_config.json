@@ -1,0 +1,17 @@
+{
+    "Fuel_Flowmeters":
+    {
+        "g": "Massic",
+        "c": "Volumetric"
+    },
+    "Fuel_Characteristics":
+    {
+        "g": "Measured",
+        "c": "Estimated"
+    },
+    "Weighing":
+    {
+        "g": "Before",
+        "c": "Not weighed"
+    }
+}

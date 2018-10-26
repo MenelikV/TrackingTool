@@ -6,7 +6,7 @@ module.exports = {
             description: "Aircraft",
             example: "A320-251N"
         },
-        Msn: {
+        MSN: {
             type: "number",
             required: true,
         },
@@ -14,14 +14,17 @@ module.exports = {
             type: "number",
             required: true,
         },
-        FlightDate: {
+        Flight_Owner: {
+            type: "string"
+        },
+        Flight_Date: {
             type: "string",
         },
-        FuelFlowmeters: {
+        Fuel_Flowmeters: {
             type: "string",
             isIn: ["Massic", "Volumic"]
         },
-        FuelCharacteristics:  {
+        Fuel_Characteristics:  {
             type: "string",
             isIn: ["Measured", "Estimated"]
         },
@@ -30,39 +33,43 @@ module.exports = {
             isIn: ["Before", "After", "Not Weighed"]
         },
         Results: {
-            type: "string"
+            type: "string",
+            defaultsTo: ""
         },
-        AircraftIdentification: {
+        Aircraft_Identification: {
             type: "string"
         },
         Airline: {
             type: "string"
         },
-        TabulatedResults: {
+        Tabulated_Results: {
             type: "string"
         },
-        ParametersValidation: {
+        Parameters_Validation: {
             type: "string"
         },
-        FleetFollowUp: {
+        Fleet_Follow_Up: {
             type: "string"
         },
         TRA: {
             type: "string"
         },
         CTR: {
-            type: "boolean",
-            defaultsTo: false
+            type: "string",
+            defaultsTo: ""
         },
-        ResultsStatus: {
+        Results_Status: {
             type: "string",
             isIn: ["Preliminary", "Definitive", "Investigation Ongoing"],
             defaultsTo: "Preliminary"
         },
-        ValidatedStatus: {
-            type: "boolean",
-            defaultsTo: false
-        }
+        Validated_Status: {
+            type: "string",
+            defaultsTo: ""
+        },
     },
-    datasore: "data"
+    datasore: "data",
+    getHeader: function(){
+        return ["CTR", "Results_Status", "Validated_Status", "Aircraft", "MSN","Flight", "Flight_Date", "Results", "Airline", "Aircraft_Identification", "Tabulated_Results", "Parameters_Validation", "Fleet_Follow_Up", "Flight_Owner", "Fuel_Flowmeters", "Fuel_Characteristics", "Weighing"]
+    },
 }
