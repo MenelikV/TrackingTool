@@ -202,6 +202,6 @@ module.exports = {
 
           // if it was successful redirect and display all uploaded files
             return res.redirect('/files');
-      })
+      
     },
   }

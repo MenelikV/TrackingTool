@@ -5,6 +5,7 @@
 
     <% /* Viewport tag for sensible mobile support */ %>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="utf-8">
 
     <% /*
         Stylesheets
@@ -142,52 +143,49 @@
     <link rel="stylesheet" href="/dependencies/Select-1.2.6/css/select.semanticui.css">
     <link rel="stylesheet" href="/dependencies/Select-1.2.6/css/select.semanticui.min.css">
     <link rel="stylesheet" href="/styles/importer.css">
+    <link rel="stylesheet" href="/styles/style.css">
     <!--STYLES END-->
   </head>
 
   <body>
-    <div id="page-wrap">
-      <header id="page-header" class="navbar navbar-expand-sm navbar-dark bg-dark flex-column flex-md-row justify-content-between">
-        <% if(me) {%> 
-        <!-- IF LOGGED IN USER SHOULD HAVE ACESS TO THE FULL TABLE -->
-        <ul class="navbar-nav mr-2">
-            <div class="form-inline mr-2" >
-                <a class="btn btn-outline-info" href="/table">Table</a>
-            </div>
-            <div class="form-inline ml-2" >
-              <a class="btn btn-outline-info" href="/upload">Upload Data</a>
-          </div>
-        </ul>
-        <%}%>
-        <div class="navbar-nav flex-row ml-auto">
-          <!-- LOGGED-IN NAVIGATION -->
+    <!--  Home Section -->
+    <div id="home">
+
+      <!-- Navbar Section -->
+
+      <header id="page-header">
+
+      <nav class="navbar navbar-expand-md fixed-top">
+      <div class="container-fluid">
+        <!--  Logo icon -->
+        <a href="/" class="navbar-brand"><img src="https://media.glassdoor.com/sqll/3059/airbus-group-squarelogo-1484558058652.png"></a>
+        <% if(me) { %>
+
+          <strong class="logged-name"> <a href="/" class="nav-link"> <%= me.fullName %> </a></strong>
+        <% } %>
+
+
+        <div class="collapse navbar-collapse" id="menu">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a href="/" class="nav-link">Home</a>
+            </li>
           <% if(me) { %>
-          <ul class="navbar-nav mx-auto"></ul>
-          <a href="#" class="nav-item nav-link ml-2 ml-md-0 mr-2 mr-md-0">Hello, <%= me.fullName %> :)</a>
-          </ul>
-          <a class="nav-item nav-link ml-2 ml-md-0 mr-2 mr-md-0" href="/contact">Help</a>
-          <!-- Only in desktop nav -->
-          <div class="nav-item dropdown d-none d-sm-block">
-            <a class="nav-link dropdown-toggle" id="header-account-menu-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
-            <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link">
-              <a class="dropdown-item" href="/account">Settings</a>
-              <a class="dropdown-item" href="/logout">Sign out</a>
-            </div>
-          </div>
-          <!-- Only in mobile nav -->
-          <a class="nav-item nav-link ml-2 mr-2 d-block d-sm-none" href="/account">Account Settings</a>
-          <a class="nav-item nav-link ml-2 mr-2 d-block d-sm-none" href="/logout">Sign out</a>
-          <% } else { %>
-          <!-- LOGGED-OUT NAVIGATION -->
-          <a class="nav-item nav-link ml-2 ml-md-0 mr-2" href="/login">Log in</a>
-          <!-- Only in desktop nav -->
-          <div class="form-inline d-none ml-2 d-md-block" >
-            <a class="btn btn-outline-info" href="/signup">Sign up</a>
-          </div>
-          <!-- Only in mobile nav -->
-          <a class="nav-item nav-link text-info ml-2 d-block d-md-none" href="/signup">Sign up</a>
+            <li class="nav-item">
+                <a href="/logout" class="nav-link">Sign out</a>
+            </li>
+          <%} else { %>
+          <li class="nav-item">
+            <a href="/login" class="nav-link">Log in</a>
+          </li>
+          <li class="nav-item">
+            <a href="/signup" class="nav-link">Sign up</a>
+          </li>
           <% } %>
+        </ul>
         </div>
+      </div>
+      </nav> 
       </header>
 
       <!-- Alert if email has not been confirmed -->
@@ -207,14 +205,6 @@
 
       <%- body %>
 
-      <footer id="page-footer" class="navbar navbar-light justify-content-between flex-row-reverse">
-        <div class="nav">
-         
-          <% if(me) { %>
-          <small class="nav-item"><a class="nav-link text-info" href="/logout">Sign out</a></small>
-          <% } %>
-        </div>
-      </footer>
     </div>
 
 
