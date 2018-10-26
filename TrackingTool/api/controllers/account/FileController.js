@@ -23,8 +23,11 @@ module.exports = {
         if (err) {return res.serverError(err)}
         
         //If successful show corresponding files in a table
+        if(results[0] == undefined) {
+          return res.send('no data')
+        }
         if(results !== undefined){
-          return res.view('pages/account/view-results', {result: results})
+          return res.view('pages/account/view-results', {result: results, me:req.me})
         }   
       })
     },
