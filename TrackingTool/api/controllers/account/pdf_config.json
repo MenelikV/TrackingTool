@@ -1,6 +1,6 @@
 {
-    "airline": "Airline_Identification",
+    "airline": "Airline",
     "tabulated": "Tabulated_Results",
     "follow": "Fleet_Follow_up",
-    "validation": "Parameters Validation"
+    "validation": "Parameters_Validation"
 }

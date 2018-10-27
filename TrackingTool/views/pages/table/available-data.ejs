@@ -13,10 +13,16 @@
     <!-- BODY -->
     <tbody>
     <% for(var j=0; j < data.length; j++){ %>
-      <!-- TODO Put some color when status is not avaible-->
       <tr>
       <% for(var i=0; i < headers.length; i++){%>
-        <th scope="col" style ="width: auto !important"><%=data[j][headers[i]]%></th><%}%>
+      <% var pdfHeaders = Data.pdfFields();%> 
+         <% if(pdfHeaders.indexOf(headers[i]) !== -1){%>
+           <th scope="col" style ="width: auto !important"><%-data[j][headers[i]]%></th>
+           <%}
+            else{%>
+            <th scope="col" style ="width: auto !important"><%=data[j][headers[i]]%></th>
+             <%} %>
+           <%}%>
       </tr>
     <%}%>
     </tbody>

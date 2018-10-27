@@ -36,9 +36,6 @@ module.exports = {
             type: "string",
             defaultsTo: ""
         },
-        Aircraft_Identification: {
-            type: "string"
-        },
         Airline: {
             type: "string"
         },
@@ -70,6 +67,9 @@ module.exports = {
     },
     datasore: "data",
     getHeader: function(){
-        return ["CTR", "Results_Status", "Validated_Status", "Aircraft", "MSN","Flight", "Flight_Date", "Results", "Airline", "Aircraft_Identification", "Tabulated_Results", "Parameters_Validation", "Fleet_Follow_Up", "Flight_Owner", "Fuel_Flowmeters", "Fuel_Characteristics", "Weighing"]
-    },
+        return ["CTR", "Results_Status", "Validated_Status", "Aircraft", "MSN","Flight", "Flight_Date", "Results", "Airline", "Tabulated_Results", "Parameters_Validation", "Fleet_Follow_Up", "Flight_Owner", "Fuel_Flowmeters", "Fuel_Characteristics", "Weighing"]
+  },
+  pdfFields: function () {
+    return ["Airline", "Tabulated_Results", "Parameters_Validation","Fleet_Follow_Up"]
+  }
 }

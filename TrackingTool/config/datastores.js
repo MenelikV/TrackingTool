@@ -54,12 +54,11 @@ module.exports.datastores = {
   },
   user: {
     adapter: "sails-disk",
-    filePath: "C:\\Users\\mvero-ext\\Documents\\GitHub\\TrackingTool\\TrackingTool\\local_databases\\user.db"
+    dir: __dirname + "\\local_databases\\",
   },
   data: {
     adapter: "sails-disk",
-    filePath: "C:\\Users\\mvero-ext\\Documents\\GitHub\\TrackingTool\\TrackingTool\\local_databases\\data.db"
+    dir: __dirname + "\\local_databases\\"
+    
   }
-
-
 };
