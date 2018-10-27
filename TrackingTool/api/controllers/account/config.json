@@ -5,6 +5,7 @@
         {
             "Aircraft":"B4",
             "MSN": "C4",
+            "Flight": "D4",
             "Flight_Owner": "E4",
             "Flight_Date": "F4"
         }
