@@ -25,6 +25,8 @@ module.exports.routes = {
 
   'POST /account/file/search':      'account/FileController.search',
 
+  'GET /account/file/download/:id':    'account/FileController.download',
+
   'GET /files': {
     view: 'pages/account/view-files',
     controller: 'account/FileController',

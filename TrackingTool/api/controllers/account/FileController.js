@@ -39,6 +39,32 @@ module.exports = {
       })
     },
 
+    download: function (req, res) {
+      //Finding file through id on the URL and selecting file path
+      File.find({ id: req.param('id')}).exec(function (err, result) {
+        if (err) {
+          res.send('error')
+        }
+  
+        else if (result == undefined) {
+          res.send('notfound')
+        }
+  
+        else {
+          var path = result[0].path;
+          console.log(path)
+          //Including skipper disk
+          var SkipperDisk = require('skipper-disk');
+          var fileAdapter = SkipperDisk();
+  
+          fileAdapter.read(path).on('error', function (err) {
+            res.send('path error');
+          })
+            .pipe(res);
+        }
+      })
+    },
+
 
     upload: function(req, res) {
       req.file('file').upload({
