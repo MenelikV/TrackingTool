@@ -101,16 +101,15 @@ module.exports = {
             }
         })
         console.log("Handling PDF Files")
-        var prefix = aircraft_data["Aircraft"]+" MSN "+aircraft_data["MSN"]+" "
         pdf_files.forEach(file => {
             pdf_keys.forEach(k => {
-              if (file.filename.indexOf(k) !== -1) {
-                aircraft_data[pdf_data[k]] = sails.helpers.createPdfLink(file.fd, prefix+pdf_data[k].replace('_', ' '))
+              if (file.filename.toLowerCase().indexOf(k) !== -1) {
+                aircraft_data[pdf_data[k]] = file.fd
               }
             })
           }
         )
-        console.log("A new entry is about to be added to the database")
+        aircraft_data["Validated_Status"] = "Preliminary"
         console.log("Finishing processing Files and redirection")
         console.log(err !== undefined && err!== null)
         console.log(err)
