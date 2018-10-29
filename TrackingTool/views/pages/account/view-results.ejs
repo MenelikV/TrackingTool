@@ -20,7 +20,7 @@
             <tr>
             <% result.forEach(function(item){ %>                           
             <td>  
-                <a href="#"> <%= item.path %> </a>
+                <a href="/account/file/download/<%= item.id %>"> <%= item.filename %> </a>
             </td>
             <% }) %>            
             </tr>  
