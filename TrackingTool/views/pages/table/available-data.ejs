@@ -16,8 +16,8 @@
       <tr>
       <% for(var i=0; i < headers.length; i++){%>
       <% var pdfHeaders = Data.pdfFields();%> 
-         <% if(pdfHeaders.indexOf(headers[i]) !== -1){%>
-           <th scope="col" style ="width: auto !important"><%-data[j][headers[i]]%></th>
+         <% if(headers[i] === "Results"){%>
+           <th scope="col" style ="width: auto !important" id = "Results"><%-data[j][headers[i]]%></th>
            <%}
             else{%>
             <th scope="col" style ="width: auto !important"><%=data[j][headers[i]]%></th>
