@@ -21,18 +21,18 @@ module.exports = {
 
 
   fn: function (input, exits) {
-    var res = "<tr>\n"
-    res += "<th>Test n°</th>\n"
-    res += "<th>Hp (ft)</th>\n"
-    res += "<th>W/delta (tons)</th>\n"
-    res += "<th>Mach</th>\n"
-    res += "<th>D Specific Range (%)</th>\n"
-    res += "</tr>\n"
+    var res = "<table><tr>"
+    res += "<th>Test n°</th>"
+    res += "<th>Hp (ft)</th>"
+    res += "<th>W/delta (tons)</th>"
+    res += "<th>Mach</th>"
+    res += "<th>D Specific Range (%)</th>"
+    res += "</tr>"
     var data = input.sheet[input.start].v
     var idx = input.start;
     var start_idx = input.start;
     while (data !== "") {
-      res += "<tr>\n"
+      res += "<tr>"
       res += sails.helpers.thWrap(data)
       idx = sails.helpers.columnShift(start_idx)
       res += sails.helpers.thWrap(input.sheet[idx].v)
@@ -48,8 +48,9 @@ module.exports = {
       data = input.sheet[start_idx].v;
       console.log(data === "")
       console.log(data === "\n")
-      res += "</tr>\n"
+      res += "</tr>"
     }
+    res+="</table>"
     exits.success(res);
   },
 }
