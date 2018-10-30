@@ -15,6 +15,12 @@ body {
 
 .nav-link {
   color: white;
+  text-transform: capitalize;
+}
+
+.nav-drop {
+  color: black;
+  text-transform: capitalize;
 }
 
 .caption {
