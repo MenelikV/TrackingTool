@@ -31,6 +31,11 @@
                     <a href="/account/file/download/<%=data[j][correct_header]%>" target="_blank"><%=headers[i].replace(/_/g, ' ')%></a></td>
                 <%}
                 else{%>
+                    <%if(headers[i]==="Validated_Status"){%>
+                        <%if(data[headers[i]].length){%>
+                            <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><span class="glyphicon glyphicon-grinning"></td>
+                            <%}
+                <%}
                 <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><%=data[j][headers[i]]%></td>
                 <%}
               %>

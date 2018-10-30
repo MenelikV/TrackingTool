@@ -20,13 +20,6 @@ $(document).ready(function(){
         }
       }
     },
-    {
-      // Special Formatting for Results Status
-      "targets": 1,
-      "render": function(data, type, row, meta){
-        return data?'<p>&amp;#9786;</p>':''
-      }
-    },
   ]
   });
   }
@@ -50,13 +43,6 @@ $(document).ready(function(){
             default:
               return ''
           }
-        }
-      },
-      {
-        // Special Formatting for Results Status
-        "targets": 1,
-        "render": function(data, type, row, meta){
-          return data?'<p>&amp;#9786;</p>':''
         }
       },
     ]
