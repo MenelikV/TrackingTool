@@ -3,7 +3,7 @@
 <div class="table-responsive">
 <table id="available-data" class="display">
     <!-- HEADERS -->
-    <thead class="table-dark"> 
+    <thead class="table-primary"> 
     <tr>
     <% for(var i=0; i < headers.length; i++){ %>
         <th scope="col" data-sortable="true" style ="width: auto !important"><%=headers[i]%></th>
@@ -17,10 +17,23 @@
       <% for(var i=0; i < headers.length; i++){%>
       <% var pdfHeaders = Data.pdfFields();%> 
          <% if(headers[i] === "Results"){%>
-           <th scope="col" style ="width: auto !important" id = "Results"><%-data[j][headers[i]]%></th>
+            <th scope="col" style ="width: auto !important" id ='<%="ResultsModalButton"+"_"+j %>'>
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target='<%="#Results"+"_"+j %>'>
+                      Results Table
+              </button>
+         </th>
            <%}
             else{%>
-            <th scope="col" style ="width: auto !important"><%=data[j][headers[i]]%></th>
+              <%if(pdfHeaders.indexOf(headers[i])!==-1){%>
+                <!--This should be a link to a PDF-->
+                <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;">
+                    <% var correct_header = headers[i]+"_id" %>
+                    <a href="/account/file/download/<%=data[j][correct_header]%>" target="_blank"><%=headers[i].replace(/_/g, ' ')%></a></td>
+                <%}
+                else{%>
+                <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><%=data[j][headers[i]]%></td>
+                <%}
+              %>
              <%} %>
            <%}%>
       </tr>
@@ -29,3 +42,28 @@
 </table>
 </div>
 </div>
+<!-- Add all the modal for the results -->
+<% for(var j=0; j < data.length; j++){ %>
+  <div class="modal fade" id='<%="Results"+"_"+j %>' tabindex="-1" role="dialog" aria-labelledby="ResultsTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content modal-body">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ResultsTitle">Results Table</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Display the results Table TODO, Better Styling for the small table-->
+                <%-data[j]["Results"]%>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div> 
+  <%}%>
+
+<%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

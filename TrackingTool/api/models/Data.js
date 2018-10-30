@@ -67,7 +67,7 @@ module.exports = {
     },
     datasore: "data",
     getHeader: function(){
-        return ["CTR", "Results_Status", "Validated_Status", "Aircraft", "MSN","Flight", "Flight_Date", "Results", "Airline", "Tabulated_Results", "Parameters_Validation", "Fleet_Follow_Up", "Flight_Owner", "Fuel_Flowmeters", "Fuel_Characteristics", "Weighing"]
+        return ["CTR", "Results_Status", "Validated_Status", "Aircraft", "MSN","Flight", "Flight_Date", "Results", "Airline", "Tabulated_Results", "Parameters_Validation", "Fleet_Follow_Up", "Flight_Owner", "Fuel_Flowmeters", "Fuel_Characteristics", "Weighing", "TRA"]
   },
   pdfFields: function () {
     return ["Airline", "Tabulated_Results", "Parameters_Validation","Fleet_Follow_Up"]

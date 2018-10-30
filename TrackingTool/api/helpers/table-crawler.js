@@ -21,7 +21,8 @@ module.exports = {
 
 
   fn: function (input, exits) {
-    var res = "<table><tr>"
+    // TODO Move this code elsewhere ?
+    var res = "<table table-bordered><tr>"
     res += "<th>Test n°</th>"
     res += "<th>Hp (ft)</th>"
     res += "<th>W/delta (tons)</th>"
@@ -34,14 +35,17 @@ module.exports = {
     while (data !== "") {
       res += "<tr>"
       res += sails.helpers.tdWrap(data)
+      // Beware special formatting
       idx = sails.helpers.columnShift(start_idx)
-      res += sails.helpers.tdWrap(input.sheet[idx].v)
+      res += Numbers.parseFloat(sails.helpers.tdWrap(input.sheet[idx].v)).toFixed(0)
       idx = sails.helpers.columnShift(idx)
-      res += sails.helpers.tdWrap(input.sheet[idx].v)
+      res += Numbers.parseFloat(sails.helpers.tdWrap(input.sheet[idx].v)).toFixed(0)
       idx = sails.helpers.columnShift(idx)
-      res += sails.helpers.tdWrap(input.sheet[idx].v)
+      // Mach Formatting, 3 numbers after the 
+      res += Numbers.parseFloat(sails.helpers.tdWrap(input.sheet[idx].v)).toFixed(3)
       idx = sails.helpers.columnShift(idx)
-      res += sails.helpers.tdWrap(input.sheet[idx].v)
+      // DSR Formatting
+      res += Numbers.parseFloat(sails.helpers.tdWrap(input.sheet[idx].v)).toFixed(2)
       start_idx = sails.helpers.rowShift(start_idx);
       console.log("DEBUGGGGGGGG")
       console.log(start_idx)

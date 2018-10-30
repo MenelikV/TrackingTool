@@ -19,8 +19,8 @@ module.exports = {
  
     search: function(req,res) {
       //Search for files by the MSN 
-      var results = File.find({
-        aircraft: req.param('aircraft').toUpperCase()}).exec(function(err,results){
+      var results = Data.find({
+        MSN: req.param('msn').toUpperCase()}).exec(function(err,results){
          
         if (err) {return res.serverError(err)}
         
@@ -29,7 +29,8 @@ module.exports = {
           return res.send('no data')
         }
         if(results !== undefined){
-          return res.view('pages/account/view-results', {result: results, me:req.me})
+          headers = Data.getHeader()
+          return res.view('pages/table/available-data', {data: results, headers: headers,  me:req.me})
         }   
       })
     },
