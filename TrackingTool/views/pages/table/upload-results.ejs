@@ -28,7 +28,16 @@
            </th>
            <%}
             else{%>
-            <th scope="col" style ="width: auto !important"><%=data[j][headers[i]]%></th>
+                <%if(pdfHeaders.indexOf(headers[i])!==-1){%>
+                    <!--This should be a link to a PDF-->
+                    <th scope="col" style ="width: auto !important">
+                        <% var correct_header = headers[i]+"_id" %>
+                        <a href="/account/file/download/<%=data[j][correct_header]%>"><%=headers[i].replace(/_/g, ' ')%></a></th>
+                    <%}
+                    else{%>
+                    <th scope="col" style ="width: auto !important"><%=data[j][headers[i]]%></th>
+                    <%}
+                %>
              <%} %>
            <%}%>
       </tr>

@@ -60,18 +60,17 @@ module.exports = {
     },
 
 
-  upload: function (req, res) {
+  upload: async function (req, res) {
       var XLSX = require("js-xlsx")
       var config_data = require("./config.json")
       var idendification_data = require("./ident_config.json")
       console.log(idendification_data)
       var pdf_data = require("./pdf_config.json")
-      var f = sails.helpers.baseName
       var keys = Object.keys(config_data)
       var pdf_keys = Object.keys(pdf_data)
     aircraft_data = {}
       req.file("file").upload({
-      }, function (err, uploads) {
+      }, async function (err, uploads) {
         if (uploads === undefined) {
           return res.send("Upload did not work")
         }
@@ -124,14 +123,15 @@ module.exports = {
             }
         })
         console.log("Handling PDF Files")
-        pdf_files.forEach(file => {
-            pdf_keys.forEach(k => {
-              if (file.filename.toLowerCase().indexOf(k) !== -1) {
-                aircraft_data[pdf_data[k]] = file.fd
-              }
-            })
+        for(const file of pdf_files){
+          for(const k of pdf_keys){
+            if (file.filename.toLowerCase().indexOf(k) !== -1) {
+              aircraft_data[pdf_data[k]] = file.fd
+              // Create a file entry in the Fike DataBase
+              var createdFileEntry = await File.create({path: file.fd}).fetch()
+              aircraft_data[pdf_data[k]+"_id"] = createdFileEntry.id;
           }
-        )
+        }}
         // Default Value
         aircraft_data["Validated_Status"] = "Preliminary"
         // TRA is filled by hand :/
