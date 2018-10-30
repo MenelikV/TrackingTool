@@ -12,7 +12,7 @@ module.exports = {
       if (aircraft_data === {}){res.send("No data found")}
       else{
         var headers = Data.getHeader();
-        return res.view("pages/table/available-data", { data: [aircraft_data], headers: headers })
+        return res.view("pages/table/upload-results", { data: [aircraft_data], headers: headers })
       }
     },
  
@@ -123,4 +123,13 @@ module.exports = {
       )
 
     },
+
+    validate: function(req, res){
+      // Push Data to the server
+      console.log("Some data will be pushed back to the server")
+      console.log(aircraft_data)
+      var res = await Data.create(aircraft_data)
+      // See the whole table with the new entry 
+      return res.redirect("/table")
+    }
   }

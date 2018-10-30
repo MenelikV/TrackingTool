@@ -1,0 +1,65 @@
+<!-- Better use d-flex ? -->
+<!-- TODO Retrigger the modal on click -->
+<div class="jumbotron">
+<form action="/account/file/validate" method="post" id="uploaded-data">
+<button type="button" class="btn btn-primary btn-lg mr-5 ml-0 pb-10" href="/upload">Redo the upload</button>
+<div class="table-responsive">
+<table id="upload-results" class="display">
+    <!-- HEADERS -->
+    <thead class="table-primary"> 
+    <tr>
+    <% for(var i=0; i < headers.length; i++){ %>
+        <th scope="col" data-sortable="true" style ="width: auto !important"><%=headers[i]%></th>
+    <%}%>
+      </tr>
+    </thead>
+    <!-- BODY -->
+    <tbody>
+    <% for(var j=0; j < data.length; j++){ %>
+      <tr>
+      <% for(var i=0; i < headers.length; i++){%>
+      <% var pdfHeaders = Data.pdfFields();%> 
+         <% if(headers[i] === "Results"){%>
+            <!-- Trigger a modal for the  results table -->
+           <th scope="col" style ="width: auto !important" id = "ResultsModalButton">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Results">
+                        Results Table
+                </button>
+           </th>
+           <%}
+            else{%>
+            <th scope="col" style ="width: auto !important"><%=data[j][headers[i]]%></th>
+             <%} %>
+           <%}%>
+      </tr>
+    <%}%>
+    </tbody>
+</table>
+</div>
+</div>
+</hr>
+<button type="submit" class="btn btn-success ml-auto" style="float: right;" form="uploaded-data">Push Data To The Server</button>
+</form>
+<!-- Modal -->
+<div class="modal fade" id="Results" tabindex="-1" role="dialog" aria-labelledby="ResultsTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content modal-body">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ResultsTitle">Results Table</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Display the results Table TODO, Better Styling for the small table-->
+                <%-data[0]["Results"]%>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>
