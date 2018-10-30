@@ -2,7 +2,7 @@ module.exports = {
   friendlyName: 'TH Wrapper',
 
 
-  description: 'Return a personalized greeting based on the provided name.',
+  description: 'Return html formatted string.',
   sync: true,
 
 

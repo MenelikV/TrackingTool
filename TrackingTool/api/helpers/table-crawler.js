@@ -33,15 +33,15 @@ module.exports = {
     var start_idx = input.start;
     while (data !== "") {
       res += "<tr>"
-      res += sails.helpers.thWrap(data)
+      res += sails.helpers.tdWrap(data)
       idx = sails.helpers.columnShift(start_idx)
-      res += sails.helpers.thWrap(input.sheet[idx].v)
+      res += sails.helpers.tdWrap(input.sheet[idx].v)
       idx = sails.helpers.columnShift(idx)
-      res += sails.helpers.thWrap(input.sheet[idx].v)
+      res += sails.helpers.tdWrap(input.sheet[idx].v)
       idx = sails.helpers.columnShift(idx)
-      res += sails.helpers.thWrap(input.sheet[idx].v)
+      res += sails.helpers.tdWrap(input.sheet[idx].v)
       idx = sails.helpers.columnShift(idx)
-      res += sails.helpers.thWrap(input.sheet[idx].v)
+      res += sails.helpers.tdWrap(input.sheet[idx].v)
       start_idx = sails.helpers.rowShift(start_idx);
       console.log("DEBUGGGGGGGG")
       console.log(start_idx)
