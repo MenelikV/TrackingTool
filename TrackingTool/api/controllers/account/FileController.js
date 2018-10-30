@@ -128,7 +128,7 @@ module.exports = {
       // Push Data to the server
       console.log("Some data will be pushed back to the server")
       console.log(aircraft_data)
-      var res = await Data.create(aircraft_data)
+      var res = Data.create(aircraft_data)
       // See the whole table with the new entry 
       return res.redirect("/table")
     }
