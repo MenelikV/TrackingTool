@@ -22,7 +22,7 @@ module.exports = {
         },
         Fuel_Flowmeters: {
             type: "string",
-            isIn: ["Massic", "Volumic"]
+            isIn: ["Massic", "Volumetric"]
         },
         Fuel_Characteristics:  {
             type: "string",

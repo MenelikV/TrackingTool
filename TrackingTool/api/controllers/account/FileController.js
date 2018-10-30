@@ -12,6 +12,7 @@ module.exports = {
       if (aircraft_data === {}){res.send("No data found")}
       else{
         var headers = Data.getHeader();
+
         return res.view("pages/table/upload-results", { data: [aircraft_data], headers: headers })
       }
     },
@@ -36,7 +37,7 @@ module.exports = {
     download: function (req, res) {
       //Finding file through id on the URL and selecting file path
       File.find({ id: req.param('id')}).exec(function (err, result) {
-        if (err) {
+        if (err) { 
           res.send('error')
         }
   
@@ -124,6 +125,7 @@ module.exports = {
         })
         console.log("Handling PDF Files")
         for(const file of pdf_files){
+          
           for(const k of pdf_keys){
             if (file.filename.toLowerCase().indexOf(k) !== -1) {
               aircraft_data[pdf_data[k]] = file.fd
@@ -150,11 +152,11 @@ module.exports = {
 
     },
 
-    validate: function(req, res){
+    validate: async function(req, res){
       // Push Data to the server
       console.log("Some data will be pushed back to the server")
-      console.log(aircraft_data)
-      var res = Data.create(aircraft_data)
+       
+       var a = await Data.create(aircraft_data)
       // See the whole table with the new entry 
       return res.redirect("/table")
     }
