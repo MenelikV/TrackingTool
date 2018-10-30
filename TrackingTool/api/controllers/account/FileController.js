@@ -132,7 +132,10 @@ module.exports = {
             })
           }
         )
+        // Default Value
         aircraft_data["Validated_Status"] = "Preliminary"
+        // TRA is filled by hand :/
+        aircraft_data["TRA"] = ""
         console.log("Finishing processing Files and redirection")
         console.log(err !== undefined && err!== null)
         console.log(err)
