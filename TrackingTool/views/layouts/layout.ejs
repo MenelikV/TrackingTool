@@ -155,42 +155,46 @@
 
       <header id="page-header">
 
-      <nav class="navbar navbar-expand-md fixed-top">
-      <div class="container-fluid">
-        <!--  Logo icon -->
-        <a href="/" class="navbar-brand"><img src="https://media.glassdoor.com/sqll/3059/airbus-group-squarelogo-1484558058652.png"></a>
-        <% if(me) { %>
-
-          <strong class="logged-name"> <a href="/" class="nav-link"> <%= me.fullName %> </a></strong>
-        <% } %>
-
-
-        <div class="collapse navbar-collapse" id="menu">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a href="/" class="nav-link">Home</a>
-            </li>
-          <% if(me) { %>
-            <li class="nav-item">
-                <a href="/account/" class="nav-link">Account Settings</a>
-            </li class="nav-item">
-                <a href="/contact" class="nav-link">Help</a>
-            </li>
-            <li class="nav-item">
-                <a href="/logout" class="nav-link">Sign out</a>
-            </li>
-          <%} else { %>
-          <li class="nav-item">
-            <a href="/login" class="nav-link">Log in</a>
-          </li>
-          <li class="nav-item">
-            <a href="/signup" class="nav-link">Sign up</a>
-          </li>
-          <% } %>
-        </ul>
-        </div>
-      </div>
-      </nav> 
+        <nav class="navbar navbar-expand-md fixed-top">
+          <div class="container-fluid">
+            <!--  Logo icon -->
+            <a href="/" class="navbar-brand"><img src="https://media.glassdoor.com/sqll/3059/airbus-group-squarelogo-1484558058652.png"></a>
+            <% if(me) { %>
+            <strong class="logged-name"> <a href="/" class="nav-link">
+                <%= me.fullName %> </a></strong>
+            <% } %>
+  
+  
+            <div class="collapse navbar-collapse" id="menu">
+              <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                  <a href="/" class="nav-link">Home</a>
+                </li>
+                <% if(me) { %>
+                <li class="nav-item">
+                  <a class="nav-item nav-link " href="/contact">Help</a>
+                </li>
+                
+                <div class="nav-item dropdown">
+                  <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="header-account-menu-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="" >Account</a>
+                  <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link">
+                    <a class="dropdown-item nav-drop" href="/account">Settings</a>
+                    <a class="dropdown-item nav-drop" href="/logout">Sign out</a>
+                  </div>
+                </div>
+              
+                <%} else { %>
+                <li class="nav-item">
+                  <a href="/login" class="nav-link">Log in</a>
+                </li>
+                <li class="nav-item">
+                  <a href="/signup" class="nav-link">Sign up</a>
+                </li>
+                <% } %>
+              </ul>
+            </div>
+          </div>
+        </nav>
       </header>
 
       <!-- Alert if email has not been confirmed -->
