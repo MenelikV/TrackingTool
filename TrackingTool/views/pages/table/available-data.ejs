@@ -31,12 +31,20 @@
                     <a href="/account/file/download/<%=data[j][correct_header]%>" target="_blank"><%=headers[i].replace(/_/g, ' ')%></a></td>
                 <%}
                 else{%>
-                    <%if(headers[i]==="Validated_Status"){%>
-                        <%if(data[headers[i]].length){%>
-                            <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><span class="glyphicon glyphicon-grinning"></td>
+                    <%if(headers[i]==="Results_Status"){%>
+                      <% console.log(data["Results_Status"])%>
+                        <%if(data[headers[i]] === undefined || data[headers[i]] === ""){%>
+                            <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"></td>
                             <%}
+                            else{%>
+                              <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><i class="fa fa-smile-o"></i></td>
+                            <%}
+                          %>
+                <%}else{%>
+                  <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><%=data[j][headers[i]]%></td>
                 <%}
-                <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><%=data[j][headers[i]]%></td>
+                %>
+                
                 <%}
               %>
              <%} %>
