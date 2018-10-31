@@ -17,6 +17,6 @@ module.exports = {
 
 
   fn: function (input, exits) {
-    exits.success("<th>" + input.field + "</th>\n")
+    exits.success('<th style="text-align: center" class="text-center">' + input.field + "</th>\n")
   }
 }

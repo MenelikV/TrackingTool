@@ -17,6 +17,6 @@ module.exports = {
   
   
     fn: function (input, exits) {
-      exits.success('<td style="text-align: center; vertical-align: middle;">' + input.field + "</td>\n")
+      exits.success('<td style="text-align: center; vertical-align: middle; width:20%">' + input.field + "</td>\n")
     }
   }
