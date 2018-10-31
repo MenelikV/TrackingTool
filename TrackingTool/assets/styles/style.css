@@ -15,6 +15,12 @@ body {
 
 .nav-link {
   color: white;
+  text-transform: capitalize;
+}
+
+.nav-drop {
+  color: black;
+  text-transform: capitalize;
 }
 
 .caption {
@@ -45,7 +51,7 @@ body {
 }
 
 .space {
-  padding-top: 1rem;
+  padding-top: 2rem;
   padding-bottom: 1rem;
 }
 
@@ -90,6 +96,11 @@ img.portfolio {
   color: white;
 }
 
+.table-text {
+  font-size: 1rem;
+  color: #1b4079
+}
+
 /*--- iOS Landing Page Fix --*/
 .landing {
   position: relative;
@@ -122,5 +133,3 @@ img.portfolio {
           transform: translateZ(0);
   will-change: transform;
 }
-
-
