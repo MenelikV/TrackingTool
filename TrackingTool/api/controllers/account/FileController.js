@@ -137,6 +137,8 @@ module.exports = {
         }}
         // Default Value
         aircraft_data["Validated_Status"] = "Preliminary"
+        aircraft_data["Results_Status"] = ""
+        // TODO CTR
         // TRA is filled by hand :/
         aircraft_data["TRA"] = ""
         console.log("Finishing processing Files and redirection")
