@@ -1,12 +1,16 @@
 <!-- Better use d-flex ? -->
 <div class="jumbotron" style="min-height: 100%;min-height: 100vh; display: flex; align-items: center">
 <div class="table-responsive">
+<!--TODO Correct That!-->
+<%if(me.isSuperAdmin){%>
+    <button type="button" id="EditButton" class="btn btn-danger btn-lg mr-5 ml-0 mb-2" data-toggle="modal" data-target="#Editor" disabled>Edit <span class="octicon octicon-pencil"></span></button>
+<%}%>
 <table id="available-data" class="display">
     <!-- HEADERS -->
     <thead class="table-primary"> 
     <tr>
     <% for(var i=0; i < headers.length; i++){ %>
-        <th scope="col" data-sortable="true" style ="width: auto !important"><%=headers[i]%></th>
+        <th scope="col" data-sortable="true" style ="width: auto !important"><%=headers[i].replace(/_/g, ' ')%></th>
     <%}%>
       </tr>
     </thead>
@@ -31,17 +35,26 @@
                     <a href="/account/file/download/<%=data[j][correct_header]%>" target="_blank"><%=headers[i].replace(/_/g, ' ')%></a></td>
                 <%}
                 else{%>
-                    <%if(headers[i]==="Results_Status"){%>
-                      <% console.log(data["Results_Status"])%>
-                        <%if(data[headers[i]] === undefined || data[headers[i]] === ""){%>
+                    <%if(headers[i]==="Validated_Status"){%>
+                        <%if(data[j][headers[i]] === undefined || data[j][headers[i]] === ""){%>
                             <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"></td>
                             <%}
                             else{%>
-                              <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><i class="fa fa-smile-o"></i></td>
+                              <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><i class="fa fa-check fa-lg" style="color:green"></i></td>
                             <%}
                           %>
                 <%}else{%>
+                    <%if(headers[i] === "CTR"){%>
+                        <%if(data[j][headers[i]] === undefined || data[j][headers[i]] === ""){%>
+                            <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"></td>
+                            <%}
+                            else{%>
+                                <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><i class="fa fa-check fa-lg" style="color:green"></i></td>
+                            <%}
+                          %>
+                    <%}else{%>
                   <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><%=data[j][headers[i]]%></td>
+                  <%}%>
                 <%}
                 %>
                 
@@ -78,5 +91,60 @@
     </div>
 </div> 
   <%}%>
-
+<!-- Add a Modal for row edition -->
+<!-- TODO Update Model according to current state -->
+<form action="/account/file/update" method="post" id="data-edition">
+<div class="modal fade" id='Editor' tabindex="-1" role="dialog" aria-labelledby="EditorTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content modal-body">
+            <div class="modal-header">
+                <h5 class="modal-title" id="EditorTitle">Row Editor</h5>
+            </div>
+            <div class="modal-body">
+                <!--Small form to edit the table -->
+                <div class="container">
+                
+                    <div class="form-group row">
+                        <label for="TRA-Text-input" class="col-2 col-form-label">TRA</label>
+                        <div class="col-10">
+                          <input class="form-control" type="text" value="" id="TRA-input">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label col-2" id="Validated">Validated Status</label>
+                        <div class="col-sm-10">
+                            <select class="custom-select" id="validatedCombo">
+                                <option selected>Choose...</option>
+                                <option value="Preliminary">Preliminary</option>
+                                <option value="Defintive">Defintive</option>
+                                <option value="Investigation">Investigation</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2">Validated</label>
+                            <label class="form-check-label pl-200">
+                                <input class="form-check-input" type="checkbox" id="validatedCheck">
+                            </label>
+                        </label>
+                    </div>
+                    <div class="form-group row">
+                            <label class="col-sm-2">CTR</label>
+                            <label class="form-check-label pl-200">
+                                    <input class="form-check-input pl-200" type="checkbox" id="CTRCheck">
+                                </label>
+                            </label>
+                    </div>
+                </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-success" form="data-edition">Update</button>
+            </div>
+        </div>
+    </div>
+</div> 
+</form>
 <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

@@ -30,6 +30,8 @@ module.exports.routes = {
   
   'POST /account/file/validate':      'account/FileController.validate',
 
+  'POST /account/file/update':        'account/FileController.update',
+
   'GET /files': {
 
     view: 'pages/account/view-files',

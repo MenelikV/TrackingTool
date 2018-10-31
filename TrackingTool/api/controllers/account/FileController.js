@@ -138,7 +138,9 @@ module.exports = {
         // Default Value
         aircraft_data["Validated_Status"] = "Preliminary"
         aircraft_data["Results_Status"] = ""
-        // TODO CTR
+        // Try to open the CTR registry
+        try{CTR_dict = require("ctr.json")}catch(error){CTR_dict = {}}
+        aircraft_data["CTR"] = CTR_dict[aircraft_data["MSN"]] !== undefined ? CTR_dict[aircraft_data["MSN"]] : ""
         // TRA is filled by hand :/
         aircraft_data["TRA"] = ""
         console.log("Finishing processing Files and redirection")
@@ -155,12 +157,19 @@ module.exports = {
 
     },
 
-    validate: async function(req, res){
+  validate: async function(req, res){
       // Push Data to the server
       console.log("Some data will be pushed back to the server")
        
        var a = await Data.create(aircraft_data)
       // See the whole table with the new entry 
       return res.redirect("/table")
-    }
+    },
+
+  update: async function(req, res){
+    console.log("Updating the server")
+    
+    return res.redirect("/table")
   }
+}
+
