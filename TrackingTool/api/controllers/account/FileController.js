@@ -8,17 +8,18 @@
 module.exports = {
 
     view: function(req, res) {
-        File.find().exec(function(err, files){
+        Data.find().exec(function(err, files){
             if(err){
                 res.send(500, {error: 'DB error'});
             }
             if(files==undefined){
               res.send('no files found');
             }
-            console.log(req.me);
-            return res.view('pages/account/view-files', {result:files});
+
+            return res.view('pages/account/view-files', {result:files, me:req.me});
         })
     },
+
  
     search: function(req,res) {
       //Search for files by the MSN 
@@ -97,7 +98,7 @@ module.exports = {
               {data = 'Parameters'}
             //Create each file with corresponding parameters
             File.create({
-              path: file.fd,
+              path: file.fd, 
               filename: file.filename,
               aircraft: file.filename.slice(0, file.filename.length-9),
               doc: data        
@@ -117,4 +118,65 @@ module.exports = {
             return res.redirect('/files');
       })
     },
+
+
+    update: function (req,res) {
+      console.log(req.param('id'));
+   
+      //Upload and create new PDF file (edit to match the temp branch version)
+      req.file('file').upload({dirname: 'C:/Users/vmasiero/Documents/GitHub/TrackingTool/TrackingTool/.tmp/uploads'},function (err, upload) {
+        if (err){
+          res.send('error')
+        }
+  
+        var file = upload[0]
+        
+        //Get doctype of uploaded file          
+        var data = file.filename.slice(file.filename.length - 9, file.filename.length - 4)
+        console.log(data)
+        //Set doctype depending on the number
+        if (data.includes('1')) { data = 'TabulatedResults' }
+  
+        if (data.includes('2')) { data = 'Airline' }
+  
+        if (data.includes('3')) { data = 'Fleet' }
+  
+        if (data.includes('4')) { data = 'AircraftID' }
+  
+        if (data.includes('5')) { data = 'Parameters' }
+        //Create each file with corresponding parameters
+  
+        File.create({
+          path: file.fd,
+          filename: file.filename,
+          aircraft: file.filename.slice(0, file.filename.length - 9),
+          doc: data
+        }).exec(function (err, newfile) {
+          if (err) {
+             res.send('err')
+          }
+        })
+        
+        //Assing the path of new file to a variable
+        var new_path = file.fd;
+        console.log('NEW= '+new_path)
+  
+        //Find the aircraft with the ID passed through the URL and update its file path with new one
+        Data.update({id: req.param('id')}).set({entry:new_path}).exec( function (err, datafile){
+  
+          if(err){
+            res.send('error')
+          }
+         console.log(datafile)
+          
+        })
+  
+   
+        return res.redirect('/files')
+      })
+
+    }
+
+
+
   }

@@ -33,8 +33,16 @@ module.exports.routes = {
     action: 'view'
   },
 
+  'POST /account/file/update/:id': 'account/FileController.update',
+
   'GET /results': {
     view: 'pages/account/view-results'
+  },
+
+  'GET pages/account/view-results': {
+    view: 'pages/account/view-files',
+    controller: 'account/FileController',
+    action: 'view'
   },
 
 
