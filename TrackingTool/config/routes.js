@@ -26,11 +26,12 @@ module.exports.routes = {
   'POST /account/file/search':      'account/FileController.search',
 
   'POST /account/file/validate':    'account/FileController.validate',
+
   'GET /account/file/download/:id':    'account/FileController.download',
   
   'POST /account/file/validate':      'account/FileController.validate',
 
-  'POST /account/file/update':        'account/FileController.update',
+  'POST /account/file/update/:id':        'account/FileController.update',
 
   'GET /files': {
 
@@ -39,7 +40,6 @@ module.exports.routes = {
     action: 'view'
 
   },
-
 
   'GET /faq':                { view:   'pages/faq' },
   'GET /legal/terms':        { view:   'pages/legal/terms' },

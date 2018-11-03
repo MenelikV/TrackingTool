@@ -29,9 +29,12 @@
                             <button type="submit"><i class="fa fa-search"></i></button>
                         </form>
                 </div>
+                
 
                 <!--File Upload column-->
-                <%if(me.isSuperAdmin || me.isBasicUser){%>
+
+                <!-- ADD USER VERIF AGAIN-->
+
                 <div class="col-md-6">
                     <h2>Upload analysis files</h2>
                     <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo,
@@ -45,7 +48,8 @@
                     <!-- Modal -->
                     <%- include ../upload-modal.ejs %>
                 </div>
-                <%}%>
+
+        
 
             </div>
             <hr>
