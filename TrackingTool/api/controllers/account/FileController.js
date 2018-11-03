@@ -205,21 +205,17 @@ module.exports = {
     })
   },
 
-/* 
+ 
     validate: async function(req, res){
         // Push Data to the server
         console.log("Some data will be pushed back to the server")
          
-         var a = await Data.create(aircraft_data)
+         var a = await Data.create(aircraft_data).fetch();
+         console.log(a)
         // See the whole table with the new entry 
         return res.redirect("/table")
-      },
-  
-    update: async function(req, res){
-      console.log("Updating the server")
-      
-      return res.redirect("/table")
-    }*/
+      }
+
 
 }
 
