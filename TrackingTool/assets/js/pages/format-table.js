@@ -10,12 +10,12 @@ $(document).ready(function(){
       var ctr = row.find("td").eq(0).find("i").length > 0
       var tra = row.find("td").eq(17).text()
       var v_status = row.find("td").eq(2).find("i").length > 0
-      var r_status = row.find("td").eq(1).text()
+      var r_status = row.find("td").eq(1).text().length ? row.find("td").eq(1).text() : "Preliminary"
       var modal = $(this)
-      modal.find('.modal-body #CTRCheck').val(ctr)
+      modal.find('.modal-body #CTRCheck').prop('checked', ctr)
       modal.find(".modal-body #TRA-input").val(tra)
       modal.find('.modal-body #validatedCombo').val(r_status)
-      modal.find('.modal-body #ValidatedCheck').val(v_status)
+      modal.find('.modal-body #validatedCheck').prop('checked', v_status)
     })
     $("#available-data tr").click(function(){
       if($.isSuperADmin){
@@ -23,7 +23,33 @@ $(document).ready(function(){
       $(this).addClass('selected').siblings().removeClass('selected'); 
       }
     })
-    // TODO
+    // Attach a submit handler to the form
+    $( "#dataEdition" ).submit(function( event ) {
+    
+      // Stop form from submitting normally
+      event.preventDefault();
+    
+      // Get some values from elements on the page:
+      var $form = $( this ),
+      url = $form.attr("action")
+       ctr = $form.find( "#CTRCheck" ).is(':checked'),
+       tra = $form.find( "#TRA-input" ).val(),
+        r_status = $form.find("#validatedCombo").val(),
+        v_status = $form.find("#validatedCheck").is(':checked'),
+        data = {
+          "TEST":"This is just a fucking test with some fucking dum data",
+          "CTR": ctr,
+          "TRA": tra,
+          "Results_Status": r_status,
+          "validated_Status": v_status
+        };
+        
+      // Send the data using post
+      var posting = $.post( url, data);
+    
+      // Handler when the posting is done, akka, close the modal and redraw the line
+      posting.done(function( data ) {console.log("Posted data"); console.log(data)});
+    })
     
   var table = $('#available-data').DataTable({
     "columnDefs":[{

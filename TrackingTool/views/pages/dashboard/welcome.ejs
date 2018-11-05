@@ -31,9 +31,8 @@
                 </div>
                 
 
-                <!--File Upload column-->
-
-                <!-- ADD USER VERIF AGAIN-->
+                <!--File Upload column, Only available for a certain type of users-->
+                <% if(me.isBasicUser || me.isSuperAdmin){%>
 
                 <div class="col-md-6">
                     <h2>Upload analysis files</h2>
@@ -48,6 +47,7 @@
                     <!-- Modal -->
                     <%- include ../upload-modal.ejs %>
                 </div>
+                <%}%>
 
         
 

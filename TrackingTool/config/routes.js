@@ -27,11 +27,13 @@ module.exports.routes = {
 
   'POST /account/file/validate':    'account/FileController.validate',
 
-  'GET /account/file/download/:id':    'account/FileController.download',
+  //'GET /account/file/download/:id':    'account/FileController.download', // Download function disabled
   
   'POST /account/file/validate':      'account/FileController.validate',
 
   'POST /account/file/update/:id':        'account/FileController.update',
+
+  'POST /account/file/edit': 'account/FileController.edit',
 
   'GET /files': {
 

@@ -137,8 +137,8 @@ module.exports = {
         }
       }
       // Default Value
-      aircraft_data["Validated_Status"] = "Preliminary"
-      aircraft_data["Results_Status"] = ""
+      aircraft_data["Validated_Status"] = ""
+      aircraft_data["Results_Status"] = "Preliminary"
       // Try to open the CTR registry
       try { CTR_dict = require("ctr.json") } catch (error) { CTR_dict = {} }
       aircraft_data["CTR"] = CTR_dict[aircraft_data["MSN"]] !== undefined ? CTR_dict[aircraft_data["MSN"]] : ""
@@ -214,7 +214,14 @@ module.exports = {
          console.log(a)
         // See the whole table with the new entry 
         return res.redirect("/table")
-      }
+      },
+
+  edit: function(req, res){
+    // Put this into an async function
+    console.log("Updating Data Entry")
+    console.log(req.body)
+    // Return Sucess If update was good
+  }
 
 
 }

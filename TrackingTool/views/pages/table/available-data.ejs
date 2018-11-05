@@ -93,7 +93,7 @@
   <%}%>
 <!-- Add a Modal for row edition -->
 <!-- TODO Update Model according to current state -->
-<form action="/account/file/update" method="post" id="data-edition">
+<form action="/account/file/edit" method="post" id="dataEdition">
 <div class="modal fade" id='Editor' tabindex="-1" role="dialog" aria-labelledby="EditorTitle"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -108,11 +108,11 @@
                     <div class="form-group row">
                         <label for="TRA-Text-input" class="col-2 col-form-label">TRA</label>
                         <div class="col-10">
-                          <input class="form-control" type="text" value="" id="TRA-input">
+                          <input class="form-control" type="text" value="" id="TRA-input" placeholder="Put your TRA here">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-form-label col-2" id="Validated">Validated Status</label>
+                        <label class="col-form-label col-2" id="Validated">Results Status</label>
                         <div class="col-sm-10">
                             <select class="custom-select" id="validatedCombo">
                                 <option selected>Choose...</option>
@@ -141,7 +141,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-success" form="data-edition">Update</button>
+                <button type="submit" class="btn btn-success">Update</button>
             </div>
         </div>
     </div>

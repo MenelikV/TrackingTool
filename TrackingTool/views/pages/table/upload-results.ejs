@@ -16,7 +16,7 @@
                             <tr>
                                 <% for(var i=0; i < headers.length; i++){ %>
                                 <th scope="col" data-sortable="true" style="width: auto !important">
-                                    <%=headers[i]%>
+                                    <%=headers[i].replace(/_/g, ' ')%>
                                 </th>
                                 <%}%>
                             </tr>
