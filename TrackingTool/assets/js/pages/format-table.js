@@ -4,13 +4,18 @@ $(document).ready(function(){
     // Modify Modal On Show
     $.isSuperADmin = $("#EditButton").length > 0
     $.selectedRow = undefined
+    $.selectedRowDom = undefined
+    $.internalIdSelection = undefined
     $('#Editor').on('show.bs.modal', function () {
       var row = $("#available-data tr.selected")
+      $.selectedRow = row.closest('tr').index()
+      $.selectedRowDom = row
       // TOD Go Trough Data Attributes ?
       var ctr = row.find("td").eq(0).find("i").length > 0
-      var tra = row.find("td").eq(17).text()
+      var tra = row.find("td").eq(15).html()
       var v_status = row.find("td").eq(2).find("i").length > 0
       var r_status = row.find("td").eq(1).text().length ? row.find("td").eq(1).text() : "Preliminary"
+      $.internalIdSelection = row.find("td").eq(2).find("div").data("id")
       var modal = $(this)
       modal.find('.modal-body #CTRCheck').prop('checked', ctr)
       modal.find(".modal-body #TRA-input").val(tra)
@@ -23,6 +28,11 @@ $(document).ready(function(){
       $(this).addClass('selected').siblings().removeClass('selected'); 
       }
     })
+    /* Too Heavy
+    $(document).click(function(){
+      if($.isSuperADmin){
+        table.rows().deselect();
+    }})*/
     // Attach a submit handler to the form
     $( "#dataEdition" ).submit(function( event ) {
     
@@ -37,18 +47,28 @@ $(document).ready(function(){
         r_status = $form.find("#validatedCombo").val(),
         v_status = $form.find("#validatedCheck").is(':checked'),
         data = {
-          "TEST":"This is just a fucking test with some fucking dum data",
           "CTR": ctr,
           "TRA": tra,
           "Results_Status": r_status,
-          "validated_Status": v_status
+          "Validated_Status": v_status,
+          "id":$.internalIdSelection,
         };
         
       // Send the data using post
-      var posting = $.post( url, data);
-    
-      // Handler when the posting is done, akka, close the modal and redraw the line
-      posting.done(function( data ) {console.log("Posted data"); console.log(data)});
+      // done has Handler when the posting is done, akka, close the modal and redraw the line
+      $.post( url, data).always(function(){
+        // Reset global variables
+        $.internalIdSelection = undefined
+        $.selectedRow = undefined
+        $.selectedRowDom = undefined 
+        }).fail(function(){
+        console.log("Posting has encountered an error, modal should be anyway now")
+        $form.modal("hide")
+        $.internalIdSelection = undefined
+        $.selectedRow = undefined
+        $.selectedRowDom = undefined 
+      }
+        );
     })
     
   var table = $('#available-data').DataTable({

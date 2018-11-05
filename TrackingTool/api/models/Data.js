@@ -39,13 +39,25 @@ module.exports = {
         Airline: {
             type: "string"
         },
+        Airline_id: {
+            type: "string"
+        },
         Tabulated_Results: {
+            type: "string"
+        },
+        Tabulated_Results_id: {
             type: "string"
         },
         Parameters_Validation: {
             type: "string"
         },
+        Parameters_Validation_id: {
+            type: "string"
+        },
         Fleet_Follow_Up: {
+            type: "string"
+        },
+        Fleet_Follow_Up_id:{
             type: "string"
         },
         TRA: {
@@ -57,7 +69,7 @@ module.exports = {
         },
         Results_Status: {
             type: "string",
-            isIn: ["Preliminary", "Definitive", "Investigation Ongoing"],
+            isIn: ["Preliminary", "Definitive", "Investigation", "In Progress"],
             defaultsTo: "Preliminary"
         },
         Validated_Status: {

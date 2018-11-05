@@ -27,7 +27,7 @@ module.exports.routes = {
 
   'POST /account/file/validate':    'account/FileController.validate',
 
-  //'GET /account/file/download/:id':    'account/FileController.download', // Download function disabled
+  'GET /account/file/download/:id':    'account/FileController.download', // Download function disabled
   
   'POST /account/file/validate':      'account/FileController.validate',
 
