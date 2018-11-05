@@ -12,7 +12,7 @@ $(document).ready(function(){
       $.selectedRowDom = row
       // TOD Go Trough Data Attributes ?
       var ctr = row.find("td").eq(0).find("i").length > 0
-      var tra = row.find("td").eq(15).html()
+      var tra = row.find("td").eq(15).find("a").length ? row.find("td").eq(15).find("a").attr("href") : ""
       var v_status = row.find("td").eq(2).find("i").length > 0
       var r_status = row.find("td").eq(1).text().length ? row.find("td").eq(1).text() : "Preliminary"
       $.internalIdSelection = row.find("td").eq(2).find("div").data("id")

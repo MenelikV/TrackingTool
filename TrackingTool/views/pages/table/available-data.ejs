@@ -36,9 +36,14 @@
               <%if(pdfHeaders.indexOf(headers[i])!==-1){%>
                 <!--This should be a link to a PDF-->
                 <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;">
+                    <!-- Link should appear if the id is actually there -->
                     <% var correct_header = headers[i]+"_id" %>
-                    <%console.log(correct_header)%>
+                    <%console.log(data[j][correct_header])%>
+                    <%if(data[j][correct_header] === undefined || data[j][correct_header] === ""){%>
+                    </td>
+                        <%}else{%>
                     <a href="/account/file/download/<%=data[j][correct_header]%>" target="_blank"><%=headers[i].replace(/_/g, ' ')%></a></td>
+                    <%}%>
                 <%}
                 else{%>
                     <%if(headers[i]==="Validated_Status"){%>
@@ -59,7 +64,18 @@
                             <%}
                           %>
                     <%}else{%>
+                        <%if(headers[i] === "TRA"){%>
+                            <%if(data[j][headers[i]] === "" || data[j][headers[i]] === undefined){%>
+                                <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"></td>
+                                <%}else{%>
+                                    <% var linkName = "CRUISE PERFORMANCE " + data[j]["Aircraft"] + " MSN " + data[j]["MSN"] + " FLIGHT " + data[j]["Flight"] %>
+                                    <% console.log(data[j][headers[i]])%>
+                                    <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><a href='<%=data[j][headers[i]]%>' target="_blank"><%=linkName%></a></td>
+                                    <%}
+                            %>
+                            <%}else{%>
                   <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><%=data[j][headers[i]]%></td>
+                  <%}%>
                   <%}%>
                 <%}
                 %>
