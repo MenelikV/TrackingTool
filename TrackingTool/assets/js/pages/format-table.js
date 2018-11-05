@@ -56,19 +56,27 @@ $(document).ready(function(){
         
       // Send the data using post
       // done has Handler when the posting is done, akka, close the modal and redraw the line
-      $.post( url, data).always(function(){
+      $.ajax({
+        url: url,
+        data: data,
+        type: "POST",
+        success: function(){
+        $("#closeEditorButton").click()
         // Reset global variables
         $.internalIdSelection = undefined
         $.selectedRow = undefined
-        $.selectedRowDom = undefined 
-        }).fail(function(){
-        console.log("Posting has encountered an error, modal should be anyway now")
-        $form.modal("hide")
-        $.internalIdSelection = undefined
-        $.selectedRow = undefined
-        $.selectedRowDom = undefined 
-      }
-        );
+        $.selectedRowDom = undefined
+        // Reload the page
+        location.reload()
+        },
+        error: function(){
+          alert("Update Failure")
+          $("#closeEditorButton").click()
+          $.internalIdSelection = undefined
+          $.selectedRow = undefined
+          $.selectedRowDom = undefined 
+        }
+      })
     })
     
   var table = $('#available-data').DataTable({

@@ -228,6 +228,7 @@ module.exports = {
     await Data.update({"id": req.body["id"]}, req.body)
     console.log('Database was updated')
     // Return Sucess If update was good
-    return res.redirect("/table")
+    res.status(200)
+    return res.send("Sucessful Operation")
   }
 }
