@@ -1,5 +1,11 @@
 <div id="edit-profile" v-cloak>
-  <div class="container">
+  <body class="dash">
+    
+ 
+  <div class="container-fluid">
+    <div class="jumbotron jumbostyle">
+
+
     <h1>Update personal info</h1>
     <hr/>
     <ajax-form action="updateProfile" :syncing.sync="syncing" :cloud-error.sync="cloudError" @submitted="submittedForm()" :handle-parsing="handleParsingForm">
@@ -32,6 +38,9 @@
         </div>
       </div>
     </ajax-form>
+
   </div>
+  </div>
+</body>
 </div>
 <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

@@ -1,8 +1,8 @@
-<body>
+<body class="dash">
     <div class="container-fluid">
     <main role="main">
         <!-- Main jumbotron -->
-        <div class="jumbotron">
+        <div class="jumbotron jumbostyle">
             <div class="container">
                 <h1 class="display-3 space">Hello,
                     <%= me.fullName %>
@@ -11,7 +11,7 @@
                     massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec
                     quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.</p>
                 <p><a class="btn btn-primary btn-lg" href="/table" role="button">View all aircrafts &raquo;</a></p>
-            </div>
+            </div> 
         </div>
 
         <div class="container">
@@ -19,7 +19,7 @@
             <div class="row">
                 <!-- Search column -->
                 <div class="col-md-6">
-                    <h2>Search</h2>
+                    <h2 style="color: #2e3338;">Search</h2>
                     <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo,
                         tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem
                         malesuada magna mollis euismod. Donec sed odio dui. </p>
@@ -35,7 +35,7 @@
                 <% if(me.isBasicUser || me.isSuperAdmin){%>
 
                 <div class="col-md-6">
-                    <h2>Upload analysis files</h2>
+                    <h2 style="color: #2e3338;">Upload analysis files</h2>
                     <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo,
                         tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem
                         malesuada magna mollis euismod. Donec sed odio dui. </p>

@@ -1,5 +1,10 @@
 <!-- Better use d-flex ? -->
-<div class="jumbotron" style="min-height: 100%;min-height: 100vh; display: flex; align-items: center">
+<body class="dash">
+    
+
+<div class="container-fluid" >
+<div class="jumbotron jumbostyle" >
+
 <div class="table-responsive">
 <!--TODO Correct That!-->
 <%if(me.isSuperAdmin){%>
@@ -22,8 +27,8 @@
       <% var pdfHeaders = Data.pdfFields();%> 
          <% if(headers[i] === "Results"){%>
             <th scope="col" style ="width: auto !important" id ='<%="ResultsModalButton"+"_"+j %>'>
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target='<%="#Results"+"_"+j %>'>
-                      Results Table
+              <button type="button" class="btn btn-primary" style="text-transform:capitalize" data-toggle="modal" data-target='<%="#Results"+"_"+j %>'>
+                      View Table
               </button>
          </th>
            <%}
@@ -145,6 +150,9 @@
             </div>
         </div>
     </div>
+</div>
+
 </div> 
-</form>
+
+</body>
 <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

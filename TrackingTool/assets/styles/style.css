@@ -119,6 +119,11 @@ img.portfolio {
   height: 100%;
 }
 
+.jumbostyle {
+  background:rgba(255, 255, 255, 0.733);
+  color: #2e3338;
+}
+
 .home-inner {
   background-image: url('https://image-store.slidesharecdn.com/7e38eff5-72e3-49d5-a9f5-1a85002ef366-original.jpeg');
   position: fixed;
@@ -132,4 +137,20 @@ img.portfolio {
   -webkit-transform: translateZ(0);
           transform: translateZ(0);
   will-change: transform;
+}
+
+.dash{position:relative;
+background: url(../airplane.png) no-repeat center center fixed;-webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;width:100%;height:100%;margin:0
+}
+.dash:after{
+    position:fixed;
+    content:"";
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:-1;
 }
