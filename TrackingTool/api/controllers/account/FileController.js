@@ -216,13 +216,19 @@ module.exports = {
         return res.redirect("/table")
       },
 
-  edit: function(req, res){
+  edit: async function(req, res){
     // Put this into an async function
     console.log("Updating Data Entry")
     console.log(req.body)
+    if(req.body["id"] === "" || req.body["id"] === undefined){
+      // TODO Return an error, internal should not be undefined or an empty string
+      return res.serverError("The internal id of the to update row was not found")
+    }
+    // Update Model Entry
+    await Data.update({"id": req.body["id"]}, req.body)
+    console.log('Database was updated')
     // Return Sucess If update was good
+    res.status(200)
+    return res.send("Sucessful Operation")
   }
-
-
 }
-

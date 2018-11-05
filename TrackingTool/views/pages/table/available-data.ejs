@@ -8,7 +8,7 @@
 <div class="table-responsive">
 <!--TODO Correct That!-->
 <%if(me.isSuperAdmin){%>
-    <button type="button" id="EditButton" class="btn btn-danger btn-lg mr-5 ml-0 mb-2" data-toggle="modal" data-target="#Editor" disabled>Edit <span class="octicon octicon-pencil"></span></button>
+    <button type="button" id="EditButton" class="btn btn-danger btn-lg mr-5 ml-0 mb-2" data-toggle="modal" data-target="#Editor" disabled>Edit <i class="fa fa-edit fa-lg" style="color:white"></i></button>
 <%}%>
 <table id="available-data" class="display">
     <!-- HEADERS -->
@@ -37,15 +37,16 @@
                 <!--This should be a link to a PDF-->
                 <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;">
                     <% var correct_header = headers[i]+"_id" %>
+                    <%console.log(correct_header)%>
                     <a href="/account/file/download/<%=data[j][correct_header]%>" target="_blank"><%=headers[i].replace(/_/g, ' ')%></a></td>
                 <%}
                 else{%>
                     <%if(headers[i]==="Validated_Status"){%>
                         <%if(data[j][headers[i]] === undefined || data[j][headers[i]] === ""){%>
-                            <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"></td>
+                            <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><div data-id=<%=data[j]["id"]%>></div></td>
                             <%}
                             else{%>
-                              <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><i class="fa fa-check fa-lg" style="color:green"></i></td>
+                              <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><i class="fa fa-check fa-lg" style="color:green"></i><div data-id=<%=data[j]["id"]%>></div></td>
                             <%}
                           %>
                 <%}else{%>
@@ -122,7 +123,7 @@
                             <select class="custom-select" id="validatedCombo">
                                 <option selected>Choose...</option>
                                 <option value="Preliminary">Preliminary</option>
-                                <option value="Defintive">Defintive</option>
+                                <option value="Definitive">Definitive</option>
                                 <option value="Investigation">Investigation</option>
                             </select>
                         </div>
@@ -145,7 +146,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeEditorButton">Close</button>
                 <button type="submit" class="btn btn-success">Update</button>
             </div>
         </div>
