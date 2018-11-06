@@ -1,8 +1,8 @@
 {
     "Fuel_Flowmeters":
     {
-        "g": "Massic",
-        "c": "Volumetric"
+        "c": "Massic",
+        "g": "Volumetric"
     },
     "Fuel_Characteristics":
     {
