@@ -22,17 +22,19 @@ $(document).ready(function(){
       modal.find('.modal-body #validatedCombo').val(r_status)
       modal.find('.modal-body #validatedCheck').prop('checked', v_status)
     })
-    $("#available-data tr").click(function(){
+    $("#available-data tr").click(function(ev){
       if($.isSuperADmin){
+        ev.stopPropagation()
       $("#EditButton").removeAttr("disabled").removeClass("disabled")
       $(this).addClass('selected').siblings().removeClass('selected'); 
+      return false
       }
     })
-    /* Too Heavy
     $(document).click(function(){
-      if($.isSuperADmin){
-        table.rows().deselect();
-    }})*/
+      if($.isSuperADmin && $("#available-data tr.selected").length){
+        $("#EditButton").attr("disabled", true).addClass("disabled")
+        $("#available-data tr.selected").removeClass("selected")
+    }})
     // Attach a submit handler to the form
     $( "#dataEdition" ).submit(function( event ) {
     
@@ -42,10 +44,10 @@ $(document).ready(function(){
       // Get some values from elements on the page:
       var $form = $( this ),
       url = $form.attr("action")
-       ctr = $form.find( "#CTRCheck" ).is(':checked'),
+       ctr = $form.find( "#CTRCheck" ).is(':checked') === true ? "true": "",
        tra = $form.find( "#TRA-input" ).val(),
         r_status = $form.find("#validatedCombo").val(),
-        v_status = $form.find("#validatedCheck").is(':checked'),
+        v_status = $form.find("#validatedCheck").is(':checked') === true ? "true": "",
         data = {
           "CTR": ctr,
           "TRA": tra,
@@ -53,7 +55,6 @@ $(document).ready(function(){
           "Validated_Status": v_status,
           "id":$.internalIdSelection,
         };
-        
       // Send the data using post
       // done has Handler when the posting is done, akka, close the modal and redraw the line
       $.ajax({
