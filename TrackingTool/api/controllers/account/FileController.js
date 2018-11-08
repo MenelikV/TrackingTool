@@ -29,14 +29,12 @@ module.exports = {
          
         if (err) {return res.serverError(err)}
         
-        //If successful show corresponding files in a table
-        if(results[0] == undefined){
-          return res.send('No data')
-        }
 
-        if(results !== undefined){
-          return res.view('pages/account/view-results', {result: results, me: req.me})
-        }   
+       
+          console.log('THESE ARE THE RESULTS ...> '+results[0])
+          return res.view('pages/account/view-results', {result: results, me: req.me, msn: req.param('aircraft')})
+        
+
       })
     },
 

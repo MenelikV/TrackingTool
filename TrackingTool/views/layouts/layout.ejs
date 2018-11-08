@@ -54,6 +54,9 @@
                 <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="header-account-menu-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="" >Account</a>
                 <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link">
                   <a class="dropdown-item nav-drop" href="/account">Settings</a>
+                  <% if (!me.isBasicUser) { %>
+                    <a class="dropdown-item nav-drop" href="#">Requests</a>
+                  <%} %>
                   <a class="dropdown-item nav-drop" href="/logout">Sign out</a>
                 </div>
               </div>
@@ -126,7 +129,6 @@
   <script src="/js/pages/account/account-overview.page.js"></script>
   <script src="/js/pages/account/edit-password.page.js"></script>
   <script src="/js/pages/account/edit-profile.page.js"></script>
-  <script src="/js/pages/account/view-files.page.js"></script>
   <script src="/js/pages/contact.page.js"></script>
   <script src="/js/pages/dashboard/welcome.page.js"></script>
   <script src="/js/pages/entrance/confirmed-email.page.js"></script>

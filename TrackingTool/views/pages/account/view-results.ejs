@@ -1,18 +1,23 @@
+<body>
+
 <div class="container-fluid space">
     <div class="jumbotron">
 
-<h1 class="display-5">Analysis of MSN  <%= result[0].aircraft %> </h1>
+<h1 class="display-5">Showing results for MSN:  <%= msn %> </h1>
 
-<body>
+
 <div class="container">
-<table class="table table-striped text-center">
+
+    <% if (result[0] !== undefined) { %>
+
+        <table class="table table-striped text-center">
         
     <thead>
             
         <tr>
             <% result.forEach(function(item){ %>
             <th><%= item.doc %></th>
-            <% }) %>
+            <% }) %> 
         </tr>
        
     </thead>
@@ -28,7 +33,19 @@
        
     </tbody>
 </table>
-</div> 
+
+</div>
+
+
+</div>
+
+
+</div>
+
 </body>
-</div>
-</div>
+
+<% } else { %>
+<br>
+    <p style="text-decoration: underline;">No records found</p>
+
+<% } %>
