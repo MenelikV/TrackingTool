@@ -48,14 +48,26 @@ $(document).ready(function(){
        ctr = $form.find( "#CTRCheck" ).is(':checked') === true ? "true": "",
        tra = $form.find( "#TRA-input" ).val(),
         r_status = $form.find("#validatedCombo").val(),
-        v_status = $form.find("#validatedCheck").is(':checked') === true ? "true": "",
-        data = {
+        v_status = $form.find("#validatedCheck").is(':checked') === true ? "true": "";
+      if($form.find("#validatedCheck").length && $form.find("#validatedCombo").length)
+        {
+          //Super Admin Editing
+        var data = {
           "CTR": ctr,
           "TRA": tra,
           "Results_Status": r_status,
           "Validated_Status": v_status,
           "id":$.internalIdSelection,
         };
+      }
+      else{
+        // Basic User Editin
+        var data = {
+          "CTR": ctr,
+          "TRA": tra,
+          "id": $.internalIdSelection
+        }
+      }
       // Send the data using post
       // done has Handler when the posting is done, akka, close the modal and redraw the line
       $.ajax({
