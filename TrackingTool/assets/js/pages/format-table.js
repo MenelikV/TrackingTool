@@ -22,19 +22,20 @@ $(document).ready(function(){
       modal.find('.modal-body #validatedCombo').val(r_status)
       modal.find('.modal-body #validatedCheck').prop('checked', v_status)
     })
-    $("#available-data tr").click(function(ev){
+    $("#available-data td").click(function(ev){
       if($.isSuperADmin){
         ev.stopPropagation()
       $("#EditButton").removeAttr("disabled").removeClass("disabled")
-      $(this).addClass('selected').siblings().removeClass('selected'); 
-      return false
+      $(this).closest("tr").addClass('selected').siblings().removeClass('selected'); 
+      return true
       }
     })
+    /* Disabled bc stéphanie does not mind ^^
     $(document).click(function(){
       if($.isSuperADmin && $("#available-data tr.selected").length){
         $("#EditButton").attr("disabled", true).addClass("disabled")
         $("#available-data tr.selected").removeClass("selected")
-    }})
+    }})*/
     // Attach a submit handler to the form
     $( "#dataEdition" ).submit(function( event ) {
     
