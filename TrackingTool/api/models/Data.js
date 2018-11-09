@@ -77,7 +77,7 @@ module.exports = {
             defaultsTo: ""
         },
     },
-    datasore: "data",
+    datastore: "data",
     getHeader: function(){
         return ["CTR", "Results_Status", "Validated_Status", "Aircraft", "MSN","Flight", "Flight_Date", "Results", "Airline", "Tabulated_Results", "Parameters_Validation", "Fleet_Follow_Up", "Flight_Owner", "Fuel_Flowmeters", "Fuel_Characteristics", "Weighing", "TRA"]
   },
