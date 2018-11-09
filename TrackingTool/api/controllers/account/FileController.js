@@ -5,16 +5,17 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-module.exports = {
+module.exports = { 
 
   view: function (req, res) {
     // New aircraft if the last created entry, if it exists, display it
     if (aircraft_data === {}) { res.send("No data found") }
+
     else {
       var headers = Data.getHeader();
-
-      return res.view("pages/table/upload-results", { data: [aircraft_data], headers: headers })
+      return res.view("pages/table/upload-results", { data: [aircraft_data], headers: headers, me:req.me })
     }
+
   },
 
   search: function (req, res) {
@@ -23,16 +24,22 @@ module.exports = {
       MSN: req.param('msn').toUpperCase()
     }).exec(function (err, results) {
 
-      if (err) { return res.view('pages/table/available-data', { data: [], headers: headers, me: req.me }) }
+      if (err) {
+        headers = undefined
+        console.log(err)
+        return res.view('pages/table/available-data', { data: [], headers: headers, me: req.me, msn: req.param('msn'), search:true }) 
+      }
 
       //If successful show corresponding files in a table
-      if (results[0] == undefined) {
-        return res.view('pages/table/available-data', { data: [], headers: headers, me: req.me })
-      }
+
       if (results !== undefined) {
         headers = Data.getHeader()
-        return res.view('pages/table/available-data', { data: results, headers: headers, me: req.me })
+        return res.view('pages/table/available-data', { data: results, headers: headers, me: req.me, msn: req.param('msn'), search:true })
       }
+
+      return res.view('pages/table/available-data', { data: results, headers: undefined, me: req.me, msn: req.param('msn'), search:true  })
+
+      
     })
   },
 
@@ -131,7 +138,7 @@ module.exports = {
           if (file.filename.toLowerCase().indexOf(k) !== -1) {
             aircraft_data[pdf_data[k]] = file.fd
             // Create a file entry in the Fike DataBase
-            var createdFileEntry = await File.create({ path: file.fd }).fetch()
+            var createdFileEntry = await File.create({filename: k ,path: file.fd }).fetch()
             aircraft_data[pdf_data[k] + "_id"] = createdFileEntry.id;
           }
         }
