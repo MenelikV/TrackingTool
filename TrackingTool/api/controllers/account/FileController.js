@@ -23,11 +23,11 @@ module.exports = {
       MSN: req.param('msn').toUpperCase()
     }).exec(function (err, results) {
 
-      if (err) { return res.serverError(err) }
+      if (err) { return res.view('pages/table/available-data', { data: [], headers: headers, me: req.me }) }
 
       //If successful show corresponding files in a table
       if (results[0] == undefined) {
-        return res.send('no data')
+        return res.view('pages/table/available-data', { data: [], headers: headers, me: req.me })
       }
       if (results !== undefined) {
         headers = Data.getHeader()
@@ -209,11 +209,28 @@ module.exports = {
     validate: async function(req, res){
         // Push Data to the server
         console.log("Some data will be pushed back to the server")
-         
-         var a = await Data.create(aircraft_data).fetch();
-         console.log(a)
-        // See the whole table with the new entry 
-        return res.redirect("/table")
+         var min_entry = sails.helpers.extractSubDictionary(aircraft_data)
+         var possible_entry = await Data.find(min_entry)
+         if(possible_entry.length ==1){
+           // Update Entry if there is something new
+           if(aircraft_data !== possible_entry[0]){
+            await Data.update(min_entry, aircraft_data);}
+         // See the whole table with the new entry 
+         return res.redirect("/table")
+         }
+         if(possible_entry.length == 0){
+           // Create new entry
+           var a = await Data.create(aircraft_data).fetch();
+           console.log(a)
+          // See the whole table with the new entry 
+          return res.redirect("/table")
+         }
+         if(possible_entry.length > 1){
+           // DataBase Error, Refuse Upload
+           console.log("There is a problem with the DataBase")
+           alert('Problem with the internal Database, upload was aborted')
+           return res.redirect("/table")
+         }
       },
 
   edit: async function(req, res){
