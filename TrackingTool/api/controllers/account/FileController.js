@@ -161,11 +161,12 @@ module.exports = {
 
 
   update: function (req, res) {
-    console.log(req.param('id'))
+    //console.log(req.param('id'))
 
     var pdf_data = require("./pdf_config.json")
     var pdf_keys = Object.keys(pdf_data)
 
+    //Uploading new file
     req.file('file').upload( {}, async function (err, upload) {
       if (err){
         res.send('error')
@@ -175,30 +176,25 @@ module.exports = {
         return res.send("Upload did not work")
       }
 
-      //console.log(upload[0]);
-      
       var file = upload[0];
 
-      for (const k of pdf_keys) {
-        if (file.filename.toLowerCase().indexOf(k) !== -1) {
-          console.log('FIRST ----- '+aircraft_data[pdf_data[k]])
-          aircraft_data[pdf_data[k]] = file.fd
-          console.log('THEN------ '+aircraft_data[pdf_data[k]]);
+      File.find({id:req.param('id')}).exec(function (err, editFile) {
+ 
+        //Editing the parameter to edit in aircraft_data field
 
-          // Update a file entry in the File DataBase
-
-          //var updateFileEntry = await File.create({ path: file.fd }).fetch()
-
-          var updatedEntry = await File.update({id: req.param('id')}).set({path:file.fd}).fetch();
+        var k = editFile[0].filename;
+        aircraft_data[pdf_data[k]] = file.fd
+        aircraft_data[pdf_data[k] + "_id"] = editFile[0].id;
 
 
-          aircraft_data[pdf_data[k] + "_id"] = updatedEntry[0].id;
-          console.log('created entry id '+updatedEntry[0].id)
+      });
 
-        }
-      }
-
-      console.log(aircraft_data)
+      //Updating the path in File database
+      File.update({id:req.param('id')}).set({path:file.fd}).exec(function (err,updatedFile){
+        if (err){
+          res.send('could not update')
+        }        
+      });
 
       return res.redirect('/files')
 
