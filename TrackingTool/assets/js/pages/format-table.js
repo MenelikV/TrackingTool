@@ -30,12 +30,14 @@ $(document).ready(function(){
       return true
       }
     })
-    /* Disabled bc stéphanie does not mind ^^
+
+     //Disabled bc stéphanie does not mind ^^
     $(document).click(function(){
       if($.isSuperADmin && $("#available-data tr.selected").length){
         $("#EditButton").attr("disabled", true).addClass("disabled")
         $("#available-data tr.selected").removeClass("selected")
-    }})*/
+    }})
+
     // Attach a submit handler to the form
     $( "#dataEdition" ).submit(function( event ) {
     

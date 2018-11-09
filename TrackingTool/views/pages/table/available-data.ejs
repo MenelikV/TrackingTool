@@ -1,15 +1,26 @@
 <!-- Better use d-flex ? -->
 <body class="dash">
-    
 
 <div class="container-fluid" >
 <div class="jumbotron jumbostyle" >
+    <%console.log(search)%>
+    
+    <%if(search){%>
+        <h1 class="display4">Search results for <%=msn%></h1>
+    <%if(data[0] == undefined || headers == undefined){%>
+    
+        
+        <h5 style="text-decoration: underline;">No results found</h5>
+                <%}}  %>
 
+<%if(data[0] !== undefined && headers !== undefined){%>                
 <div class="table-responsive">
 <!--TODO Correct That!-->
 <%if(me.isSuperAdmin || me.isBasicUser){%>
     <button type="button" id="EditButton" class="btn btn-danger btn-lg mr-5 ml-0 mb-2" data-toggle="modal" data-target="#Editor" disabled>Edit <i class="fa fa-edit fa-lg" style="color:white"></i></button>
 <%}%>
+
+
 <table id="available-data" class="display">
     <!-- HEADERS -->
     <thead class="table-primary"> 
@@ -87,6 +98,9 @@
     </tbody>
 </table>
 </div>
+
+
+
 </div>
 <!-- Add all the modal for the results -->
 <% for(var j=0; j < data.length; j++){ %>
@@ -169,6 +183,6 @@
 </div>
 
 </div> 
-
+<%}  %>
 </body>
 <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>
