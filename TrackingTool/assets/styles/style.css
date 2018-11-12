@@ -19,6 +19,14 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     -webkit-appearance: none;
     margin: 0;
 }
+
+.dot {
+  height: 15px;
+  width: 15px;
+  background-color: green;
+  border-radius: 80%;
+  display: inline-block;
+}
  
 input[type="number"] {
     -moz-appearance: textfield;
