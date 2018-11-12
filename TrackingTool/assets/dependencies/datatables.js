@@ -4,10 +4,10 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs4/dt-1.10.18
+ *   https://datatables.net/download/#bs4/dt-1.10.18/cr-1.5.0/r-2.2.2
  *
  * Included libraries:
- *   DataTables 1.10.18
+ *   DataTables 1.10.18, ColReorder 1.5.0, Responsive 2.2.2
  */
 
 /*! DataTables 1.10.18
@@ -13898,7 +13898,7 @@
 		 *
 		 *  @type string
 		 */
-		build:"bs4/dt-1.10.18",
+		build:"bs4/dt-1.10.18/cr-1.5.0/r-2.2.2",
 	
 	
 		/**
@@ -15491,6 +15491,2825 @@ DataTable.ext.renderer.pageButton.bootstrap = function ( settings, host, idx, bu
 
 
 return DataTable;
+}));
+
+
+/*! ColReorder 1.5.0
+ * ©2010-2018 SpryMedia Ltd - datatables.net/license
+ */
+
+/**
+ * @summary     ColReorder
+ * @description Provide the ability to reorder columns in a DataTable
+ * @version     1.5.0
+ * @file        dataTables.colReorder.js
+ * @author      SpryMedia Ltd (www.sprymedia.co.uk)
+ * @contact     www.sprymedia.co.uk/contact
+ * @copyright   Copyright 2010-2018 SpryMedia Ltd.
+ *
+ * This source file is free software, available under the following license:
+ *   MIT license - http://datatables.net/license/mit
+ *
+ * This source file is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
+ *
+ * For details please refer to: http://www.datatables.net
+ */
+(function( factory ){
+	if ( typeof define === 'function' && define.amd ) {
+		// AMD
+		define( ['jquery', 'datatables.net'], function ( $ ) {
+			return factory( $, window, document );
+		} );
+	}
+	else if ( typeof exports === 'object' ) {
+		// CommonJS
+		module.exports = function (root, $) {
+			if ( ! root ) {
+				root = window;
+			}
+
+			if ( ! $ || ! $.fn.dataTable ) {
+				$ = require('datatables.net')(root, $).$;
+			}
+
+			return factory( $, root, root.document );
+		};
+	}
+	else {
+		// Browser
+		factory( jQuery, window, document );
+	}
+}(function( $, window, document, undefined ) {
+'use strict';
+var DataTable = $.fn.dataTable;
+
+
+/**
+ * Switch the key value pairing of an index array to be value key (i.e. the old value is now the
+ * key). For example consider [ 2, 0, 1 ] this would be returned as [ 1, 2, 0 ].
+ *  @method  fnInvertKeyValues
+ *  @param   array aIn Array to switch around
+ *  @returns array
+ */
+function fnInvertKeyValues( aIn )
+{
+	var aRet=[];
+	for ( var i=0, iLen=aIn.length ; i<iLen ; i++ )
+	{
+		aRet[ aIn[i] ] = i;
+	}
+	return aRet;
+}
+
+
+/**
+ * Modify an array by switching the position of two elements
+ *  @method  fnArraySwitch
+ *  @param   array aArray Array to consider, will be modified by reference (i.e. no return)
+ *  @param   int iFrom From point
+ *  @param   int iTo Insert point
+ *  @returns void
+ */
+function fnArraySwitch( aArray, iFrom, iTo )
+{
+	var mStore = aArray.splice( iFrom, 1 )[0];
+	aArray.splice( iTo, 0, mStore );
+}
+
+
+/**
+ * Switch the positions of nodes in a parent node (note this is specifically designed for
+ * table rows). Note this function considers all element nodes under the parent!
+ *  @method  fnDomSwitch
+ *  @param   string sTag Tag to consider
+ *  @param   int iFrom Element to move
+ *  @param   int Point to element the element to (before this point), can be null for append
+ *  @returns void
+ */
+function fnDomSwitch( nParent, iFrom, iTo )
+{
+	var anTags = [];
+	for ( var i=0, iLen=nParent.childNodes.length ; i<iLen ; i++ )
+	{
+		if ( nParent.childNodes[i].nodeType == 1 )
+		{
+			anTags.push( nParent.childNodes[i] );
+		}
+	}
+	var nStore = anTags[ iFrom ];
+
+	if ( iTo !== null )
+	{
+		nParent.insertBefore( nStore, anTags[iTo] );
+	}
+	else
+	{
+		nParent.appendChild( nStore );
+	}
+}
+
+
+/**
+ * Plug-in for DataTables which will reorder the internal column structure by taking the column
+ * from one position (iFrom) and insert it into a given point (iTo).
+ *  @method  $.fn.dataTableExt.oApi.fnColReorder
+ *  @param   object oSettings DataTables settings object - automatically added by DataTables!
+ *  @param   int iFrom Take the column to be repositioned from this point
+ *  @param   int iTo and insert it into this point
+ *  @param   bool drop Indicate if the reorder is the final one (i.e. a drop)
+ *    not a live reorder
+ *  @param   bool invalidateRows speeds up processing if false passed
+ *  @returns void
+ */
+$.fn.dataTableExt.oApi.fnColReorder = function ( oSettings, iFrom, iTo, drop, invalidateRows )
+{
+	var i, iLen, j, jLen, jen, iCols=oSettings.aoColumns.length, nTrs, oCol;
+	var attrMap = function ( obj, prop, mapping ) {
+		if ( ! obj[ prop ] || typeof obj[ prop ] === 'function' ) {
+			return;
+		}
+
+		var a = obj[ prop ].split('.');
+		var num = a.shift();
+
+		if ( isNaN( num*1 ) ) {
+			return;
+		}
+
+		obj[ prop ] = mapping[ num*1 ]+'.'+a.join('.');
+	};
+
+	/* Sanity check in the input */
+	if ( iFrom == iTo )
+	{
+		/* Pointless reorder */
+		return;
+	}
+
+	if ( iFrom < 0 || iFrom >= iCols )
+	{
+		this.oApi._fnLog( oSettings, 1, "ColReorder 'from' index is out of bounds: "+iFrom );
+		return;
+	}
+
+	if ( iTo < 0 || iTo >= iCols )
+	{
+		this.oApi._fnLog( oSettings, 1, "ColReorder 'to' index is out of bounds: "+iTo );
+		return;
+	}
+
+	/*
+	 * Calculate the new column array index, so we have a mapping between the old and new
+	 */
+	var aiMapping = [];
+	for ( i=0, iLen=iCols ; i<iLen ; i++ )
+	{
+		aiMapping[i] = i;
+	}
+	fnArraySwitch( aiMapping, iFrom, iTo );
+	var aiInvertMapping = fnInvertKeyValues( aiMapping );
+
+
+	/*
+	 * Convert all internal indexing to the new column order indexes
+	 */
+	/* Sorting */
+	for ( i=0, iLen=oSettings.aaSorting.length ; i<iLen ; i++ )
+	{
+		oSettings.aaSorting[i][0] = aiInvertMapping[ oSettings.aaSorting[i][0] ];
+	}
+
+	/* Fixed sorting */
+	if ( oSettings.aaSortingFixed !== null )
+	{
+		for ( i=0, iLen=oSettings.aaSortingFixed.length ; i<iLen ; i++ )
+		{
+			oSettings.aaSortingFixed[i][0] = aiInvertMapping[ oSettings.aaSortingFixed[i][0] ];
+		}
+	}
+
+	/* Data column sorting (the column which the sort for a given column should take place on) */
+	for ( i=0, iLen=iCols ; i<iLen ; i++ )
+	{
+		oCol = oSettings.aoColumns[i];
+		for ( j=0, jLen=oCol.aDataSort.length ; j<jLen ; j++ )
+		{
+			oCol.aDataSort[j] = aiInvertMapping[ oCol.aDataSort[j] ];
+		}
+
+		// Update the column indexes
+		oCol.idx = aiInvertMapping[ oCol.idx ];
+	}
+
+	// Update 1.10 optimised sort class removal variable
+	$.each( oSettings.aLastSort, function (i, val) {
+		oSettings.aLastSort[i].src = aiInvertMapping[ val.src ];
+	} );
+
+	/* Update the Get and Set functions for each column */
+	for ( i=0, iLen=iCols ; i<iLen ; i++ )
+	{
+		oCol = oSettings.aoColumns[i];
+
+		if ( typeof oCol.mData == 'number' ) {
+			oCol.mData = aiInvertMapping[ oCol.mData ];
+		}
+		else if ( $.isPlainObject( oCol.mData ) ) {
+			// HTML5 data sourced
+			attrMap( oCol.mData, '_',      aiInvertMapping );
+			attrMap( oCol.mData, 'filter', aiInvertMapping );
+			attrMap( oCol.mData, 'sort',   aiInvertMapping );
+			attrMap( oCol.mData, 'type',   aiInvertMapping );
+		}
+	}
+
+	/*
+	 * Move the DOM elements
+	 */
+	if ( oSettings.aoColumns[iFrom].bVisible )
+	{
+		/* Calculate the current visible index and the point to insert the node before. The insert
+		 * before needs to take into account that there might not be an element to insert before,
+		 * in which case it will be null, and an appendChild should be used
+		 */
+		var iVisibleIndex = this.oApi._fnColumnIndexToVisible( oSettings, iFrom );
+		var iInsertBeforeIndex = null;
+
+		i = iTo < iFrom ? iTo : iTo + 1;
+		while ( iInsertBeforeIndex === null && i < iCols )
+		{
+			iInsertBeforeIndex = this.oApi._fnColumnIndexToVisible( oSettings, i );
+			i++;
+		}
+
+		/* Header */
+		nTrs = oSettings.nTHead.getElementsByTagName('tr');
+		for ( i=0, iLen=nTrs.length ; i<iLen ; i++ )
+		{
+			fnDomSwitch( nTrs[i], iVisibleIndex, iInsertBeforeIndex );
+		}
+
+		/* Footer */
+		if ( oSettings.nTFoot !== null )
+		{
+			nTrs = oSettings.nTFoot.getElementsByTagName('tr');
+			for ( i=0, iLen=nTrs.length ; i<iLen ; i++ )
+			{
+				fnDomSwitch( nTrs[i], iVisibleIndex, iInsertBeforeIndex );
+			}
+		}
+
+		/* Body */
+		for ( i=0, iLen=oSettings.aoData.length ; i<iLen ; i++ )
+		{
+			if ( oSettings.aoData[i].nTr !== null )
+			{
+				fnDomSwitch( oSettings.aoData[i].nTr, iVisibleIndex, iInsertBeforeIndex );
+			}
+		}
+	}
+
+	/*
+	 * Move the internal array elements
+	 */
+	/* Columns */
+	fnArraySwitch( oSettings.aoColumns, iFrom, iTo );
+
+	// regenerate the get / set functions
+	for ( i=0, iLen=iCols ; i<iLen ; i++ ) {
+		oSettings.oApi._fnColumnOptions( oSettings, i, {} );
+	}
+
+	/* Search columns */
+	fnArraySwitch( oSettings.aoPreSearchCols, iFrom, iTo );
+
+	/* Array array - internal data anodes cache */
+	for ( i=0, iLen=oSettings.aoData.length ; i<iLen ; i++ )
+	{
+		var data = oSettings.aoData[i];
+		var cells = data.anCells;
+
+		if ( cells ) {
+			fnArraySwitch( cells, iFrom, iTo );
+
+			// Longer term, should this be moved into the DataTables' invalidate
+			// methods?
+			for ( j=0, jen=cells.length ; j<jen ; j++ ) {
+				if ( cells[j] && cells[j]._DT_CellIndex ) {
+					cells[j]._DT_CellIndex.column = j;
+				}
+			}
+		}
+
+		// For DOM sourced data, the invalidate will reread the cell into
+		// the data array, but for data sources as an array, they need to
+		// be flipped
+		if ( data.src !== 'dom' && $.isArray( data._aData ) ) {
+			fnArraySwitch( data._aData, iFrom, iTo );
+		}
+	}
+
+	/* Reposition the header elements in the header layout array */
+	for ( i=0, iLen=oSettings.aoHeader.length ; i<iLen ; i++ )
+	{
+		fnArraySwitch( oSettings.aoHeader[i], iFrom, iTo );
+	}
+
+	if ( oSettings.aoFooter !== null )
+	{
+		for ( i=0, iLen=oSettings.aoFooter.length ; i<iLen ; i++ )
+		{
+			fnArraySwitch( oSettings.aoFooter[i], iFrom, iTo );
+		}
+	}
+
+	if ( invalidateRows || invalidateRows === undefined )
+	{
+		$.fn.dataTable.Api( oSettings ).rows().invalidate();
+	}
+
+	/*
+	 * Update DataTables' event handlers
+	 */
+
+	/* Sort listener */
+	for ( i=0, iLen=iCols ; i<iLen ; i++ )
+	{
+		$(oSettings.aoColumns[i].nTh).off('.DT');
+		this.oApi._fnSortAttachListener( oSettings, oSettings.aoColumns[i].nTh, i );
+	}
+
+
+	/* Fire an event so other plug-ins can update */
+	$(oSettings.oInstance).trigger( 'column-reorder.dt', [ oSettings, {
+		from: iFrom,
+		to: iTo,
+		mapping: aiInvertMapping,
+		drop: drop,
+
+		// Old style parameters for compatibility
+		iFrom: iFrom,
+		iTo: iTo,
+		aiInvertMapping: aiInvertMapping
+	} ] );
+};
+
+/**
+ * ColReorder provides column visibility control for DataTables
+ * @class ColReorder
+ * @constructor
+ * @param {object} dt DataTables settings object
+ * @param {object} opts ColReorder options
+ */
+var ColReorder = function( dt, opts )
+{
+	var settings = new $.fn.dataTable.Api( dt ).settings()[0];
+
+	// Ensure that we can't initialise on the same table twice
+	if ( settings._colReorder ) {
+		return settings._colReorder;
+	}
+
+	// Allow the options to be a boolean for defaults
+	if ( opts === true ) {
+		opts = {};
+	}
+
+	// Convert from camelCase to Hungarian, just as DataTables does
+	var camelToHungarian = $.fn.dataTable.camelToHungarian;
+	if ( camelToHungarian ) {
+		camelToHungarian( ColReorder.defaults, ColReorder.defaults, true );
+		camelToHungarian( ColReorder.defaults, opts || {} );
+	}
+
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 * Public class variables
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+	/**
+	 * @namespace Settings object which contains customisable information for ColReorder instance
+	 */
+	this.s = {
+		/**
+		 * DataTables settings object
+		 *  @property dt
+		 *  @type     Object
+		 *  @default  null
+		 */
+		"dt": null,
+
+		/**
+		 * Enable flag
+		 *  @property dt
+		 *  @type     Object
+		 *  @default  null
+		 */
+		"enable": null,
+
+		/**
+		 * Initialisation object used for this instance
+		 *  @property init
+		 *  @type     object
+		 *  @default  {}
+		 */
+		"init": $.extend( true, {}, ColReorder.defaults, opts ),
+
+		/**
+		 * Number of columns to fix (not allow to be reordered)
+		 *  @property fixed
+		 *  @type     int
+		 *  @default  0
+		 */
+		"fixed": 0,
+
+		/**
+		 * Number of columns to fix counting from right (not allow to be reordered)
+		 *  @property fixedRight
+		 *  @type     int
+		 *  @default  0
+		 */
+		"fixedRight": 0,
+
+		/**
+		 * Callback function for once the reorder has been done
+		 *  @property reorderCallback
+		 *  @type     function
+		 *  @default  null
+		 */
+		"reorderCallback": null,
+
+		/**
+		 * @namespace Information used for the mouse drag
+		 */
+		"mouse": {
+			"startX": -1,
+			"startY": -1,
+			"offsetX": -1,
+			"offsetY": -1,
+			"target": -1,
+			"targetIndex": -1,
+			"fromIndex": -1
+		},
+
+		/**
+		 * Information which is used for positioning the insert cusor and knowing where to do the
+		 * insert. Array of objects with the properties:
+		 *   x: x-axis position
+		 *   to: insert point
+		 *  @property aoTargets
+		 *  @type     array
+		 *  @default  []
+		 */
+		"aoTargets": []
+	};
+
+
+	/**
+	 * @namespace Common and useful DOM elements for the class instance
+	 */
+	this.dom = {
+		/**
+		 * Dragging element (the one the mouse is moving)
+		 *  @property drag
+		 *  @type     element
+		 *  @default  null
+		 */
+		"drag": null,
+
+		/**
+		 * The insert cursor
+		 *  @property pointer
+		 *  @type     element
+		 *  @default  null
+		 */
+		"pointer": null
+	};
+
+	/* Constructor logic */
+	this.s.enable = this.s.init.bEnable;
+	this.s.dt = settings;
+	this.s.dt._colReorder = this;
+	this._fnConstruct();
+
+	return this;
+};
+
+
+
+$.extend( ColReorder.prototype, {
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 * Public methods
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+	/**
+	 * Enable / disable end user interaction
+	 */
+	fnEnable: function ( flag )
+	{
+		if ( flag === false ) {
+			return fnDisable();
+		}
+
+		this.s.enable = true;
+	},
+
+	/**
+	 * Disable end user interaction
+	 */
+	fnDisable: function ()
+	{
+		this.s.enable = false;
+	},
+
+	/**
+	 * Reset the column ordering to the original ordering that was detected on
+	 * start up.
+	 *  @return {this} Returns `this` for chaining.
+	 *
+	 *  @example
+	 *    // DataTables initialisation with ColReorder
+	 *    var table = $('#example').dataTable( {
+	 *        "sDom": 'Rlfrtip'
+	 *    } );
+	 *
+	 *    // Add click event to a button to reset the ordering
+	 *    $('#resetOrdering').click( function (e) {
+	 *        e.preventDefault();
+	 *        $.fn.dataTable.ColReorder( table ).fnReset();
+	 *    } );
+	 */
+	"fnReset": function ()
+	{
+		this._fnOrderColumns( this.fnOrder() );
+
+		return this;
+	},
+
+	/**
+	 * `Deprecated` - Get the current order of the columns, as an array.
+	 *  @return {array} Array of column identifiers
+	 *  @deprecated `fnOrder` should be used in preference to this method.
+	 *      `fnOrder` acts as a getter/setter.
+	 */
+	"fnGetCurrentOrder": function ()
+	{
+		return this.fnOrder();
+	},
+
+	/**
+	 * Get the current order of the columns, as an array. Note that the values
+	 * given in the array are unique identifiers for each column. Currently
+	 * these are the original ordering of the columns that was detected on
+	 * start up, but this could potentially change in future.
+	 *  @return {array} Array of column identifiers
+	 *
+	 *  @example
+	 *    // Get column ordering for the table
+	 *    var order = $.fn.dataTable.ColReorder( dataTable ).fnOrder();
+	 *//**
+	 * Set the order of the columns, from the positions identified in the
+	 * ordering array given. Note that ColReorder takes a brute force approach
+	 * to reordering, so it is possible multiple reordering events will occur
+	 * before the final order is settled upon.
+	 *  @param {array} [set] Array of column identifiers in the new order. Note
+	 *    that every column must be included, uniquely, in this array.
+	 *  @return {this} Returns `this` for chaining.
+	 *
+	 *  @example
+	 *    // Swap the first and second columns
+	 *    $.fn.dataTable.ColReorder( dataTable ).fnOrder( [1, 0, 2, 3, 4] );
+	 *
+	 *  @example
+	 *    // Move the first column to the end for the table `#example`
+	 *    var curr = $.fn.dataTable.ColReorder( '#example' ).fnOrder();
+	 *    var first = curr.shift();
+	 *    curr.push( first );
+	 *    $.fn.dataTable.ColReorder( '#example' ).fnOrder( curr );
+	 *
+	 *  @example
+	 *    // Reverse the table's order
+	 *    $.fn.dataTable.ColReorder( '#example' ).fnOrder(
+	 *      $.fn.dataTable.ColReorder( '#example' ).fnOrder().reverse()
+	 *    );
+	 */
+	"fnOrder": function ( set, original )
+	{
+		var a = [], i, ien, j, jen;
+		var columns = this.s.dt.aoColumns;
+
+		if ( set === undefined ){
+			for ( i=0, ien=columns.length ; i<ien ; i++ ) {
+				a.push( columns[i]._ColReorder_iOrigCol );
+			}
+
+			return a;
+		}
+
+		// The order given is based on the original indexes, rather than the
+		// existing ones, so we need to translate from the original to current
+		// before then doing the order
+		if ( original ) {
+			var order = this.fnOrder();
+
+			for ( i=0, ien=set.length ; i<ien ; i++ ) {
+				a.push( $.inArray( set[i], order ) );
+			}
+
+			set = a;
+		}
+
+		this._fnOrderColumns( fnInvertKeyValues( set ) );
+
+		return this;
+	},
+
+
+	/**
+	 * Convert from the original column index, to the original
+	 *
+	 * @param  {int|array} idx Index(es) to convert
+	 * @param  {string} dir Transpose direction - `fromOriginal` / `toCurrent`
+	 *   or `'toOriginal` / `fromCurrent`
+	 * @return {int|array}     Converted values
+	 */
+	fnTranspose: function ( idx, dir )
+	{
+		if ( ! dir ) {
+			dir = 'toCurrent';
+		}
+
+		var order = this.fnOrder();
+		var columns = this.s.dt.aoColumns;
+
+		if ( dir === 'toCurrent' ) {
+			// Given an original index, want the current
+			return ! $.isArray( idx ) ?
+				$.inArray( idx, order ) :
+				$.map( idx, function ( index ) {
+					return $.inArray( index, order );
+				} );
+		}
+		else {
+			// Given a current index, want the original
+			return ! $.isArray( idx ) ?
+				columns[idx]._ColReorder_iOrigCol :
+				$.map( idx, function ( index ) {
+					return columns[index]._ColReorder_iOrigCol;
+				} );
+		}
+	},
+
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 * Private methods (they are of course public in JS, but recommended as private)
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+	/**
+	 * Constructor logic
+	 *  @method  _fnConstruct
+	 *  @returns void
+	 *  @private
+	 */
+	"_fnConstruct": function ()
+	{
+		var that = this;
+		var iLen = this.s.dt.aoColumns.length;
+		var table = this.s.dt.nTable;
+		var i;
+
+		/* Columns discounted from reordering - counting left to right */
+		if ( this.s.init.iFixedColumns )
+		{
+			this.s.fixed = this.s.init.iFixedColumns;
+		}
+
+		if ( this.s.init.iFixedColumnsLeft )
+		{
+			this.s.fixed = this.s.init.iFixedColumnsLeft;
+		}
+
+		/* Columns discounted from reordering - counting right to left */
+		this.s.fixedRight = this.s.init.iFixedColumnsRight ?
+			this.s.init.iFixedColumnsRight :
+			0;
+
+		/* Drop callback initialisation option */
+		if ( this.s.init.fnReorderCallback )
+		{
+			this.s.reorderCallback = this.s.init.fnReorderCallback;
+		}
+
+		/* Add event handlers for the drag and drop, and also mark the original column order */
+		for ( i = 0; i < iLen; i++ )
+		{
+			if ( i > this.s.fixed-1 && i < iLen - this.s.fixedRight )
+			{
+				this._fnMouseListener( i, this.s.dt.aoColumns[i].nTh );
+			}
+
+			/* Mark the original column order for later reference */
+			this.s.dt.aoColumns[i]._ColReorder_iOrigCol = i;
+		}
+
+		/* State saving */
+		this.s.dt.oApi._fnCallbackReg( this.s.dt, 'aoStateSaveParams', function (oS, oData) {
+			that._fnStateSave.call( that, oData );
+		}, "ColReorder_State" );
+
+		/* An initial column order has been specified */
+		var aiOrder = null;
+		if ( this.s.init.aiOrder )
+		{
+			aiOrder = this.s.init.aiOrder.slice();
+		}
+
+		/* State loading, overrides the column order given */
+		if ( this.s.dt.oLoadedState && typeof this.s.dt.oLoadedState.ColReorder != 'undefined' &&
+		  this.s.dt.oLoadedState.ColReorder.length == this.s.dt.aoColumns.length )
+		{
+			aiOrder = this.s.dt.oLoadedState.ColReorder;
+		}
+
+		/* If we have an order to apply - do so */
+		if ( aiOrder )
+		{
+			/* We might be called during or after the DataTables initialisation. If before, then we need
+			 * to wait until the draw is done, if after, then do what we need to do right away
+			 */
+			if ( !that.s.dt._bInitComplete )
+			{
+				var bDone = false;
+				$(table).on( 'draw.dt.colReorder', function () {
+					if ( !that.s.dt._bInitComplete && !bDone )
+					{
+						bDone = true;
+						var resort = fnInvertKeyValues( aiOrder );
+						that._fnOrderColumns.call( that, resort );
+					}
+				} );
+			}
+			else
+			{
+				var resort = fnInvertKeyValues( aiOrder );
+				that._fnOrderColumns.call( that, resort );
+			}
+		}
+		else {
+			this._fnSetColumnIndexes();
+		}
+
+		// Destroy clean up
+		$(table).on( 'destroy.dt.colReorder', function () {
+			$(table).off( 'destroy.dt.colReorder draw.dt.colReorder' );
+
+			$.each( that.s.dt.aoColumns, function (i, column) {
+				$(column.nTh).off('.ColReorder');
+				$(column.nTh).removeAttr('data-column-index');
+			} );
+
+			that.s.dt._colReorder = null;
+			that.s = null;
+		} );
+	},
+
+
+	/**
+	 * Set the column order from an array
+	 *  @method  _fnOrderColumns
+	 *  @param   array a An array of integers which dictate the column order that should be applied
+	 *  @returns void
+	 *  @private
+	 */
+	"_fnOrderColumns": function ( a )
+	{
+		var changed = false;
+
+		if ( a.length != this.s.dt.aoColumns.length )
+		{
+			this.s.dt.oInstance.oApi._fnLog( this.s.dt, 1, "ColReorder - array reorder does not "+
+				"match known number of columns. Skipping." );
+			return;
+		}
+
+		for ( var i=0, iLen=a.length ; i<iLen ; i++ )
+		{
+			var currIndex = $.inArray( i, a );
+			if ( i != currIndex )
+			{
+				/* Reorder our switching array */
+				fnArraySwitch( a, currIndex, i );
+
+				/* Do the column reorder in the table */
+				this.s.dt.oInstance.fnColReorder( currIndex, i, true, false );
+
+				changed = true;
+			}
+		}
+
+		this._fnSetColumnIndexes();
+
+		// Has anything actually changed? If not, then nothing else to do
+		if ( ! changed ) {
+			return;
+		}
+
+		$.fn.dataTable.Api( this.s.dt ).rows().invalidate();
+
+		/* When scrolling we need to recalculate the column sizes to allow for the shift */
+		if ( this.s.dt.oScroll.sX !== "" || this.s.dt.oScroll.sY !== "" )
+		{
+			this.s.dt.oInstance.fnAdjustColumnSizing( false );
+		}
+
+		/* Save the state */
+		this.s.dt.oInstance.oApi._fnSaveState( this.s.dt );
+
+		if ( this.s.reorderCallback !== null )
+		{
+			this.s.reorderCallback.call( this );
+		}
+	},
+
+
+	/**
+	 * Because we change the indexes of columns in the table, relative to their starting point
+	 * we need to reorder the state columns to what they are at the starting point so we can
+	 * then rearrange them again on state load!
+	 *  @method  _fnStateSave
+	 *  @param   object oState DataTables state
+	 *  @returns string JSON encoded cookie string for DataTables
+	 *  @private
+	 */
+	"_fnStateSave": function ( oState )
+	{
+		var i, iLen, aCopy, iOrigColumn;
+		var oSettings = this.s.dt;
+		var columns = oSettings.aoColumns;
+
+		oState.ColReorder = [];
+
+		/* Sorting */
+		if ( oState.aaSorting ) {
+			// 1.10.0-
+			for ( i=0 ; i<oState.aaSorting.length ; i++ ) {
+				oState.aaSorting[i][0] = columns[ oState.aaSorting[i][0] ]._ColReorder_iOrigCol;
+			}
+
+			var aSearchCopy = $.extend( true, [], oState.aoSearchCols );
+
+			for ( i=0, iLen=columns.length ; i<iLen ; i++ )
+			{
+				iOrigColumn = columns[i]._ColReorder_iOrigCol;
+
+				/* Column filter */
+				oState.aoSearchCols[ iOrigColumn ] = aSearchCopy[i];
+
+				/* Visibility */
+				oState.abVisCols[ iOrigColumn ] = columns[i].bVisible;
+
+				/* Column reordering */
+				oState.ColReorder.push( iOrigColumn );
+			}
+		}
+		else if ( oState.order ) {
+			// 1.10.1+
+			for ( i=0 ; i<oState.order.length ; i++ ) {
+				oState.order[i][0] = columns[ oState.order[i][0] ]._ColReorder_iOrigCol;
+			}
+
+			var stateColumnsCopy = $.extend( true, [], oState.columns );
+
+			for ( i=0, iLen=columns.length ; i<iLen ; i++ )
+			{
+				iOrigColumn = columns[i]._ColReorder_iOrigCol;
+
+				/* Columns */
+				oState.columns[ iOrigColumn ] = stateColumnsCopy[i];
+
+				/* Column reordering */
+				oState.ColReorder.push( iOrigColumn );
+			}
+		}
+	},
+
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 * Mouse drop and drag
+	 */
+
+	/**
+	 * Add a mouse down listener to a particluar TH element
+	 *  @method  _fnMouseListener
+	 *  @param   int i Column index
+	 *  @param   element nTh TH element clicked on
+	 *  @returns void
+	 *  @private
+	 */
+	"_fnMouseListener": function ( i, nTh )
+	{
+		var that = this;
+		$(nTh)
+			.on( 'mousedown.ColReorder', function (e) {
+				if ( that.s.enable ) {
+					that._fnMouseDown.call( that, e, nTh );
+				}
+			} )
+			.on( 'touchstart.ColReorder', function (e) {
+				if ( that.s.enable ) {
+					that._fnMouseDown.call( that, e, nTh );
+				}
+			} );
+	},
+
+
+	/**
+	 * Mouse down on a TH element in the table header
+	 *  @method  _fnMouseDown
+	 *  @param   event e Mouse event
+	 *  @param   element nTh TH element to be dragged
+	 *  @returns void
+	 *  @private
+	 */
+	"_fnMouseDown": function ( e, nTh )
+	{
+		var that = this;
+
+		/* Store information about the mouse position */
+		var target = $(e.target).closest('th, td');
+		var offset = target.offset();
+		var idx = parseInt( $(nTh).attr('data-column-index'), 10 );
+
+		if ( idx === undefined ) {
+			return;
+		}
+
+		this.s.mouse.startX = this._fnCursorPosition( e, 'pageX' );
+		this.s.mouse.startY = this._fnCursorPosition( e, 'pageY' );
+		this.s.mouse.offsetX = this._fnCursorPosition( e, 'pageX' ) - offset.left;
+		this.s.mouse.offsetY = this._fnCursorPosition( e, 'pageY' ) - offset.top;
+		this.s.mouse.target = this.s.dt.aoColumns[ idx ].nTh;//target[0];
+		this.s.mouse.targetIndex = idx;
+		this.s.mouse.fromIndex = idx;
+
+		this._fnRegions();
+
+		/* Add event handlers to the document */
+		$(document)
+			.on( 'mousemove.ColReorder touchmove.ColReorder', function (e) {
+				that._fnMouseMove.call( that, e );
+			} )
+			.on( 'mouseup.ColReorder touchend.ColReorder', function (e) {
+				that._fnMouseUp.call( that, e );
+			} );
+	},
+
+
+	/**
+	 * Deal with a mouse move event while dragging a node
+	 *  @method  _fnMouseMove
+	 *  @param   event e Mouse event
+	 *  @returns void
+	 *  @private
+	 */
+	"_fnMouseMove": function ( e )
+	{
+		var that = this;
+
+		if ( this.dom.drag === null )
+		{
+			/* Only create the drag element if the mouse has moved a specific distance from the start
+			 * point - this allows the user to make small mouse movements when sorting and not have a
+			 * possibly confusing drag element showing up
+			 */
+			if ( Math.pow(
+				Math.pow(this._fnCursorPosition( e, 'pageX') - this.s.mouse.startX, 2) +
+				Math.pow(this._fnCursorPosition( e, 'pageY') - this.s.mouse.startY, 2), 0.5 ) < 5 )
+			{
+				return;
+			}
+			this._fnCreateDragNode();
+		}
+
+		/* Position the element - we respect where in the element the click occured */
+		this.dom.drag.css( {
+			left: this._fnCursorPosition( e, 'pageX' ) - this.s.mouse.offsetX,
+			top: this._fnCursorPosition( e, 'pageY' ) - this.s.mouse.offsetY
+		} );
+
+		/* Based on the current mouse position, calculate where the insert should go */
+		var bSet = false;
+		var lastToIndex = this.s.mouse.toIndex;
+
+		for ( var i=1, iLen=this.s.aoTargets.length ; i<iLen ; i++ )
+		{
+			if ( this._fnCursorPosition(e, 'pageX') < this.s.aoTargets[i-1].x + ((this.s.aoTargets[i].x-this.s.aoTargets[i-1].x)/2) )
+			{
+				this.dom.pointer.css( 'left', this.s.aoTargets[i-1].x );
+				this.s.mouse.toIndex = this.s.aoTargets[i-1].to;
+				bSet = true;
+				break;
+			}
+		}
+
+		// The insert element wasn't positioned in the array (less than
+		// operator), so we put it at the end
+		if ( !bSet )
+		{
+			this.dom.pointer.css( 'left', this.s.aoTargets[this.s.aoTargets.length-1].x );
+			this.s.mouse.toIndex = this.s.aoTargets[this.s.aoTargets.length-1].to;
+		}
+
+		// Perform reordering if realtime updating is on and the column has moved
+		if ( this.s.init.bRealtime && lastToIndex !== this.s.mouse.toIndex ) {
+			this.s.dt.oInstance.fnColReorder( this.s.mouse.fromIndex, this.s.mouse.toIndex );
+			this.s.mouse.fromIndex = this.s.mouse.toIndex;
+
+			// Not great for performance, but required to keep everything in alignment
+			if ( this.s.dt.oScroll.sX !== "" || this.s.dt.oScroll.sY !== "" )
+			{
+				this.s.dt.oInstance.fnAdjustColumnSizing( false );
+			}
+
+			this._fnRegions();
+		}
+	},
+
+
+	/**
+	 * Finish off the mouse drag and insert the column where needed
+	 *  @method  _fnMouseUp
+	 *  @param   event e Mouse event
+	 *  @returns void
+	 *  @private
+	 */
+	"_fnMouseUp": function ( e )
+	{
+		var that = this;
+
+		$(document).off( '.ColReorder' );
+
+		if ( this.dom.drag !== null )
+		{
+			/* Remove the guide elements */
+			this.dom.drag.remove();
+			this.dom.pointer.remove();
+			this.dom.drag = null;
+			this.dom.pointer = null;
+
+			/* Actually do the reorder */
+			this.s.dt.oInstance.fnColReorder( this.s.mouse.fromIndex, this.s.mouse.toIndex, true );
+			this._fnSetColumnIndexes();
+
+			/* When scrolling we need to recalculate the column sizes to allow for the shift */
+			if ( this.s.dt.oScroll.sX !== "" || this.s.dt.oScroll.sY !== "" )
+			{
+				this.s.dt.oInstance.fnAdjustColumnSizing( false );
+			}
+
+			/* Save the state */
+			this.s.dt.oInstance.oApi._fnSaveState( this.s.dt );
+
+			if ( this.s.reorderCallback !== null )
+			{
+				this.s.reorderCallback.call( this );
+			}
+		}
+	},
+
+
+	/**
+	 * Calculate a cached array with the points of the column inserts, and the
+	 * 'to' points
+	 *  @method  _fnRegions
+	 *  @returns void
+	 *  @private
+	 */
+	"_fnRegions": function ()
+	{
+		var aoColumns = this.s.dt.aoColumns;
+
+		this.s.aoTargets.splice( 0, this.s.aoTargets.length );
+
+		this.s.aoTargets.push( {
+			"x":  $(this.s.dt.nTable).offset().left,
+			"to": 0
+		} );
+
+		var iToPoint = 0;
+		var total = this.s.aoTargets[0].x;
+
+		for ( var i=0, iLen=aoColumns.length ; i<iLen ; i++ )
+		{
+			/* For the column / header in question, we want it's position to remain the same if the
+			 * position is just to it's immediate left or right, so we only increment the counter for
+			 * other columns
+			 */
+			if ( i != this.s.mouse.fromIndex )
+			{
+				iToPoint++;
+			}
+
+			if ( aoColumns[i].bVisible && aoColumns[i].nTh.style.display !=='none' )
+			{
+				total += $(aoColumns[i].nTh).outerWidth();
+
+				this.s.aoTargets.push( {
+					"x":  total,
+					"to": iToPoint
+				} );
+			}
+		}
+
+		/* Disallow columns for being reordered by drag and drop, counting right to left */
+		if ( this.s.fixedRight !== 0 )
+		{
+			this.s.aoTargets.splice( this.s.aoTargets.length - this.s.fixedRight );
+		}
+
+		/* Disallow columns for being reordered by drag and drop, counting left to right */
+		if ( this.s.fixed !== 0 )
+		{
+			this.s.aoTargets.splice( 0, this.s.fixed );
+		}
+	},
+
+
+	/**
+	 * Copy the TH element that is being drags so the user has the idea that they are actually
+	 * moving it around the page.
+	 *  @method  _fnCreateDragNode
+	 *  @returns void
+	 *  @private
+	 */
+	"_fnCreateDragNode": function ()
+	{
+		var scrolling = this.s.dt.oScroll.sX !== "" || this.s.dt.oScroll.sY !== "";
+
+		var origCell = this.s.dt.aoColumns[ this.s.mouse.targetIndex ].nTh;
+		var origTr = origCell.parentNode;
+		var origThead = origTr.parentNode;
+		var origTable = origThead.parentNode;
+		var cloneCell = $(origCell).clone();
+
+		// This is a slightly odd combination of jQuery and DOM, but it is the
+		// fastest and least resource intensive way I could think of cloning
+		// the table with just a single header cell in it.
+		this.dom.drag = $(origTable.cloneNode(false))
+			.addClass( 'DTCR_clonedTable' )
+			.append(
+				$(origThead.cloneNode(false)).append(
+					$(origTr.cloneNode(false)).append(
+						cloneCell[0]
+					)
+				)
+			)
+			.css( {
+				position: 'absolute',
+				top: 0,
+				left: 0,
+				width: $(origCell).outerWidth(),
+				height: $(origCell).outerHeight()
+			} )
+			.appendTo( 'body' );
+
+		this.dom.pointer = $('<div></div>')
+			.addClass( 'DTCR_pointer' )
+			.css( {
+				position: 'absolute',
+				top: scrolling ?
+					$('div.dataTables_scroll', this.s.dt.nTableWrapper).offset().top :
+					$(this.s.dt.nTable).offset().top,
+				height : scrolling ?
+					$('div.dataTables_scroll', this.s.dt.nTableWrapper).height() :
+					$(this.s.dt.nTable).height()
+			} )
+			.appendTo( 'body' );
+	},
+
+
+	/**
+	 * Add a data attribute to the column headers, so we know the index of
+	 * the row to be reordered. This allows fast detection of the index, and
+	 * for this plug-in to work with FixedHeader which clones the nodes.
+	 *  @private
+	 */
+	"_fnSetColumnIndexes": function ()
+	{
+		$.each( this.s.dt.aoColumns, function (i, column) {
+			$(column.nTh).attr('data-column-index', i);
+		} );
+	},
+
+
+	/**
+	 * Get cursor position regardless of mouse or touch input
+	 * @param  {Event}  e    jQuery Event
+	 * @param  {string} prop Property to get
+	 * @return {number}      Value
+	 */
+	_fnCursorPosition: function ( e, prop ) {
+		if ( e.type.indexOf('touch') !== -1 ) {
+			return e.originalEvent.touches[0][ prop ];
+		}
+		return e[ prop ];
+	}
+} );
+
+
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Static parameters
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+
+/**
+ * ColReorder default settings for initialisation
+ *  @namespace
+ *  @static
+ */
+ColReorder.defaults = {
+	/**
+	 * Predefined ordering for the columns that will be applied automatically
+	 * on initialisation. If not specified then the order that the columns are
+	 * found to be in the HTML is the order used.
+	 *  @type array
+	 *  @default null
+	 *  @static
+	 */
+	aiOrder: null,
+
+	/**
+	 * ColReorder enable on initialisation
+	 *  @type boolean
+	 *  @default true
+	 *  @static
+	 */
+	bEnable: true,
+
+	/**
+	 * Redraw the table's column ordering as the end user draws the column
+	 * (`true`) or wait until the mouse is released (`false` - default). Note
+	 * that this will perform a redraw on each reordering, which involves an
+	 * Ajax request each time if you are using server-side processing in
+	 * DataTables.
+	 *  @type boolean
+	 *  @default false
+	 *  @static
+	 */
+	bRealtime: true,
+
+	/**
+	 * Indicate how many columns should be fixed in position (counting from the
+	 * left). This will typically be 1 if used, but can be as high as you like.
+	 *  @type int
+	 *  @default 0
+	 *  @static
+	 */
+	iFixedColumnsLeft: 0,
+
+	/**
+	 * As `iFixedColumnsRight` but counting from the right.
+	 *  @type int
+	 *  @default 0
+	 *  @static
+	 */
+	iFixedColumnsRight: 0,
+
+	/**
+	 * Callback function that is fired when columns are reordered. The `column-
+	 * reorder` event is preferred over this callback
+	 *  @type function():void
+	 *  @default null
+	 *  @static
+	 */
+	fnReorderCallback: null
+};
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Constants
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+/**
+ * ColReorder version
+ *  @constant  version
+ *  @type      String
+ *  @default   As code
+ */
+ColReorder.version = "1.5.0";
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * DataTables interfaces
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+// Expose
+$.fn.dataTable.ColReorder = ColReorder;
+$.fn.DataTable.ColReorder = ColReorder;
+
+
+// Register a new feature with DataTables
+if ( typeof $.fn.dataTable == "function" &&
+     typeof $.fn.dataTableExt.fnVersionCheck == "function" &&
+     $.fn.dataTableExt.fnVersionCheck('1.10.8') )
+{
+	$.fn.dataTableExt.aoFeatures.push( {
+		"fnInit": function( settings ) {
+			var table = settings.oInstance;
+
+			if ( ! settings._colReorder ) {
+				var dtInit = settings.oInit;
+				var opts = dtInit.colReorder || dtInit.oColReorder || {};
+
+				new ColReorder( settings, opts );
+			}
+			else {
+				table.oApi._fnLog( settings, 1, "ColReorder attempted to initialise twice. Ignoring second" );
+			}
+
+			return null; /* No node for DataTables to insert */
+		},
+		"cFeature": "R",
+		"sFeature": "ColReorder"
+	} );
+}
+else {
+	alert( "Warning: ColReorder requires DataTables 1.10.8 or greater - www.datatables.net/download");
+}
+
+
+// Attach a listener to the document which listens for DataTables initialisation
+// events so we can automatically initialise
+$(document).on( 'preInit.dt.colReorder', function (e, settings) {
+	if ( e.namespace !== 'dt' ) {
+		return;
+	}
+
+	var init = settings.oInit.colReorder;
+	var defaults = DataTable.defaults.colReorder;
+
+	if ( init || defaults ) {
+		var opts = $.extend( {}, init, defaults );
+
+		if ( init !== false ) {
+			new ColReorder( settings, opts  );
+		}
+	}
+} );
+
+
+// API augmentation
+$.fn.dataTable.Api.register( 'colReorder.reset()', function () {
+	return this.iterator( 'table', function ( ctx ) {
+		ctx._colReorder.fnReset();
+	} );
+} );
+
+$.fn.dataTable.Api.register( 'colReorder.order()', function ( set, original ) {
+	if ( set ) {
+		return this.iterator( 'table', function ( ctx ) {
+			ctx._colReorder.fnOrder( set, original );
+		} );
+	}
+
+	return this.context.length ?
+		this.context[0]._colReorder.fnOrder() :
+		null;
+} );
+
+$.fn.dataTable.Api.register( 'colReorder.transpose()', function ( idx, dir ) {
+	return this.context.length && this.context[0]._colReorder ?
+		this.context[0]._colReorder.fnTranspose( idx, dir ) :
+		idx;
+} );
+
+$.fn.dataTable.Api.register( 'colReorder.move()', function( from, to, drop, invalidateRows ) {
+	if (this.context.length) {
+		this.context[0]._colReorder.s.dt.oInstance.fnColReorder( from, to, drop, invalidateRows );
+	}
+	return this;
+} );
+
+$.fn.dataTable.Api.register( 'colReorder.enable()', function( flag ) {
+	return this.iterator( 'table', function ( ctx ) {
+		if ( ctx._colReorder ) {
+			ctx._colReorder.fnEnable( flag );
+		}
+	} );
+} );
+
+$.fn.dataTable.Api.register( 'colReorder.disable()', function() {
+	return this.iterator( 'table', function ( ctx ) {
+		if ( ctx._colReorder ) {
+			ctx._colReorder.fnDisable();
+		}
+	} );
+} );
+
+
+return ColReorder;
+}));
+
+
+/*! Responsive 2.2.2
+ * 2014-2018 SpryMedia Ltd - datatables.net/license
+ */
+
+/**
+ * @summary     Responsive
+ * @description Responsive tables plug-in for DataTables
+ * @version     2.2.2
+ * @file        dataTables.responsive.js
+ * @author      SpryMedia Ltd (www.sprymedia.co.uk)
+ * @contact     www.sprymedia.co.uk/contact
+ * @copyright   Copyright 2014-2018 SpryMedia Ltd.
+ *
+ * This source file is free software, available under the following license:
+ *   MIT license - http://datatables.net/license/mit
+ *
+ * This source file is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
+ *
+ * For details please refer to: http://www.datatables.net
+ */
+(function( factory ){
+	if ( typeof define === 'function' && define.amd ) {
+		// AMD
+		define( ['jquery', 'datatables.net'], function ( $ ) {
+			return factory( $, window, document );
+		} );
+	}
+	else if ( typeof exports === 'object' ) {
+		// CommonJS
+		module.exports = function (root, $) {
+			if ( ! root ) {
+				root = window;
+			}
+
+			if ( ! $ || ! $.fn.dataTable ) {
+				$ = require('datatables.net')(root, $).$;
+			}
+
+			return factory( $, root, root.document );
+		};
+	}
+	else {
+		// Browser
+		factory( jQuery, window, document );
+	}
+}(function( $, window, document, undefined ) {
+'use strict';
+var DataTable = $.fn.dataTable;
+
+
+/**
+ * Responsive is a plug-in for the DataTables library that makes use of
+ * DataTables' ability to change the visibility of columns, changing the
+ * visibility of columns so the displayed columns fit into the table container.
+ * The end result is that complex tables will be dynamically adjusted to fit
+ * into the viewport, be it on a desktop, tablet or mobile browser.
+ *
+ * Responsive for DataTables has two modes of operation, which can used
+ * individually or combined:
+ *
+ * * Class name based control - columns assigned class names that match the
+ *   breakpoint logic can be shown / hidden as required for each breakpoint.
+ * * Automatic control - columns are automatically hidden when there is no
+ *   room left to display them. Columns removed from the right.
+ *
+ * In additional to column visibility control, Responsive also has built into
+ * options to use DataTables' child row display to show / hide the information
+ * from the table that has been hidden. There are also two modes of operation
+ * for this child row display:
+ *
+ * * Inline - when the control element that the user can use to show / hide
+ *   child rows is displayed inside the first column of the table.
+ * * Column - where a whole column is dedicated to be the show / hide control.
+ *
+ * Initialisation of Responsive is performed by:
+ *
+ * * Adding the class `responsive` or `dt-responsive` to the table. In this case
+ *   Responsive will automatically be initialised with the default configuration
+ *   options when the DataTable is created.
+ * * Using the `responsive` option in the DataTables configuration options. This
+ *   can also be used to specify the configuration options, or simply set to
+ *   `true` to use the defaults.
+ *
+ *  @class
+ *  @param {object} settings DataTables settings object for the host table
+ *  @param {object} [opts] Configuration options
+ *  @requires jQuery 1.7+
+ *  @requires DataTables 1.10.3+
+ *
+ *  @example
+ *      $('#example').DataTable( {
+ *        responsive: true
+ *      } );
+ *    } );
+ */
+var Responsive = function ( settings, opts ) {
+	// Sanity check that we are using DataTables 1.10 or newer
+	if ( ! DataTable.versionCheck || ! DataTable.versionCheck( '1.10.10' ) ) {
+		throw 'DataTables Responsive requires DataTables 1.10.10 or newer';
+	}
+
+	this.s = {
+		dt: new DataTable.Api( settings ),
+		columns: [],
+		current: []
+	};
+
+	// Check if responsive has already been initialised on this table
+	if ( this.s.dt.settings()[0].responsive ) {
+		return;
+	}
+
+	// details is an object, but for simplicity the user can give it as a string
+	// or a boolean
+	if ( opts && typeof opts.details === 'string' ) {
+		opts.details = { type: opts.details };
+	}
+	else if ( opts && opts.details === false ) {
+		opts.details = { type: false };
+	}
+	else if ( opts && opts.details === true ) {
+		opts.details = { type: 'inline' };
+	}
+
+	this.c = $.extend( true, {}, Responsive.defaults, DataTable.defaults.responsive, opts );
+	settings.responsive = this;
+	this._constructor();
+};
+
+$.extend( Responsive.prototype, {
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 * Constructor
+	 */
+
+	/**
+	 * Initialise the Responsive instance
+	 *
+	 * @private
+	 */
+	_constructor: function ()
+	{
+		var that = this;
+		var dt = this.s.dt;
+		var dtPrivateSettings = dt.settings()[0];
+		var oldWindowWidth = $(window).width();
+
+		dt.settings()[0]._responsive = this;
+
+		// Use DataTables' throttle function to avoid processor thrashing on
+		// resize
+		$(window).on( 'resize.dtr orientationchange.dtr', DataTable.util.throttle( function () {
+			// iOS has a bug whereby resize can fire when only scrolling
+			// See: http://stackoverflow.com/questions/8898412
+			var width = $(window).width();
+
+			if ( width !== oldWindowWidth ) {
+				that._resize();
+				oldWindowWidth = width;
+			}
+		} ) );
+
+		// DataTables doesn't currently trigger an event when a row is added, so
+		// we need to hook into its private API to enforce the hidden rows when
+		// new data is added
+		dtPrivateSettings.oApi._fnCallbackReg( dtPrivateSettings, 'aoRowCreatedCallback', function (tr, data, idx) {
+			if ( $.inArray( false, that.s.current ) !== -1 ) {
+				$('>td, >th', tr).each( function ( i ) {
+					var idx = dt.column.index( 'toData', i );
+
+					if ( that.s.current[idx] === false ) {
+						$(this).css('display', 'none');
+					}
+				} );
+			}
+		} );
+
+		// Destroy event handler
+		dt.on( 'destroy.dtr', function () {
+			dt.off( '.dtr' );
+			$( dt.table().body() ).off( '.dtr' );
+			$(window).off( 'resize.dtr orientationchange.dtr' );
+
+			// Restore the columns that we've hidden
+			$.each( that.s.current, function ( i, val ) {
+				if ( val === false ) {
+					that._setColumnVis( i, true );
+				}
+			} );
+		} );
+
+		// Reorder the breakpoints array here in case they have been added out
+		// of order
+		this.c.breakpoints.sort( function (a, b) {
+			return a.width < b.width ? 1 :
+				a.width > b.width ? -1 : 0;
+		} );
+
+		this._classLogic();
+		this._resizeAuto();
+
+		// Details handler
+		var details = this.c.details;
+
+		if ( details.type !== false ) {
+			that._detailsInit();
+
+			// DataTables will trigger this event on every column it shows and
+			// hides individually
+			dt.on( 'column-visibility.dtr', function () {
+				// Use a small debounce to allow multiple columns to be set together
+				if ( that._timer ) {
+					clearTimeout( that._timer );
+				}
+
+				that._timer = setTimeout( function () {
+					that._timer = null;
+
+					that._classLogic();
+					that._resizeAuto();
+					that._resize();
+
+					that._redrawChildren();
+				}, 100 );
+			} );
+
+			// Redraw the details box on each draw which will happen if the data
+			// has changed. This is used until DataTables implements a native
+			// `updated` event for rows
+			dt.on( 'draw.dtr', function () {
+				that._redrawChildren();
+			} );
+
+			$(dt.table().node()).addClass( 'dtr-'+details.type );
+		}
+
+		dt.on( 'column-reorder.dtr', function (e, settings, details) {
+			that._classLogic();
+			that._resizeAuto();
+			that._resize();
+		} );
+
+		// Change in column sizes means we need to calc
+		dt.on( 'column-sizing.dtr', function () {
+			that._resizeAuto();
+			that._resize();
+		});
+
+		// On Ajax reload we want to reopen any child rows which are displayed
+		// by responsive
+		dt.on( 'preXhr.dtr', function () {
+			var rowIds = [];
+			dt.rows().every( function () {
+				if ( this.child.isShown() ) {
+					rowIds.push( this.id(true) );
+				}
+			} );
+
+			dt.one( 'draw.dtr', function () {
+				that._resizeAuto();
+				that._resize();
+
+				dt.rows( rowIds ).every( function () {
+					that._detailsDisplay( this, false );
+				} );
+			} );
+		});
+
+		dt.on( 'init.dtr', function (e, settings, details) {
+			that._resizeAuto();
+			that._resize();
+
+			// If columns were hidden, then DataTables needs to adjust the
+			// column sizing
+			if ( $.inArray( false, that.s.current ) ) {
+				dt.columns.adjust();
+			}
+		} );
+
+		// First pass - draw the table for the current viewport size
+		this._resize();
+	},
+
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 * Private methods
+	 */
+
+	/**
+	 * Calculate the visibility for the columns in a table for a given
+	 * breakpoint. The result is pre-determined based on the class logic if
+	 * class names are used to control all columns, but the width of the table
+	 * is also used if there are columns which are to be automatically shown
+	 * and hidden.
+	 *
+	 * @param  {string} breakpoint Breakpoint name to use for the calculation
+	 * @return {array} Array of boolean values initiating the visibility of each
+	 *   column.
+	 *  @private
+	 */
+	_columnsVisiblity: function ( breakpoint )
+	{
+		var dt = this.s.dt;
+		var columns = this.s.columns;
+		var i, ien;
+
+		// Create an array that defines the column ordering based first on the
+		// column's priority, and secondly the column index. This allows the
+		// columns to be removed from the right if the priority matches
+		var order = columns
+			.map( function ( col, idx ) {
+				return {
+					columnIdx: idx,
+					priority: col.priority
+				};
+			} )
+			.sort( function ( a, b ) {
+				if ( a.priority !== b.priority ) {
+					return a.priority - b.priority;
+				}
+				return a.columnIdx - b.columnIdx;
+			} );
+
+		// Class logic - determine which columns are in this breakpoint based
+		// on the classes. If no class control (i.e. `auto`) then `-` is used
+		// to indicate this to the rest of the function
+		var display = $.map( columns, function ( col, i ) {
+			if ( dt.column(i).visible() === false ) {
+				return 'not-visible';
+			}
+			return col.auto && col.minWidth === null ?
+				false :
+				col.auto === true ?
+					'-' :
+					$.inArray( breakpoint, col.includeIn ) !== -1;
+		} );
+
+		// Auto column control - first pass: how much width is taken by the
+		// ones that must be included from the non-auto columns
+		var requiredWidth = 0;
+		for ( i=0, ien=display.length ; i<ien ; i++ ) {
+			if ( display[i] === true ) {
+				requiredWidth += columns[i].minWidth;
+			}
+		}
+
+		// Second pass, use up any remaining width for other columns. For
+		// scrolling tables we need to subtract the width of the scrollbar. It
+		// may not be requires which makes this sub-optimal, but it would
+		// require another full redraw to make complete use of those extra few
+		// pixels
+		var scrolling = dt.settings()[0].oScroll;
+		var bar = scrolling.sY || scrolling.sX ? scrolling.iBarWidth : 0;
+		var widthAvailable = dt.table().container().offsetWidth - bar;
+		var usedWidth = widthAvailable - requiredWidth;
+
+		// Control column needs to always be included. This makes it sub-
+		// optimal in terms of using the available with, but to stop layout
+		// thrashing or overflow. Also we need to account for the control column
+		// width first so we know how much width is available for the other
+		// columns, since the control column might not be the first one shown
+		for ( i=0, ien=display.length ; i<ien ; i++ ) {
+			if ( columns[i].control ) {
+				usedWidth -= columns[i].minWidth;
+			}
+		}
+
+		// Allow columns to be shown (counting by priority and then right to
+		// left) until we run out of room
+		var empty = false;
+		for ( i=0, ien=order.length ; i<ien ; i++ ) {
+			var colIdx = order[i].columnIdx;
+
+			if ( display[colIdx] === '-' && ! columns[colIdx].control && columns[colIdx].minWidth ) {
+				// Once we've found a column that won't fit we don't let any
+				// others display either, or columns might disappear in the
+				// middle of the table
+				if ( empty || usedWidth - columns[colIdx].minWidth < 0 ) {
+					empty = true;
+					display[colIdx] = false;
+				}
+				else {
+					display[colIdx] = true;
+				}
+
+				usedWidth -= columns[colIdx].minWidth;
+			}
+		}
+
+		// Determine if the 'control' column should be shown (if there is one).
+		// This is the case when there is a hidden column (that is not the
+		// control column). The two loops look inefficient here, but they are
+		// trivial and will fly through. We need to know the outcome from the
+		// first , before the action in the second can be taken
+		var showControl = false;
+
+		for ( i=0, ien=columns.length ; i<ien ; i++ ) {
+			if ( ! columns[i].control && ! columns[i].never && display[i] === false ) {
+				showControl = true;
+				break;
+			}
+		}
+
+		for ( i=0, ien=columns.length ; i<ien ; i++ ) {
+			if ( columns[i].control ) {
+				display[i] = showControl;
+			}
+
+			// Replace not visible string with false from the control column detection above
+			if ( display[i] === 'not-visible' ) {
+				display[i] = false;
+			}
+		}
+
+		// Finally we need to make sure that there is at least one column that
+		// is visible
+		if ( $.inArray( true, display ) === -1 ) {
+			display[0] = true;
+		}
+
+		return display;
+	},
+
+
+	/**
+	 * Create the internal `columns` array with information about the columns
+	 * for the table. This includes determining which breakpoints the column
+	 * will appear in, based upon class names in the column, which makes up the
+	 * vast majority of this method.
+	 *
+	 * @private
+	 */
+	_classLogic: function ()
+	{
+		var that = this;
+		var calc = {};
+		var breakpoints = this.c.breakpoints;
+		var dt = this.s.dt;
+		var columns = dt.columns().eq(0).map( function (i) {
+			var column = this.column(i);
+			var className = column.header().className;
+			var priority = dt.settings()[0].aoColumns[i].responsivePriority;
+
+			if ( priority === undefined ) {
+				var dataPriority = $(column.header()).data('priority');
+
+				priority = dataPriority !== undefined ?
+					dataPriority * 1 :
+					10000;
+			}
+
+			return {
+				className: className,
+				includeIn: [],
+				auto:      false,
+				control:   false,
+				never:     className.match(/\bnever\b/) ? true : false,
+				priority:  priority
+			};
+		} );
+
+		// Simply add a breakpoint to `includeIn` array, ensuring that there are
+		// no duplicates
+		var add = function ( colIdx, name ) {
+			var includeIn = columns[ colIdx ].includeIn;
+
+			if ( $.inArray( name, includeIn ) === -1 ) {
+				includeIn.push( name );
+			}
+		};
+
+		var column = function ( colIdx, name, operator, matched ) {
+			var size, i, ien;
+
+			if ( ! operator ) {
+				columns[ colIdx ].includeIn.push( name );
+			}
+			else if ( operator === 'max-' ) {
+				// Add this breakpoint and all smaller
+				size = that._find( name ).width;
+
+				for ( i=0, ien=breakpoints.length ; i<ien ; i++ ) {
+					if ( breakpoints[i].width <= size ) {
+						add( colIdx, breakpoints[i].name );
+					}
+				}
+			}
+			else if ( operator === 'min-' ) {
+				// Add this breakpoint and all larger
+				size = that._find( name ).width;
+
+				for ( i=0, ien=breakpoints.length ; i<ien ; i++ ) {
+					if ( breakpoints[i].width >= size ) {
+						add( colIdx, breakpoints[i].name );
+					}
+				}
+			}
+			else if ( operator === 'not-' ) {
+				// Add all but this breakpoint
+				for ( i=0, ien=breakpoints.length ; i<ien ; i++ ) {
+					if ( breakpoints[i].name.indexOf( matched ) === -1 ) {
+						add( colIdx, breakpoints[i].name );
+					}
+				}
+			}
+		};
+
+		// Loop over each column and determine if it has a responsive control
+		// class
+		columns.each( function ( col, i ) {
+			var classNames = col.className.split(' ');
+			var hasClass = false;
+
+			// Split the class name up so multiple rules can be applied if needed
+			for ( var k=0, ken=classNames.length ; k<ken ; k++ ) {
+				var className = $.trim( classNames[k] );
+
+				if ( className === 'all' ) {
+					// Include in all
+					hasClass = true;
+					col.includeIn = $.map( breakpoints, function (a) {
+						return a.name;
+					} );
+					return;
+				}
+				else if ( className === 'none' || col.never ) {
+					// Include in none (default) and no auto
+					hasClass = true;
+					return;
+				}
+				else if ( className === 'control' ) {
+					// Special column that is only visible, when one of the other
+					// columns is hidden. This is used for the details control
+					hasClass = true;
+					col.control = true;
+					return;
+				}
+
+				$.each( breakpoints, function ( j, breakpoint ) {
+					// Does this column have a class that matches this breakpoint?
+					var brokenPoint = breakpoint.name.split('-');
+					var re = new RegExp( '(min\\-|max\\-|not\\-)?('+brokenPoint[0]+')(\\-[_a-zA-Z0-9])?' );
+					var match = className.match( re );
+
+					if ( match ) {
+						hasClass = true;
+
+						if ( match[2] === brokenPoint[0] && match[3] === '-'+brokenPoint[1] ) {
+							// Class name matches breakpoint name fully
+							column( i, breakpoint.name, match[1], match[2]+match[3] );
+						}
+						else if ( match[2] === brokenPoint[0] && ! match[3] ) {
+							// Class name matched primary breakpoint name with no qualifier
+							column( i, breakpoint.name, match[1], match[2] );
+						}
+					}
+				} );
+			}
+
+			// If there was no control class, then automatic sizing is used
+			if ( ! hasClass ) {
+				col.auto = true;
+			}
+		} );
+
+		this.s.columns = columns;
+	},
+
+
+	/**
+	 * Show the details for the child row
+	 *
+	 * @param  {DataTables.Api} row    API instance for the row
+	 * @param  {boolean}        update Update flag
+	 * @private
+	 */
+	_detailsDisplay: function ( row, update )
+	{
+		var that = this;
+		var dt = this.s.dt;
+		var details = this.c.details;
+
+		if ( details && details.type !== false ) {
+			var res = details.display( row, update, function () {
+				return details.renderer(
+					dt, row[0], that._detailsObj(row[0])
+				);
+			} );
+
+			if ( res === true || res === false ) {
+				$(dt.table().node()).triggerHandler( 'responsive-display.dt', [dt, row, res, update] );
+			}
+		}
+	},
+
+
+	/**
+	 * Initialisation for the details handler
+	 *
+	 * @private
+	 */
+	_detailsInit: function ()
+	{
+		var that    = this;
+		var dt      = this.s.dt;
+		var details = this.c.details;
+
+		// The inline type always uses the first child as the target
+		if ( details.type === 'inline' ) {
+			details.target = 'td:first-child, th:first-child';
+		}
+
+		// Keyboard accessibility
+		dt.on( 'draw.dtr', function () {
+			that._tabIndexes();
+		} );
+		that._tabIndexes(); // Initial draw has already happened
+
+		$( dt.table().body() ).on( 'keyup.dtr', 'td, th', function (e) {
+			if ( e.keyCode === 13 && $(this).data('dtr-keyboard') ) {
+				$(this).click();
+			}
+		} );
+
+		// type.target can be a string jQuery selector or a column index
+		var target   = details.target;
+		var selector = typeof target === 'string' ? target : 'td, th';
+
+		// Click handler to show / hide the details rows when they are available
+		$( dt.table().body() )
+			.on( 'click.dtr mousedown.dtr mouseup.dtr', selector, function (e) {
+				// If the table is not collapsed (i.e. there is no hidden columns)
+				// then take no action
+				if ( ! $(dt.table().node()).hasClass('collapsed' ) ) {
+					return;
+				}
+
+				// Check that the row is actually a DataTable's controlled node
+				if ( $.inArray( $(this).closest('tr').get(0), dt.rows().nodes().toArray() ) === -1 ) {
+					return;
+				}
+
+				// For column index, we determine if we should act or not in the
+				// handler - otherwise it is already okay
+				if ( typeof target === 'number' ) {
+					var targetIdx = target < 0 ?
+						dt.columns().eq(0).length + target :
+						target;
+
+					if ( dt.cell( this ).index().column !== targetIdx ) {
+						return;
+					}
+				}
+
+				// $().closest() includes itself in its check
+				var row = dt.row( $(this).closest('tr') );
+
+				// Check event type to do an action
+				if ( e.type === 'click' ) {
+					// The renderer is given as a function so the caller can execute it
+					// only when they need (i.e. if hiding there is no point is running
+					// the renderer)
+					that._detailsDisplay( row, false );
+				}
+				else if ( e.type === 'mousedown' ) {
+					// For mouse users, prevent the focus ring from showing
+					$(this).css('outline', 'none');
+				}
+				else if ( e.type === 'mouseup' ) {
+					// And then re-allow at the end of the click
+					$(this).blur().css('outline', '');
+				}
+			} );
+	},
+
+
+	/**
+	 * Get the details to pass to a renderer for a row
+	 * @param  {int} rowIdx Row index
+	 * @private
+	 */
+	_detailsObj: function ( rowIdx )
+	{
+		var that = this;
+		var dt = this.s.dt;
+
+		return $.map( this.s.columns, function( col, i ) {
+			// Never and control columns should not be passed to the renderer
+			if ( col.never || col.control ) {
+				return;
+			}
+
+			return {
+				title:       dt.settings()[0].aoColumns[ i ].sTitle,
+				data:        dt.cell( rowIdx, i ).render( that.c.orthogonal ),
+				hidden:      dt.column( i ).visible() && !that.s.current[ i ],
+				columnIndex: i,
+				rowIndex:    rowIdx
+			};
+		} );
+	},
+
+
+	/**
+	 * Find a breakpoint object from a name
+	 *
+	 * @param  {string} name Breakpoint name to find
+	 * @return {object}      Breakpoint description object
+	 * @private
+	 */
+	_find: function ( name )
+	{
+		var breakpoints = this.c.breakpoints;
+
+		for ( var i=0, ien=breakpoints.length ; i<ien ; i++ ) {
+			if ( breakpoints[i].name === name ) {
+				return breakpoints[i];
+			}
+		}
+	},
+
+
+	/**
+	 * Re-create the contents of the child rows as the display has changed in
+	 * some way.
+	 *
+	 * @private
+	 */
+	_redrawChildren: function ()
+	{
+		var that = this;
+		var dt = this.s.dt;
+
+		dt.rows( {page: 'current'} ).iterator( 'row', function ( settings, idx ) {
+			var row = dt.row( idx );
+
+			that._detailsDisplay( dt.row( idx ), true );
+		} );
+	},
+
+
+	/**
+	 * Alter the table display for a resized viewport. This involves first
+	 * determining what breakpoint the window currently is in, getting the
+	 * column visibilities to apply and then setting them.
+	 *
+	 * @private
+	 */
+	_resize: function ()
+	{
+		var that = this;
+		var dt = this.s.dt;
+		var width = $(window).width();
+		var breakpoints = this.c.breakpoints;
+		var breakpoint = breakpoints[0].name;
+		var columns = this.s.columns;
+		var i, ien;
+		var oldVis = this.s.current.slice();
+
+		// Determine what breakpoint we are currently at
+		for ( i=breakpoints.length-1 ; i>=0 ; i-- ) {
+			if ( width <= breakpoints[i].width ) {
+				breakpoint = breakpoints[i].name;
+				break;
+			}
+		}
+		
+		// Show the columns for that break point
+		var columnsVis = this._columnsVisiblity( breakpoint );
+		this.s.current = columnsVis;
+
+		// Set the class before the column visibility is changed so event
+		// listeners know what the state is. Need to determine if there are
+		// any columns that are not visible but can be shown
+		var collapsedClass = false;
+		for ( i=0, ien=columns.length ; i<ien ; i++ ) {
+			if ( columnsVis[i] === false && ! columns[i].never && ! columns[i].control && ! dt.column(i).visible() === false ) {
+				collapsedClass = true;
+				break;
+			}
+		}
+
+		$( dt.table().node() ).toggleClass( 'collapsed', collapsedClass );
+
+		var changed = false;
+		var visible = 0;
+
+		dt.columns().eq(0).each( function ( colIdx, i ) {
+			if ( columnsVis[i] === true ) {
+				visible++;
+			}
+
+			if ( columnsVis[i] !== oldVis[i] ) {
+				changed = true;
+				that._setColumnVis( colIdx, columnsVis[i] );
+			}
+		} );
+
+		if ( changed ) {
+			this._redrawChildren();
+
+			// Inform listeners of the change
+			$(dt.table().node()).trigger( 'responsive-resize.dt', [dt, this.s.current] );
+
+			// If no records, update the "No records" display element
+			if ( dt.page.info().recordsDisplay === 0 ) {
+				$('td', dt.table().body()).eq(0).attr('colspan', visible);
+			}
+		}
+	},
+
+
+	/**
+	 * Determine the width of each column in the table so the auto column hiding
+	 * has that information to work with. This method is never going to be 100%
+	 * perfect since column widths can change slightly per page, but without
+	 * seriously compromising performance this is quite effective.
+	 *
+	 * @private
+	 */
+	_resizeAuto: function ()
+	{
+		var dt = this.s.dt;
+		var columns = this.s.columns;
+
+		// Are we allowed to do auto sizing?
+		if ( ! this.c.auto ) {
+			return;
+		}
+
+		// Are there any columns that actually need auto-sizing, or do they all
+		// have classes defined
+		if ( $.inArray( true, $.map( columns, function (c) { return c.auto; } ) ) === -1 ) {
+			return;
+		}
+
+		// Need to restore all children. They will be reinstated by a re-render
+		if ( ! $.isEmptyObject( _childNodeStore ) ) {
+			$.each( _childNodeStore, function ( key ) {
+				var idx = key.split('-');
+
+				_childNodesRestore( dt, idx[0]*1, idx[1]*1 );
+			} );
+		}
+
+		// Clone the table with the current data in it
+		var tableWidth   = dt.table().node().offsetWidth;
+		var columnWidths = dt.columns;
+		var clonedTable  = dt.table().node().cloneNode( false );
+		var clonedHeader = $( dt.table().header().cloneNode( false ) ).appendTo( clonedTable );
+		var clonedBody   = $( dt.table().body() ).clone( false, false ).empty().appendTo( clonedTable ); // use jQuery because of IE8
+
+		// Header
+		var headerCells = dt.columns()
+			.header()
+			.filter( function (idx) {
+				return dt.column(idx).visible();
+			} )
+			.to$()
+			.clone( false )
+			.css( 'display', 'table-cell' )
+			.css( 'min-width', 0 );
+
+		// Body rows - we don't need to take account of DataTables' column
+		// visibility since we implement our own here (hence the `display` set)
+		$(clonedBody)
+			.append( $(dt.rows( { page: 'current' } ).nodes()).clone( false ) )
+			.find( 'th, td' ).css( 'display', '' );
+
+		// Footer
+		var footer = dt.table().footer();
+		if ( footer ) {
+			var clonedFooter = $( footer.cloneNode( false ) ).appendTo( clonedTable );
+			var footerCells = dt.columns()
+				.footer()
+				.filter( function (idx) {
+					return dt.column(idx).visible();
+				} )
+				.to$()
+				.clone( false )
+				.css( 'display', 'table-cell' );
+
+			$('<tr/>')
+				.append( footerCells )
+				.appendTo( clonedFooter );
+		}
+
+		$('<tr/>')
+			.append( headerCells )
+			.appendTo( clonedHeader );
+
+		// In the inline case extra padding is applied to the first column to
+		// give space for the show / hide icon. We need to use this in the
+		// calculation
+		if ( this.c.details.type === 'inline' ) {
+			$(clonedTable).addClass( 'dtr-inline collapsed' );
+		}
+		
+		// It is unsafe to insert elements with the same name into the DOM
+		// multiple times. For example, cloning and inserting a checked radio
+		// clears the chcecked state of the original radio.
+		$( clonedTable ).find( '[name]' ).removeAttr( 'name' );
+
+		// A position absolute table would take the table out of the flow of
+		// our container element, bypassing the height and width (Scroller)
+		$( clonedTable ).css( 'position', 'relative' )
+		
+		var inserted = $('<div/>')
+			.css( {
+				width: 1,
+				height: 1,
+				overflow: 'hidden',
+				clear: 'both'
+			} )
+			.append( clonedTable );
+
+		inserted.insertBefore( dt.table().node() );
+
+		// The cloned header now contains the smallest that each column can be
+		headerCells.each( function (i) {
+			var idx = dt.column.index( 'fromVisible', i );
+			columns[ idx ].minWidth =  this.offsetWidth || 0;
+		} );
+
+		inserted.remove();
+	},
+
+	/**
+	 * Set a column's visibility.
+	 *
+	 * We don't use DataTables' column visibility controls in order to ensure
+	 * that column visibility can Responsive can no-exist. Since only IE8+ is
+	 * supported (and all evergreen browsers of course) the control of the
+	 * display attribute works well.
+	 *
+	 * @param {integer} col      Column index
+	 * @param {boolean} showHide Show or hide (true or false)
+	 * @private
+	 */
+	_setColumnVis: function ( col, showHide )
+	{
+		var dt = this.s.dt;
+		var display = showHide ? '' : 'none'; // empty string will remove the attr
+
+		$( dt.column( col ).header() ).css( 'display', display );
+		$( dt.column( col ).footer() ).css( 'display', display );
+		dt.column( col ).nodes().to$().css( 'display', display );
+
+		// If the are child nodes stored, we might need to reinsert them
+		if ( ! $.isEmptyObject( _childNodeStore ) ) {
+			dt.cells( null, col ).indexes().each( function (idx) {
+				_childNodesRestore( dt, idx.row, idx.column );
+			} );
+		}
+	},
+
+
+	/**
+	 * Update the cell tab indexes for keyboard accessibility. This is called on
+	 * every table draw - that is potentially inefficient, but also the least
+	 * complex option given that column visibility can change on the fly. Its a
+	 * shame user-focus was removed from CSS 3 UI, as it would have solved this
+	 * issue with a single CSS statement.
+	 *
+	 * @private
+	 */
+	_tabIndexes: function ()
+	{
+		var dt = this.s.dt;
+		var cells = dt.cells( { page: 'current' } ).nodes().to$();
+		var ctx = dt.settings()[0];
+		var target = this.c.details.target;
+
+		cells.filter( '[data-dtr-keyboard]' ).removeData( '[data-dtr-keyboard]' );
+
+		if ( typeof target === 'number' ) {
+			dt.cells( null, target, { page: 'current' } ).nodes().to$()
+				.attr( 'tabIndex', ctx.iTabIndex )
+				.data( 'dtr-keyboard', 1 );
+		}
+		else {
+			// This is a bit of a hack - we need to limit the selected nodes to just
+			// those of this table
+			if ( target === 'td:first-child, th:first-child' ) {
+				target = '>td:first-child, >th:first-child';
+			}
+
+			$( target, dt.rows( { page: 'current' } ).nodes() )
+				.attr( 'tabIndex', ctx.iTabIndex )
+				.data( 'dtr-keyboard', 1 );
+		}
+	}
+} );
+
+
+/**
+ * List of default breakpoints. Each item in the array is an object with two
+ * properties:
+ *
+ * * `name` - the breakpoint name.
+ * * `width` - the breakpoint width
+ *
+ * @name Responsive.breakpoints
+ * @static
+ */
+Responsive.breakpoints = [
+	{ name: 'desktop',  width: Infinity },
+	{ name: 'tablet-l', width: 1024 },
+	{ name: 'tablet-p', width: 768 },
+	{ name: 'mobile-l', width: 480 },
+	{ name: 'mobile-p', width: 320 }
+];
+
+
+/**
+ * Display methods - functions which define how the hidden data should be shown
+ * in the table.
+ *
+ * @namespace
+ * @name Responsive.defaults
+ * @static
+ */
+Responsive.display = {
+	childRow: function ( row, update, render ) {
+		if ( update ) {
+			if ( $(row.node()).hasClass('parent') ) {
+				row.child( render(), 'child' ).show();
+
+				return true;
+			}
+		}
+		else {
+			if ( ! row.child.isShown()  ) {
+				row.child( render(), 'child' ).show();
+				$( row.node() ).addClass( 'parent' );
+
+				return true;
+			}
+			else {
+				row.child( false );
+				$( row.node() ).removeClass( 'parent' );
+
+				return false;
+			}
+		}
+	},
+
+	childRowImmediate: function ( row, update, render ) {
+		if ( (! update && row.child.isShown()) || ! row.responsive.hasHidden() ) {
+			// User interaction and the row is show, or nothing to show
+			row.child( false );
+			$( row.node() ).removeClass( 'parent' );
+
+			return false;
+		}
+		else {
+			// Display
+			row.child( render(), 'child' ).show();
+			$( row.node() ).addClass( 'parent' );
+
+			return true;
+		}
+	},
+
+	// This is a wrapper so the modal options for Bootstrap and jQuery UI can
+	// have options passed into them. This specific one doesn't need to be a
+	// function but it is for consistency in the `modal` name
+	modal: function ( options ) {
+		return function ( row, update, render ) {
+			if ( ! update ) {
+				// Show a modal
+				var close = function () {
+					modal.remove(); // will tidy events for us
+					$(document).off( 'keypress.dtr' );
+				};
+
+				var modal = $('<div class="dtr-modal"/>')
+					.append( $('<div class="dtr-modal-display"/>')
+						.append( $('<div class="dtr-modal-content"/>')
+							.append( render() )
+						)
+						.append( $('<div class="dtr-modal-close">&times;</div>' )
+							.click( function () {
+								close();
+							} )
+						)
+					)
+					.append( $('<div class="dtr-modal-background"/>')
+						.click( function () {
+							close();
+						} )
+					)
+					.appendTo( 'body' );
+
+				$(document).on( 'keyup.dtr', function (e) {
+					if ( e.keyCode === 27 ) {
+						e.stopPropagation();
+
+						close();
+					}
+				} );
+			}
+			else {
+				$('div.dtr-modal-content')
+					.empty()
+					.append( render() );
+			}
+
+			if ( options && options.header ) {
+				$('div.dtr-modal-content').prepend(
+					'<h2>'+options.header( row )+'</h2>'
+				);
+			}
+		};
+	}
+};
+
+
+var _childNodeStore = {};
+
+function _childNodes( dt, row, col ) {
+	var name = row+'-'+col;
+
+	if ( _childNodeStore[ name ] ) {
+		return _childNodeStore[ name ];
+	}
+
+	// https://jsperf.com/childnodes-array-slice-vs-loop
+	var nodes = [];
+	var children = dt.cell( row, col ).node().childNodes;
+	for ( var i=0, ien=children.length ; i<ien ; i++ ) {
+		nodes.push( children[i] );
+	}
+
+	_childNodeStore[ name ] = nodes;
+
+	return nodes;
+}
+
+function _childNodesRestore( dt, row, col ) {
+	var name = row+'-'+col;
+
+	if ( ! _childNodeStore[ name ] ) {
+		return;
+	}
+
+	var node = dt.cell( row, col ).node();
+	var store = _childNodeStore[ name ];
+	var parent = store[0].parentNode;
+	var parentChildren = parent.childNodes;
+	var a = [];
+
+	for ( var i=0, ien=parentChildren.length ; i<ien ; i++ ) {
+		a.push( parentChildren[i] );
+	}
+
+	for ( var j=0, jen=a.length ; j<jen ; j++ ) {
+		node.appendChild( a[j] );
+	}
+
+	_childNodeStore[ name ] = undefined;
+}
+
+
+/**
+ * Display methods - functions which define how the hidden data should be shown
+ * in the table.
+ *
+ * @namespace
+ * @name Responsive.defaults
+ * @static
+ */
+Responsive.renderer = {
+	listHiddenNodes: function () {
+		return function ( api, rowIdx, columns ) {
+			var ul = $('<ul data-dtr-index="'+rowIdx+'" class="dtr-details"/>');
+			var found = false;
+
+			var data = $.each( columns, function ( i, col ) {
+				if ( col.hidden ) {
+					$(
+						'<li data-dtr-index="'+col.columnIndex+'" data-dt-row="'+col.rowIndex+'" data-dt-column="'+col.columnIndex+'">'+
+							'<span class="dtr-title">'+
+								col.title+
+							'</span> '+
+						'</li>'
+					)
+						.append( $('<span class="dtr-data"/>').append( _childNodes( api, col.rowIndex, col.columnIndex ) ) )// api.cell( col.rowIndex, col.columnIndex ).node().childNodes ) )
+						.appendTo( ul );
+
+					found = true;
+				}
+			} );
+
+			return found ?
+				ul :
+				false;
+		};
+	},
+
+	listHidden: function () {
+		return function ( api, rowIdx, columns ) {
+			var data = $.map( columns, function ( col ) {
+				return col.hidden ?
+					'<li data-dtr-index="'+col.columnIndex+'" data-dt-row="'+col.rowIndex+'" data-dt-column="'+col.columnIndex+'">'+
+						'<span class="dtr-title">'+
+							col.title+
+						'</span> '+
+						'<span class="dtr-data">'+
+							col.data+
+						'</span>'+
+					'</li>' :
+					'';
+			} ).join('');
+
+			return data ?
+				$('<ul data-dtr-index="'+rowIdx+'" class="dtr-details"/>').append( data ) :
+				false;
+		}
+	},
+
+	tableAll: function ( options ) {
+		options = $.extend( {
+			tableClass: ''
+		}, options );
+
+		return function ( api, rowIdx, columns ) {
+			var data = $.map( columns, function ( col ) {
+				return '<tr data-dt-row="'+col.rowIndex+'" data-dt-column="'+col.columnIndex+'">'+
+						'<td>'+col.title+':'+'</td> '+
+						'<td>'+col.data+'</td>'+
+					'</tr>';
+			} ).join('');
+
+			return $('<table class="'+options.tableClass+' dtr-details" width="100%"/>').append( data );
+		}
+	}
+};
+
+/**
+ * Responsive default settings for initialisation
+ *
+ * @namespace
+ * @name Responsive.defaults
+ * @static
+ */
+Responsive.defaults = {
+	/**
+	 * List of breakpoints for the instance. Note that this means that each
+	 * instance can have its own breakpoints. Additionally, the breakpoints
+	 * cannot be changed once an instance has been creased.
+	 *
+	 * @type {Array}
+	 * @default Takes the value of `Responsive.breakpoints`
+	 */
+	breakpoints: Responsive.breakpoints,
+
+	/**
+	 * Enable / disable auto hiding calculations. It can help to increase
+	 * performance slightly if you disable this option, but all columns would
+	 * need to have breakpoint classes assigned to them
+	 *
+	 * @type {Boolean}
+	 * @default  `true`
+	 */
+	auto: true,
+
+	/**
+	 * Details control. If given as a string value, the `type` property of the
+	 * default object is set to that value, and the defaults used for the rest
+	 * of the object - this is for ease of implementation.
+	 *
+	 * The object consists of the following properties:
+	 *
+	 * * `display` - A function that is used to show and hide the hidden details
+	 * * `renderer` - function that is called for display of the child row data.
+	 *   The default function will show the data from the hidden columns
+	 * * `target` - Used as the selector for what objects to attach the child
+	 *   open / close to
+	 * * `type` - `false` to disable the details display, `inline` or `column`
+	 *   for the two control types
+	 *
+	 * @type {Object|string}
+	 */
+	details: {
+		display: Responsive.display.childRow,
+
+		renderer: Responsive.renderer.listHidden(),
+
+		target: 0,
+
+		type: 'inline'
+	},
+
+	/**
+	 * Orthogonal data request option. This is used to define the data type
+	 * requested when Responsive gets the data to show in the child row.
+	 *
+	 * @type {String}
+	 */
+	orthogonal: 'display'
+};
+
+
+/*
+ * API
+ */
+var Api = $.fn.dataTable.Api;
+
+// Doesn't do anything - work around for a bug in DT... Not documented
+Api.register( 'responsive()', function () {
+	return this;
+} );
+
+Api.register( 'responsive.index()', function ( li ) {
+	li = $(li);
+
+	return {
+		column: li.data('dtr-index'),
+		row:    li.parent().data('dtr-index')
+	};
+} );
+
+Api.register( 'responsive.rebuild()', function () {
+	return this.iterator( 'table', function ( ctx ) {
+		if ( ctx._responsive ) {
+			ctx._responsive._classLogic();
+		}
+	} );
+} );
+
+Api.register( 'responsive.recalc()', function () {
+	return this.iterator( 'table', function ( ctx ) {
+		if ( ctx._responsive ) {
+			ctx._responsive._resizeAuto();
+			ctx._responsive._resize();
+		}
+	} );
+} );
+
+Api.register( 'responsive.hasHidden()', function () {
+	var ctx = this.context[0];
+
+	return ctx._responsive ?
+		$.inArray( false, ctx._responsive.s.current ) !== -1 :
+		false;
+} );
+
+Api.registerPlural( 'columns().responsiveHidden()', 'column().responsiveHidden()', function () {
+	return this.iterator( 'column', function ( settings, column ) {
+		return settings._responsive ?
+			settings._responsive.s.current[ column ] :
+			false;
+	}, 1 );
+} );
+
+
+/**
+ * Version information
+ *
+ * @name Responsive.version
+ * @static
+ */
+Responsive.version = '2.2.2';
+
+
+$.fn.dataTable.Responsive = Responsive;
+$.fn.DataTable.Responsive = Responsive;
+
+// Attach a listener to the document which listens for DataTables initialisation
+// events so we can automatically initialise
+$(document).on( 'preInit.dt.dtr', function (e, settings, json) {
+	if ( e.namespace !== 'dt' ) {
+		return;
+	}
+
+	if ( $(settings.nTable).hasClass( 'responsive' ) ||
+		 $(settings.nTable).hasClass( 'dt-responsive' ) ||
+		 settings.oInit.responsive ||
+		 DataTable.defaults.responsive
+	) {
+		var init = settings.oInit.responsive;
+
+		if ( init !== false ) {
+			new Responsive( settings, $.isPlainObject( init ) ? init : {}  );
+		}
+	}
+} );
+
+
+return Responsive;
 }));
 
 

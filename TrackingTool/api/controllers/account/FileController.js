@@ -250,5 +250,12 @@ module.exports = {
     // Return Sucess If update was good
     res.status(200)
     return res.send("Sucessful Operation")
+  },
+  
+  test: function(req, res){
+    console.log(req.body)
+    console.log(req.params)
+    res.status(200)
+    return res.send("Test was okay")
   }
 }

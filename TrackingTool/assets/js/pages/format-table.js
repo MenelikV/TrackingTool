@@ -113,7 +113,17 @@ $(document).ready(function(){
         }
       }
     },
-  ]
+  ],
+  colReorder: true,
+  responsive: true,
+  stateSave: true,
+  stateSaveCallBack: function(settings, data){
+    $.ajax({
+      "url": "/state_save",
+      "data": data,
+      "type": "POST",
+    })
+  }
   });
   }
   if($("#upload-results").length){

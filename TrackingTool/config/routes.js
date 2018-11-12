@@ -43,6 +43,8 @@ module.exports.routes = {
 
   },
 
+  "POST /state_save": "accout/FileController.test",
+
   'GET /faq':                { view:   'pages/faq' },
   'GET /legal/terms':        { view:   'pages/legal/terms' },
   'GET /legal/privacy':      { view:   'pages/legal/privacy' },
