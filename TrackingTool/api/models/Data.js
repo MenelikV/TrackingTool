@@ -76,10 +76,18 @@ module.exports = {
             type: "string",
             defaultsTo: ""
         },
+        Commentary: {
+            type: "string",
+            defaultsTo: ""
+        },
+        Delivery_Date: {
+            type: "string",
+            defaultsTo: ""
+        }
     },
     datastore: "data",
     getHeader: function(){
-        return ["CTR", "Results_Status", "Validated_Status", "Aircraft", "MSN","Flight", "Flight_Date", "Results", "Airline", "Tabulated_Results", "Parameters_Validation", "Fleet_Follow_Up", "Flight_Owner", "Fuel_Flowmeters", "Fuel_Characteristics", "Weighing", "TRA"]
+        return ["CTR", "Results_Status", "Validated_Status", "Aircraft", "MSN","Flight", "Flight_Date", "Delivery_Date", "Results", "Airline", "Tabulated_Results", "Parameters_Validation", "Fleet_Follow_Up", "Flight_Owner", "Fuel_Flowmeters", "Fuel_Characteristics", "Weighing", "TRA", "Commentary"]
   },
   pdfFields: function () {
     return ["Airline", "Tabulated_Results", "Parameters_Validation","Fleet_Follow_Up"]
