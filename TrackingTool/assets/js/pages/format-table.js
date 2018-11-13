@@ -82,7 +82,7 @@ $(document).ready(function(){
         $.internalIdSelection = undefined
         $.selectedRow = undefined
         $.selectedRowDom = undefined
-        // Reload the page
+        // Reload the page, TODO only redraw part of the table, see with an ajax call
         location.reload()
         },
         error: function(){
@@ -116,14 +116,23 @@ $(document).ready(function(){
   ],
   colReorder: true,
   responsive: true,
-  stateSave: true,
-  stateSaveCallBack: function(settings, data){
-    $.ajax({
-      "url": "/state_save",
-      "data": data,
-      "type": "POST",
-    })
-  }
+  bStateSave:true,
+  dom: 'lBfrtip',
+  fnStateSave: function(settings, data){
+    localStorage.setItem("DataTables_"+window.location.pathname, JSON.stringify(data))
+  },
+  fnStateLoad: function(settings){
+    var data = localStorage.getItem("DataTables_"+window.location.pathname)
+    return JSON.parse(data)
+  },
+  buttons: [{
+    extend: "colvis",
+    className: "btn btn-outline-primary ml-2",
+    columnText: function(dt, idx, title){
+      // Necessary, I do not know why
+      return title
+    }
+  }]
   });
   }
   if($("#upload-results").length){
