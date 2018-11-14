@@ -6,26 +6,34 @@
       <h1 class="display4">Pending Requests</h1>
       <br>
 
+
       <table class="table table-striped display" id="example">
         <thead style="background-color: #bfd6f0;">
           <tr>
+            <th class="text-center">ID</th>
             <th>Name</th>
             <th width="300">Email</th>
             <th class="text-center">Admin</th>
             <th class="text-center">Basic</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
 
           <% result.forEach(function(item){ %>
 
-          <tr>
+          <tr id="<%= item.id %>">
+
+            <td class="text-center">
+              <%= item.id %>
+            </td>
+
             <td>
               <%= item.fullName %>
             </td>
 
             <td>
-              <%= item.emailAddress %> 
+              <%= item.emailAddress %>
             </td>
 
             <td class="text-center">
@@ -33,7 +41,6 @@
               <% if(item.isSuperAdmin) { %>
 
               <span class="dot"></span>
-              <input type="hidden" id="t">
 
               <%}%>
 
@@ -46,13 +53,20 @@
               <%}%>
             </td>
 
+            <td class="text-right">
+
+
+                <button id="accept"  type="submit"><i class="fa fa-user-plus fa-lg" style="color:#64aeda"></i></button>
+
+                <button id="reject" type="submit"><i class="fa fa-user-times fa-lg" style="color:rgb(240, 99, 99)"></i></button>
+              
+
+            </td>
+
           </tr>
           <% }) %>
         </tbody>
       </table>
-
-      <button type="submit" class="btn btn-primary ml-auto" style="float: right;" form="uploaded-data">Confirm
-        &raquo;</button>
 
     </div>
   </div>

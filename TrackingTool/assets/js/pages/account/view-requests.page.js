@@ -4,10 +4,24 @@ $(document).ready(function() {
     $('#example tbody').on( 'click', 'tr', function () {
         $(this).toggleClass('selected');
     } );
+
  
-    $('#button').click( function () {
-        alert( table.rows('.selected').data().length +' row(s) selected' );
-    } );
+        var tid = "";
+        $('#example tr').click(function(event) {
+          tid = $(this).attr('id');
+        });
+        $("#accept").click(function() {
+          console.log(tid);
+
+          if ($('#' + tid).length) {
+              
+            $('#' + tid).remove();
+          }
+        });
+    
+
+
 } );
+ 
 
-
+ 
