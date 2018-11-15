@@ -42,11 +42,11 @@ parasails.registerPage('signup', {
         this.cloudSuccess = true;
       }
       else {
-        // Otherwise, redirect to the logged-in dashboard.
+        // Otherwise, redirect to the log-in dashboard.
         // > (Note that we re-enable the syncing state here.  This is on purpose--
         // > to make sure the spinner stays there until the page navigation finishes.)
         this.syncing = true;
-        window.location = '/';
+        window.location = '/login';
       }
     },
 

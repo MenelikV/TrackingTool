@@ -48,8 +48,9 @@ module.exports = {
     },
 
     isApproved: {
-      type: "boolean",
-      defaultsTo: false
+      type: "string",
+      isIn: ['true', 'false', 'rejected'],
+      defaultsTo: 'false'
     },
 
     passwordResetToken: {

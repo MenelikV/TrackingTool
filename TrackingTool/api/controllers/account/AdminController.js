@@ -10,7 +10,7 @@ module.exports = {
   view: async function (req, res) {
 
     User.find({
-      isApproved: false
+      isApproved: 'false'
     }).exec(function (err, results) {
 
         if(err){
@@ -24,11 +24,25 @@ module.exports = {
 
   approve: async function (req,res) {
     //Approving the user
-    User.update({id: req.param('id')}).set({isApproved:true}).exec(function (err, updatedUser){
+    User.update({id: req.param('id')}).set({isApproved:'true'}).exec(function (err, updatedUser){
       if(err){
         res.send('could not approve')
       }
 
+      res.status(200)
+      return res.send("Sucessful Operation")
+    
+    })
+
+  },
+
+  reject: async function (req,res) {
+    //Approving the user
+    User.update({id: req.param('id')}).set({isApproved:'rejected'}).exec(function (err, updatedUser){
+      if(err){
+        res.send('could not approve')
+      }
+      console.log('rejected!')
       res.status(200)
       return res.send("Sucessful Operation")
     

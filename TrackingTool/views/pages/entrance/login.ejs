@@ -17,6 +17,7 @@
           <label class="form-check-label" for="remember">Remember Me</label>
         </div>
         <p class="text-danger" v-if="cloudError==='notApproved'"><small>Your account has not been approved yet. Please wait for the administrator to grant you access or <a href="/contact">contact support</a>.</small></p>
+        <p class="text-danger" v-else-if="cloudError==='rejected'"><small>Your account has been <strong> rejected </strong> by the administrator. If this seems wrong or unusual, please <a href="/contact">contact support</a>.</small></p>
         <p class="text-danger" v-else-if="cloudError==='badCombo'"><small>The credentials you entered are not associated with an account. Please check your email and/or password and try again.</small></p>
         <p class="text-danger" v-else-if="cloudError"><small>An error occured while processing your request. Please check your information and try again, or <a href="/contact">contact support</a> if the error persists.</small></p>
         <div class="form-group">

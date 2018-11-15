@@ -69,7 +69,14 @@ and exposed as \`req.me\`.)`
     notApproved: {
     description: `The user has not yet been approved by the admin`,
     responseType: 'unauthorized'
-    }
+    },
+
+    rejected: {
+      description: `The user has been rejected rights to access the site`,
+      responseType: 'unauthorized'
+      }
+
+
   },
 
 
@@ -91,8 +98,12 @@ and exposed as \`req.me\`.)`
     await sails.helpers.passwords.checkPassword(inputs.password, userRecord.password)
     .intercept('incorrect', 'badCombo');
 
-    if (!userRecord.isApproved){
+    if (userRecord.isApproved=='false'){
       throw 'notApproved'
+    }
+
+    if (userRecord.isApproved=='rejected'){
+      throw 'rejected'
     }
 
     // If "Remember Me" was enabled, then keep the session alive for

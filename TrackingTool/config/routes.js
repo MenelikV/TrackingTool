@@ -43,6 +43,8 @@ module.exports.routes = {
 
   'POST /account/admin/approve/:id': 'account/AdminController.approve',
 
+  'POST /account/admin/reject/:id': 'account/AdminController.reject',
+
   'GET /requests': {
     //view: 'pages/account/view-requests',
     controller: 'account/AdminController',
