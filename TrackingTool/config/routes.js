@@ -41,6 +41,8 @@ module.exports.routes = {
 
   'POST /account/file/edit': 'account/FileController.edit',
 
+  'POST /account/admin/approve/:id': 'account/AdminController.approve',
+
   'GET /requests': {
     //view: 'pages/account/view-requests',
     controller: 'account/AdminController',

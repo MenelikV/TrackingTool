@@ -16,12 +16,23 @@ module.exports = {
         if(err){
             res.send('error')
         }
-
-
         return res.view('pages/account/view-requests', {me: req.me, result: results} )
 
-
     });
+
+  },
+
+  approve: async function (req,res) {
+    //Approving the user
+    User.update({id: req.param('id')}).set({isApproved:true}).exec(function (err, updatedUser){
+      if(err){
+        res.send('could not approve')
+      }
+
+      res.status(200)
+      return res.send("Sucessful Operation")
+    
+    })
 
   }
 

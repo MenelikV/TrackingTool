@@ -1,26 +1,35 @@
 $(document).ready(function() {
+
     var table = $('#example').DataTable();
- 
-    $('#example tbody').on( 'click', 'tr', function () {
-        $(this).toggleClass('selected');
-    } );
 
- 
-        var tid = "";
-        $('#example tr').click(function(event) {
-          tid = $(this).attr('id');
-        });
-        $("#accept").click(function() {
-          console.log(tid);
+    $('tbody').on('click', '#accept', function (){
+      
+      $(this).closest("tr").addClass('selected');
 
-          if ($('#' + tid).length) {
-              
-            $('#' + tid).remove();
-          }
-        });
-    
+      var row = $("#example tr.selected")
+       
+      $.selectedRow = row.closest('tr').index()      
+      var id = row.find("td").eq(0).text();
 
+      var url = '/account/admin/approve/'+id;
+      url = url.replace(/\s/g,'')
 
+      console.log(url)
+
+      $.ajax({
+        url: url,
+        type: 'POST',
+        success: function() {
+
+          row.remove();
+          id = undefined;
+          console.log('OK')
+
+        }
+
+      })
+
+    });
 } );
  
 

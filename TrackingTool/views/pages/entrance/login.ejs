@@ -16,7 +16,8 @@
           <input class="form-check-input" type="checkbox" id="remember" name="rememberMe" v-model="formData.rememberMe"/>
           <label class="form-check-label" for="remember">Remember Me</label>
         </div>
-        <p class="text-danger" v-if="cloudError==='badCombo'"><small>The credentials you entered are not associated with an account. Please check your email and/or password and try again.</small></p>
+        <p class="text-danger" v-if="cloudError==='notApproved'"><small>Your account has not been approved yet. Please wait for the administrator to grant you access or <a href="/contact">contact support</a>.</small></p>
+        <p class="text-danger" v-else-if="cloudError==='badCombo'"><small>The credentials you entered are not associated with an account. Please check your email and/or password and try again.</small></p>
         <p class="text-danger" v-else-if="cloudError"><small>An error occured while processing your request. Please check your information and try again, or <a href="/contact">contact support</a> if the error persists.</small></p>
         <div class="form-group">
           <ajax-button :syncing="syncing" class="btn btn-primary btn-lg btn-block">Sign in</ajax-button>

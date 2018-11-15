@@ -55,7 +55,7 @@ and exposed as \`req.me\`.)`
 
     badCombo: {
       description: `The provided email and password combination does not
-      match any user in the database.`,
+      match any user in the database or may not have been approved yet.`,
       responseType: 'unauthorized'
       // ^This uses the custom `unauthorized` response located in `api/responses/unauthorized.js`.
       // To customize the generic "unauthorized" response across this entire app, change that file
@@ -64,8 +64,12 @@ and exposed as \`req.me\`.)`
       // To customize the response for _only this_ action, replace `responseType` with
       // something else.  For example, you might set `statusCode: 498` and change the
       // implementation below accordingly (see http://sailsjs.com/docs/concepts/controllers).
-    }
+    },
 
+    notApproved: {
+    description: `The user has not yet been approved by the admin`,
+    responseType: 'unauthorized'
+    }
   },
 
 
@@ -86,6 +90,10 @@ and exposed as \`req.me\`.)`
     // If the password doesn't match, then also exit thru "badCombo".
     await sails.helpers.passwords.checkPassword(inputs.password, userRecord.password)
     .intercept('incorrect', 'badCombo');
+
+    if (!userRecord.isApproved){
+      throw 'notApproved'
+    }
 
     // If "Remember Me" was enabled, then keep the session alive for
     // a longer amount of time.  (This causes an updated "Set Cookie"
