@@ -40,7 +40,7 @@ module.exports = {
       return res.view('pages/table/available-data', { data: results, headers: undefined, me: req.me, msn: req.param('msn'), search:true  })
 
       
-    })
+    }) 
   },
 
   download: function (req, res) {

@@ -11,7 +11,7 @@
         <button type="button" class="btn btn-secondary btn-lg mr-5 ml-0 pb-10" data-toggle="modal" data-target="#exampleModalCenter">Reupload</button>
         <div class="table-responsive">
           <table id="upload-results" class="display">
-            <!-- HEADERS --> 
+            <!-- HEADERS -->
             <thead class="table-primary">
               <tr>
                 <% for(var i=0; i < headers.length; i++){ %>
@@ -34,8 +34,26 @@
                     View
                   </a>
                 </th>
-                <%}
-                                else{%>
+
+                <%}  else if(headers[i] === "Commentary"){%>
+                  <!-- Trigger a modal for the  results table -->
+                  <th scope="col" class="text-center" style="width: auto !important" id="comments">
+                  
+                    <div class="input-group input-group-sm mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <a href="" data-target="#commentaryModal" class="table-text" data-toggle="modal" data-book-id="<%=data[j][correct_header]%>"><i class="fa fa-pencil fa-lg" style="color:rgb(20, 83, 134)"></i></a>
+                        </span>
+                      </div>
+                      <textarea class="form-control" aria-label="With textarea"></textarea>
+                    </div>
+
+                    
+
+                  </th>
+
+
+                    <% }else{%>
                 <%if(pdfHeaders.indexOf(headers[i])!==-1){%>
                 <!--This should be a link to a PDF-->
                 <th scope="col" style="width: auto !important; text-align: center; vertical-align: middle;">
@@ -43,8 +61,7 @@
                   <a href="/account/file/download/<%=data[j][correct_header]%>" target="_blank">View</a>
                   <br>
 
-                  <a href="" data-target="#editModal" class="table-text" data-toggle="modal" data-book-id="<%=data[j][correct_header]%>">Edit
-                    &raquo;</a>
+                  <a href="" data-target="#editModal" class="table-text" data-toggle="modal" data-book-id="<%=data[j][correct_header]%>"><i class="fa fa-pencil fa-lg" style="color:rgb(20, 83, 134)"></i></a>
 
                 </th>
                 <%}
@@ -125,5 +142,6 @@
 
 
   <%- include ../upload-modal.ejs %>
+  <%- include commentary-modal.ejs %>
   <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>
 </body>

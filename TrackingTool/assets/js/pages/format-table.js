@@ -29,7 +29,7 @@ $(document).ready(function(){
       $(this).closest("tr").addClass('selected').siblings().removeClass('selected'); 
       return true
       }
-    })
+    }) 
 
      //Disabled bc stéphanie does not mind ^^
     $(document).click(function(){
