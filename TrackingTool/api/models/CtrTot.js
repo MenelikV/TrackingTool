@@ -5,9 +5,14 @@ module.exports = {
             required: true,
             unique: true
         },
-        Date: {
+        CTR: {
+            type: "boolean",
+            defaultsTo: false,
+        },
+        DeliveryDate: {
             type: "string",
-            required: true
+            defaultsTo: ""
         }
-    }
+    },
+    datastore: "ctr"
 }

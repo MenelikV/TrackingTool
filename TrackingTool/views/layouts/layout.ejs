@@ -57,6 +57,14 @@
                   <a href="/" class="nav-link">Home</a>
                 </li>
                 <% if(me) { %>
+                  <% if(me.isSuperAdmin){%>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="header-account-menu-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="" >Manage</a>
+                        <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link">
+                          <a class="dropdown-item nav-drop" href="/ctr">CTR / Delivery Date</a>
+                        </div>
+                    </div>
+                    <%}%>
                 <li class="nav-item">
                   <a class="nav-item nav-link " href="/contact">Help</a>
                 </li>
@@ -163,5 +171,6 @@
     <script src="/js/pages/legal/privacy.page.js"></script>
     <script src="/js/pages/legal/terms.page.js"></script>
     <script src="/js/pages/table/upload-results.page.js"></script>
+    <script src="/js/pages/table/ctr.page.js"></script>
   </body>
 </html>

@@ -1,0 +1,42 @@
+<body class="dash">
+        <div class="container-fluid" >
+                <div class="jumbotron jumbostyle" >
+                        <table id="ctr-table" class="display">
+                                <thead class="table-primary" style="text-align: center"> 
+                                        <tr>
+                                            <th>
+                                                MSN
+                                            </th>
+                                            <th>
+                                                CTR
+                                            </th>
+                                            <th>
+                                                Delivery Date
+                                            </th>
+                                        </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Not supported by IE -->
+                                    <% for(let aircraftf of ctr){%>
+                                        <tr>
+                                            <td style="text-align: center">
+                                                <%=aircraft.MSN%>
+                                            </td>
+                                            <td style="text-align: center"> 
+                                                <% if(aircraft.CTR){%>
+                                                    <i class="fa fa-check fa-lg" style="color: forestgreen"></i>
+                                                    <%}
+                                                    else{%><%}%>
+                                            </td>
+                                            <td style="text-align: center">
+                                                <%=aircraft.DeliveryDate%>
+                                            </td>
+                                        </tr>
+                                        <%}%>
+                                </tbody>
+                        </table>
+                </div>
+            </div>
+</body>
+<!-- Add Modal -->
+<% include ../upload-modal.ejs %>

@@ -47,6 +47,10 @@ module.exports.routes = {
 
   'POST /account/admin/changeRights/:id': 'account/AdminController.changeRights',
 
+  'POST /ctr/import': 'ctr/CtrController.import',
+
+  'GET /ctr': "ctr/CtrController.view",
+
   'GET /requests': {
     //view: 'pages/account/view-requests',
     controller: 'account/AdminController',

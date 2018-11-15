@@ -11,6 +11,8 @@ $(document).ready(function(){
       $.selectedRow = row.closest('tr').index()
       $.selectedRowDom = row
       // TOD Go Trough Data Attributes ?
+      //alert(table.row(row).data())
+      alert($('#available-data thead tr')[0].cells[0].innertText)
       var ctr = row.find("td").eq(0).find("i").length > 0
       var tra = row.find("td").eq(15).find("a").length ? row.find("td").eq(15).find("a").attr("href") : ""
       var v_status = row.find("td").eq(2).find("i").length > 0

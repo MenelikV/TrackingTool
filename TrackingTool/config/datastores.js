@@ -60,5 +60,9 @@ module.exports.datastores = {
     adapter: "sails-disk",
     dir: __dirname + "\\local_databases\\"
     
+  },
+  ctr: {
+    adapter: "sails-disk",
+    dir: __dirname+"\\local_databases\\"
   }
 };
