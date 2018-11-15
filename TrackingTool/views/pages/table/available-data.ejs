@@ -51,7 +51,7 @@
                     <%if(data[j][correct_header] === undefined || data[j][correct_header] === ""){%>
                     </td>
                         <%}else{%>
-                    <a href="/account/file/download/<%=data[j][correct_header]%>" target="_blank"><%=headers[i].replace(/_/g, ' ')%></a></td>
+                    <a href="/account/file/download/<%=data[j][correct_header]%>" target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(93, 83, 240)"></i></a></td>
                     <%}%>
                 <%}
                 else{%>
