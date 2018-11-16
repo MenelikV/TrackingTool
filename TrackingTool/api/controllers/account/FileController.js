@@ -150,7 +150,7 @@ module.exports = {
       try { CTR_dict = require("ctr.json") } catch (error) { CTR_dict = {} }
       aircraft_data["CTR"] = CTR_dict[aircraft_data["MSN"]] !== undefined ? CTR_dict[aircraft_data["MSN"]] : ""
       // TRA is filled by hand :/
-      aircraft_data["TRA"] = ""
+      aircraft_data["TRA"] = "" 
       console.log("Finishing processing Files and redirection")
       console.log(err !== undefined && err !== null)
       console.log(err)
@@ -185,14 +185,11 @@ module.exports = {
 
       var file = upload[0];
 
-      File.find({id:req.param('id')}).exec(function (err, editFile) {
- 
+      File.find({id:req.param('id')}).exec(function (err, editFile) { 
         //Editing the parameter to edit in aircraft_data field
-
         var k = editFile[0].filename;
         aircraft_data[pdf_data[k]] = file.fd
         aircraft_data[pdf_data[k] + "_id"] = editFile[0].id;
-
 
       });
 
@@ -202,9 +199,7 @@ module.exports = {
           res.send('could not update')
         }        
       });
-
       return res.redirect('/files')
-
     })
   },
 
@@ -250,6 +245,14 @@ module.exports = {
     // Return Sucess If update was good
     res.status(200)
     return res.send("Sucessful Operation")
+  },
+
+  comment: function (req,res){
+
+    aircraft_data["Commentary"] = req.body["Commentary"]
+    res.status(200)
+    return res.send("good")
+
   },
   
   test: function(req, res){
