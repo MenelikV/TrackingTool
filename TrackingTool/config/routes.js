@@ -45,6 +45,8 @@ module.exports.routes = {
 
   'POST /account/admin/reject/:id': 'account/AdminController.reject',
 
+  'POST /account/admin/changeRights/:id': 'account/AdminController.changeRights',
+
   'GET /requests': {
     //view: 'pages/account/view-requests',
     controller: 'account/AdminController',
