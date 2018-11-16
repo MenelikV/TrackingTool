@@ -31,7 +31,7 @@
     <!-- BODY -->
     <tbody>
     <% for(var j=0; j < data.length; j++){ %>
-      <tr>
+      <tr id='<%=data[j]["id"]%>'>
       <% for(var i=0; i < headers.length; i++){%>
       <% var pdfHeaders = Data.pdfFields();%> 
          <% if(headers[i] === "Results"){%>
@@ -56,7 +56,7 @@
                 else{%>
                     <%if(headers[i]==="Validated_Status"){%>
                         <%if(data[j][headers[i]] === undefined || data[j][headers[i]] === ""){%>
-                            <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><div data-id=<%=data[j]["id"]%>></div></td>
+                            <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"></td>
                             <%}
                             else{%>
                               <td scope="col" style ="width: auto !important; text-align: center; vertical-align: middle;"><i class="fa fa-check fa-lg" style="color:green"></i><div data-id=<%=data[j]["id"]%>></div></td>

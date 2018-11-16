@@ -10,14 +10,17 @@ $(document).ready(function(){
       var row = $("#available-data tr.selected")
       $.selectedRow = row.closest('tr').index()
       $.selectedRowDom = row
-      // TOD Go Trough Data Attributes ?
-      //alert(table.row(row).data())
-      alert($('#available-data thead tr')[0].cells[0].innertText)
-      var ctr = row.find("td").eq(0).find("i").length > 0
-      var tra = row.find("td").eq(15).find("a").length ? row.find("td").eq(15).find("a").attr("href") : ""
-      var v_status = row.find("td").eq(2).find("i").length > 0
-      var r_status = row.find("td").eq(1).text().length ? row.find("td").eq(1).text() : "Preliminary"
-      $.internalIdSelection = row.find("td").eq(2).find("div").data("id")
+      var table_header = []
+      table.columns().every(function(){
+        table_header.push(this.header().textContent)
+      })
+      var complete_data_table = _.zipObject(table_header, table.row(row).data())
+      console.log(complete_data_table)
+      var ctr = complete_data_table["CTR"].length > 0 ? true: false
+      var tra = complete_data_table["TRA"]
+      var v_status = complete_data_table["Validated Status"].length > 0 ? true: false
+      var r_status = complete_data_table["Results Status"]
+      $.internalIdSelection = row.attr("id")
       var modal = $(this)
       modal.find('.modal-body #CTRCheck').prop('checked', ctr)
       modal.find(".modal-body #TRA-input").val(tra)
