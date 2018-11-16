@@ -21,7 +21,6 @@ module.exports = {
 
 
   fn: function (input, exits) {
-    // TODO Move this code elsewhere ?
     var res = '<table class="table-bordered"><tr>'
     res += sails.helpers.thWrap("Test n°")
     res += sails.helpers.thWrap("Hp (ft)")
