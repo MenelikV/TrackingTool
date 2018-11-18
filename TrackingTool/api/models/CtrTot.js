@@ -9,7 +9,7 @@ module.exports = {
             type: "boolean",
             defaultsTo: false,
         },
-        DeliveryDate: {
+        Delivery_Date: {
             type: "string",
             defaultsTo: ""
         }

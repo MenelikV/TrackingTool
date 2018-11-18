@@ -49,21 +49,26 @@ module.exports = {
         for(var i = 0; i<new_base.MSN.length; i++){
           // Update the CtrTot Database
           console.log("Updating the CtrTot DataBase")
-          CtrTot.findOrCreate({"MSN": new_base.MSN[i]}).exec(
+          CtrTot.findOrCreate({"MSN": new_base.MSN[i]}, {
+            "MSN": new_base.MSN[i],
+            "CTR": new_base.CTR[i],
+            "Delivery_Date": new_base.Delivery_Date[i]
+          }).exec(
             async(err, entry, wasCreated) => {
               if(err) { return res.serverError(err)}
               if(wasCreated){/*A new entry was created, do nothing*/}
               else{
                 // Update of an old entry
-                await CtrTot.update({"MSN": new_base.MSN[i]}).set({"CTR": new_base.CTR[i], "Delivery_Date": new_base.DeliveryDate[i]})
+                await CtrTot.update({"MSN": new_base.MSN[i]}).set({"CTR": new_base.CTR[i], "Delivery_Date": new_base.Delivery_Date[i]})
               }
             }
           )
           // Update the Data Database
-          await Data.update({"MSN": new_base.MSN[i]}).set({"CTR": new_base.CTR[i], "Delivery_Date": new_base.DeliveryDate[i]})
+          await Data.update({"MSN": new_base.MSN[i]}).set({"CTR": new_base.CTR[i], "Delivery_Date": new_base.Delivery_Date[i]})
         }
         res.status(200)
         // Display the refreshed table
+        aircraft = await CtrTot.find()
         return res.redirect("/ctr")
         })
   

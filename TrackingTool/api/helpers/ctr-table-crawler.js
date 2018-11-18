@@ -40,7 +40,7 @@ module.exports = {
           res["CTR"].push(false)
         }
         start_idx = sails.helpers.rowShift(start_idx);
-        data = input.sheet[start_idx].v; 
+        data = input.sheet[start_idx] !== undefined ? input.sheet[start_idx].v : ""; 
       }
       exits.success(res);
     },
