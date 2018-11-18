@@ -1,12 +1,19 @@
 $(document).ready(function(){
     // Launch DataTable to make the table look nicer, if there is a table to display...
   if($('#available-data').length){
+    
     // Modify Modal On Show
     $.isSuperADmin = $("#EditButton").length > 0
     $.selectedRow = undefined
     $.selectedRowDom = undefined
     $.internalIdSelection = undefined
     $('#Editor').on('show.bs.modal', function () {
+      var calendar_button = $("#Calendar-button")
+      $('[data-toggle="datepicker"]').datepicker({
+        trigger: calendar_button,
+        format: "dd/mm/yyyy",
+        zIndex: 2048,
+      }); 
       var row = $("#available-data tr.selected")
       $.selectedRow = row.closest('tr').index()
       $.selectedRowDom = row
@@ -55,7 +62,9 @@ $(document).ready(function(){
        ctr = $form.find( "#CTRCheck" ).is(':checked') === true ? "true": "",
        tra = $form.find( "#TRA-input" ).val(),
         r_status = $form.find("#validatedCombo").val(),
-        v_status = $form.find("#validatedCheck").is(':checked') === true ? "true": "";
+        v_status = $form.find("#validatedCheck").is(':checked') === true ? "true": "",
+        delivery_date = $form.find("#Delivery-Input").val(),
+        comment = $form.find('#Comment-input').val()
       if($form.find("#validatedCheck").length && $form.find("#validatedCombo").length)
         {
           //Super Admin Editing
@@ -64,19 +73,23 @@ $(document).ready(function(){
           "TRA": tra,
           "Results_Status": r_status,
           "Validated_Status": v_status,
+          "Delivery_Date": delivery_date,
+          "Commentary": comment,
           "id":$.internalIdSelection,
         };
       }
       else{
-        // Basic User Editin
+        // Basic User Edition
         var data = {
           "CTR": ctr,
           "TRA": tra,
+          "Delivery_Date": delivery_date,
+          "Commentary": comment,
           "id": $.internalIdSelection
         }
       }
       // Send the data using post
-      // done has Handler when the posting is done, akka, close the modal and redraw the line
+      // done has Handler when the posting is done, aka, close the modal and redraw the line
       $.ajax({
         url: url,
         data: data,
