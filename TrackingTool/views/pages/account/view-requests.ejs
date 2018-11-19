@@ -2,12 +2,14 @@
   <div class="container-fluid">
     <div class="jumbotron jumbostyle">
       <br>
-        <% if (search == true) { %>
-          <h3>Search results for  <%=email%></h3>
-          <% if (result[0] == undefined) { %>
-            <h5 style="text-decoration: underline;">No results found</h5>
-            <% } %>
-       <% } else {%>
+      <% if (search == true) { %>
+      <h3>Search results for
+        <%=email%>
+      </h3>
+      <% if (result[0] == undefined) { %>
+      <h5 style="text-decoration: underline;">No results found</h5>
+      <% } %>
+      <% } else {%>
       <h1 class="display4">Pending Requests</h1>
       <% } %>
       <br>
@@ -20,17 +22,15 @@
             <th class="text-center">Admin</th>
             <th class="text-center">Basic</th>
             <th class="text-center">
-                <% if (search == true) { %>
-                  Revoke access
-               <% } %>
+              <% if (search == true) { %>
+              Revoke access
+              <% } %>
             </th>
           </tr>
-        </thead> 
+        </thead>
         <tbody>
           <% result.forEach(function(item){ %>
           <tr id="<%= item.id %>">
-
- 
 
             <td>
               <%= item.fullName %>
@@ -49,13 +49,12 @@
               <%}%>
             </td>
 
-
             <td class="text-center">
 
               <% if (search == true) { %>
-                <button id="reject" type="submit"><i class="fa fa-user-times fa-lg" style="color:rgb(240, 99, 99)"></i></button>
+              <button id="reject" type="submit"><i class="fa fa-user-times fa-lg" style="color:rgb(240, 99, 99)"></i></button>
 
-             <% }  else {%>
+              <% }  else {%>
 
               <button id="accept" type="submit"><i class="fa fa-user-plus fa-lg" style="color:#64aeda"></i></button>
               <button id="reject" type="submit"><i class="fa fa-user-times fa-lg" style="color:rgb(240, 99, 99)"></i></button>
@@ -67,19 +66,18 @@
         </tbody>
       </table>
       <% } %>
-      </form> 
+      </form>
       <br>
       <div class="row">
         <!-- Search column -->
         <div class="col-md-6">
-            <h4 style="color: #2e3338;">Search for a user</h4>
-  
-                <form name="form" id="form" method="post" action="/account/admin/search">
-                    <input type="email" placeholder="Search by Email" name="user">
-                    <button type="submit"><i class="fa fa-search"></i></button>
-                </form>
-        </div>
-    </div>
-  </div>
+          <h4 style="color: #2e3338;">Search for a user</h4>
 
+          <form name="form" id="form" method="post" action="/account/admin/search">
+            <input type="email" placeholder="Search by Email" name="user">
+            <button type="submit"><i class="fa fa-search"></i></button>
+          </form>
+        </div>
+      </div>
+    </div>
 </body>

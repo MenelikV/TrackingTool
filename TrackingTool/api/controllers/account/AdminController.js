@@ -8,7 +8,6 @@
 module.exports = {
 
   view: async function (req, res) {
-
     User.find({
       isApproved: 'false'
     }).exec(function (err, results) {
@@ -21,9 +20,7 @@ module.exports = {
         result: results,
         search: false
       })
-
     });
-
   },
 
   approve: async function (req, res) {
@@ -39,9 +36,7 @@ module.exports = {
 
       res.status(200)
       return res.send("Sucessful Operation")
-
     })
-
   },
 
   reject: async function (req, res) {
@@ -64,54 +59,53 @@ module.exports = {
 
   changeRights: function (req, res) {
 
-  if (req.body["isSuperAdmin"]){
-    User.update({
-      emailAddress: req.param('emailAddress')
-    }).set({ 
-      isSuperAdmin: true,
-      isBasicUser: false
-    }).exec(function (err, updatedUser) {
-      if (err) {
-        res.send('could not change rights')
-      }
-      console.log('now admin!')
-      res.status(200)
-      return res.send("Sucessful Operation")
-    })
-  }
-
-  else if (req.body["isBasicUser"]){
-    console.log('true for basic!')
-    User.update({
-      emailAddress: req.param('emailAddress')
-    }).set({
-      isBasicUser: true,
-      isSuperAdmin: false
-    }).exec(function (err, updatedUser) {
-      if (err) {
-        res.send('could not change rights')
-      }
-      console.log('now basic user!')
-      res.status(200)
-      return res.send("Sucessful Operation")
-    })
-  }
-},
-
-search: async function (req,res){
-  
-  User.find({
-    emailAddress: req.param('user').toLowerCase()
-  }).exec(function (err, results) {
-    if(err){
-    res.send('notfound')  
+    if (req.body["isSuperAdmin"]) {
+      User.update({
+        emailAddress: req.param('emailAddress')
+      }).set({
+        isSuperAdmin: true,
+        isBasicUser: false
+      }).exec(function (err, updatedUser) {
+        if (err) {
+          res.send('could not change rights')
+        }
+        console.log('now admin!')
+        res.status(200)
+        return res.send("Sucessful Operation")
+      })
+    } else if (req.body["isBasicUser"]) {
+      console.log('true for basic!')
+      User.update({
+        emailAddress: req.param('emailAddress')
+      }).set({
+        isBasicUser: true,
+        isSuperAdmin: false
+      }).exec(function (err, updatedUser) {
+        if (err) {
+          res.send('could not change rights')
+        }
+        console.log('now basic user!')
+        res.status(200)
+        return res.send("Sucessful Operation")
+      })
     }
-    console.log('ifoundthis'+results)
-    return res.view('pages/account/view-requests', {result: results, me: req.me, search: true, email: req.param('user')})
+  },
 
-})
+  search: async function (req, res) {
 
- 
-}
-
+    User.find({
+      emailAddress: req.param('user').toLowerCase()
+    }).exec(function (err, results) {
+      if (err) {
+        res.send('notfound')
+      }
+      console.log('ifoundthis' + results)
+      return res.view('pages/account/view-requests', {
+        result: results,
+        me: req.me,
+        search: true,
+        email: req.param('user')
+      })
+    })
+  }
 }
