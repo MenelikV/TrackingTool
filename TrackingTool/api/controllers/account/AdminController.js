@@ -18,7 +18,8 @@ module.exports = {
       }
       return res.view('pages/account/view-requests', {
         me: req.me,
-        result: results
+        result: results,
+        search: false
       })
 
     });
@@ -28,7 +29,7 @@ module.exports = {
   approve: async function (req, res) {
     //Approving the user
     User.update({
-      id: req.param('id')
+      emailAddress: req.param('emailAddress')
     }).set({
       isApproved: 'true'
     }).exec(function (err, updatedUser) {
@@ -46,7 +47,7 @@ module.exports = {
   reject: async function (req, res) {
     //Approving the user
     User.update({
-      id: req.param('id')
+      emailAddress: req.param('emailAddress')
     }).set({
       isApproved: 'rejected'
     }).exec(function (err, updatedUser) {
@@ -65,7 +66,7 @@ module.exports = {
 
   if (req.body["isSuperAdmin"]){
     User.update({
-      id: req.param('id')
+      emailAddress: req.param('emailAddress')
     }).set({ 
       isSuperAdmin: true,
       isBasicUser: false
@@ -82,7 +83,7 @@ module.exports = {
   else if (req.body["isBasicUser"]){
     console.log('true for basic!')
     User.update({
-      id: req.param('id')
+      emailAddress: req.param('emailAddress')
     }).set({
       isBasicUser: true,
       isSuperAdmin: false
@@ -95,8 +96,22 @@ module.exports = {
       return res.send("Sucessful Operation")
     })
   }
+},
 
+search: async function (req,res){
+  
+  User.find({
+    emailAddress: req.param('user').toLowerCase()
+  }).exec(function (err, results) {
+    if(err){
+    res.send('notfound')  
+    }
+    console.log('ifoundthis'+results)
+    return res.view('pages/account/view-requests', {result: results, me: req.me, search: true, email: req.param('user')})
 
-  }
+})
+
+ 
+}
 
 }

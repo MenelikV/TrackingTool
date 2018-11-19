@@ -9,7 +9,7 @@ $(document).ready(function () {
     var email = row.find("td").eq(1).text();
     email = email.replace(/\s/g, '')
     var url = '/account/admin/approve';
-    var info = {
+    var info = { 
       emailAddress: email
     }
     $.ajax({
