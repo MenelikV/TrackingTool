@@ -27,12 +27,16 @@ $(document).ready(function(){
       var tra = complete_data_table["TRA"]
       var v_status = complete_data_table["Validated Status"].length > 0 ? true: false
       var r_status = complete_data_table["Results Status"]
+      var comment = complete_data_table["Commentary"]
+      var delivery_date = complete_data_table["Delivery Date"]
       $.internalIdSelection = row.attr("id")
       var modal = $(this)
       modal.find('.modal-body #CTRCheck').prop('checked', ctr)
       modal.find(".modal-body #TRA-input").val(tra)
       modal.find('.modal-body #validatedCombo').val(r_status)
       modal.find('.modal-body #validatedCheck').prop('checked', v_status)
+      modal.find('.modal-body #Delivery-Input').val(delivery_date)
+      modal.find('.modal-body #Comment-input').val(comment)
     })
     $("#available-data td").click(function(ev){
       if($.isSuperADmin){
