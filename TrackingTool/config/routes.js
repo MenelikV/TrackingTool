@@ -12,7 +12,7 @@ module.exports.routes = {
 
 
   //  ╦ ╦╔═╗╔╗ ╔═╗╔═╗╔═╗╔═╗╔═╗
-  //  ║║║║╣ ╠╩╗╠═╝╠═╣║ ╦║╣ ╚═╗
+  //  ║║║║╣ ╠╩╗╠═╝╠═╣║ ╦║╣ ╚═╗ 
   //  ╚╩╝╚═╝╚═╝╩  ╩ ╩╚═╝╚═╝╚═╝
 
   'GET /': {
@@ -41,15 +41,11 @@ module.exports.routes = {
 
   'POST /account/file/edit': 'account/FileController.edit',
 
-  'POST /account/admin/approve/:id': 'account/AdminController.approve',
+  'POST /account/admin/approve': 'account/AdminController.approve',
 
-  'POST /account/admin/reject/:id': 'account/AdminController.reject',
+  'POST /account/admin/reject': 'account/AdminController.reject',
 
-  'POST /account/admin/changeRights/:id': 'account/AdminController.changeRights',
-
-  'POST /ctr/import': 'ctr/CtrController.import',
-
-  'GET /ctr': "ctr/CtrController.view",
+  'POST /account/admin/changeRights': 'account/AdminController.changeRights',
 
   'GET /requests': {
     //view: 'pages/account/view-requests',

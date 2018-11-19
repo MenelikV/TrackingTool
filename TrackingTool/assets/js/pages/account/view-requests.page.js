@@ -6,13 +6,15 @@ $(document).ready(function () {
     $(this).closest("tr").addClass('selected');
     var row = $("#example tr.selected")
     $.selectedRow = row.closest('tr').index()
-    var id = row.find("td").eq(0).text();
-
-    var url = '/account/admin/approve/' + id;
-    url = url.replace(/\s/g, '')
-
+    var email = row.find("td").eq(1).text();
+    email = email.replace(/\s/g, '')
+    var url = '/account/admin/approve';
+    var info = {
+      emailAddress: email
+    }
     $.ajax({
       url: url,
+      data: info,
       type: 'POST',
       success: function () {
         row.remove();
@@ -27,13 +29,16 @@ $(document).ready(function () {
     $(this).closest("tr").addClass('selected');
     var row = $("#example tr.selected")
     $.selectedRow = row.closest('tr').index()
-    var id = row.find("td").eq(0).text();
-
-    var url = '/account/admin/reject/' + id;
-    url = url.replace(/\s/g, '')
+    var email = row.find("td").eq(1).text();
+    email = email.replace(/\s/g, '')
+    var url = '/account/admin/reject';
+    var info = {
+      emailAddress: email
+    }
 
     $.ajax({
       url: url,
+      data: info,
       type: 'POST',
       success: function () {
         row.remove();
@@ -43,21 +48,23 @@ $(document).ready(function () {
     })
   });
 
-  $('#example').on('click', 'tbody tr td:nth-child(4)', function (e) {
+
+  $('#example').on('click', 'tbody tr td:nth-child(3)', function (e) {
 
     $(this).closest("tr").addClass('selected');
     var row = $("#example tr.selected")
     row.not(this).removeClass('selected')
-    var id = row.find("td").eq(0).text();
-    var url = '/account/admin/changeRights/' + id;
-    url = url.replace(/\s/g, '')
+    var email = row.find("td").eq(1).text();
+    email = email.replace(/\s/g, '')
+    var url = '/account/admin/changeRights';
 
-    row.find("td").eq(4).empty();
     row.find("td").eq(3).empty();
-    row.find("td").eq(3).append('<span class="dot"></span>');
+    row.find("td").eq(2).empty();
+    row.find("td").eq(2).append('<span class="dot"></span>');
 
     var rights = {
-      isSuperAdmin: true
+      isSuperAdmin: true,
+      emailAddress: email
     };
 
     $.ajax({
@@ -70,21 +77,22 @@ $(document).ready(function () {
     })
   });
 
-  $('#example').on('click', 'tbody tr td:nth-child(5)', function (e) {
+  $('#example').on('click', 'tbody tr td:nth-child(4)', function (e) {
 
     $(this).closest("tr").addClass('selected');
     var row = $("#example tr.selected")
     row.not(this).removeClass('selected')
-    var id = row.find("td").eq(0).text();
-    var url = '/account/admin/changeRights/' + id;
-    url = url.replace(/\s/g, '')
+    var email = row.find("td").eq(1).text();
+    email = email.replace(/\s/g, '')
+    var url = '/account/admin/changeRights';
 
+    row.find("td").eq(2).empty();
     row.find("td").eq(3).empty();
-    row.find("td").eq(4).empty();
-    row.find("td").eq(4).append('<span class="dot"></span>');
+    row.find("td").eq(3).append('<span class="dot"></span>');
 
     var rights = {  
-      isBasicUser: true
+      isBasicUser: true,
+      emailAddress: email
     };
 
     $.ajax({
