@@ -27,6 +27,18 @@ $(document).ready(function(){
       var tra = complete_data_table["TRA"]
       var v_status = complete_data_table["Validated Status"].length > 0 ? true: false
       var r_status = complete_data_table["Results Status"]
+      if(r_status.indexOf("Preliminary")!==-1)
+      {
+        r_status = "Preliminary"
+      }
+      else{
+        if(r_status.indexOf("Validated") !== -1){
+          r_status = "Validated"
+        }
+        else{
+          r_status = "Investigation"
+        }
+      }
       var comment = complete_data_table["Commentary"]
       var delivery_date = complete_data_table["Delivery Date"]
       $.internalIdSelection = row.attr("id")
