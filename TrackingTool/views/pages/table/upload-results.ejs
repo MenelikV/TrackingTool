@@ -7,7 +7,7 @@
 
     <div class="jumbotron jumbostyle">
 
-      <form action="/account/file/validate" method="post" id="uploaded-data">
+      <form action="/account/file/validate" method="post" id="uploaded">
         <button type="button" class="btn btn-secondary btn-lg mr-5 ml-0 pb-10" data-toggle="modal" data-target="#exampleModalCenter">Reupload</button>
         <div class="table-responsive">
           <table id="upload-results" class="display">
@@ -35,7 +35,7 @@
                   </a>
                 </th>
 
-                <%}  else if(headers[i] === "Commentary"){%>
+                <%} else if(headers[i] === "Commentary"){%>
                 <!-- Trigger a modal for the  results table -->
                 <th scope="col" class="text-center" style="width: auto !important">
 
@@ -55,8 +55,15 @@
                   </div>
                 </th>
 
-
-                <% }else{%>
+                <%}  else if(headers[i].replace(/_/g, ' ') === "Delivery Date"){%>
+                  <!-- Trigger a modal for the  results table -->
+                  <th scope="col" class="text-center" style="width: auto !important">
+                        <input type="date" class="form-control" id="deliveryDate">             
+                  </th>
+  
+  
+                
+                <% } else{%>
                 <%if(pdfHeaders.indexOf(headers[i])!==-1){%>
                 <!--This should be a link to a PDF-->
                 <th scope="col" style="width: auto !important; text-align: center; vertical-align: middle;">
@@ -85,7 +92,7 @@
 
         </br>
         <div class="container center-block">
-          <button type="submit" class="btn btn-primary ml-auto" style="float: right;" form="uploaded-data">Confirm
+          <button type="button" id="confirm" class="btn btn-primary ml-auto" style="float: right;" form="uploaded">Confirm
             &raquo;</button>
         </div>
 

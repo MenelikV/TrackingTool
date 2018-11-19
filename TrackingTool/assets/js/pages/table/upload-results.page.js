@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
   $('#editModal').on('show.bs.modal', function (e) {
     var bookId = $(e.relatedTarget).data('book-id');
     $(e.currentTarget).find('input[name="bookId"]').val(bookId);
@@ -9,21 +8,27 @@ $(document).ready(function () {
   });
 
   $('#comment').on('click', function (e) {
+    var comment = $.trim($("#userComment").val());
+    $("#commentaryText").append(comment)
+    var newComment = $.trim($("#commentaryText").val());
+    $("#userComment").val(newComment)
+    $("#commentaryModal").modal('hide');
+  });
 
-    var url = '/account/file/comment'
-    var comment = $.trim($("#commentaryText").val());
-
+  $('#confirm').on('click', function (e) {
+    var url = '/account/file/validate'
+    var delivery = $.trim($("#deliveryDate").val());
+    var comment = $.trim($("#userComment").val());
     var data = {
-      Commentary: comment
+      deliveryDate: delivery,
+      userCommentary: comment
     }
-
     $.ajax({
       url: url,
       data: data,
       type: 'POST',
       success: function () {
-        $("#closeComment").click();
-        $("#userComment").append(comment);
+        window.location.href = "/table";
       }
     })
   });

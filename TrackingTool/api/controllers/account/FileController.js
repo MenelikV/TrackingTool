@@ -5,15 +5,19 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-module.exports = { 
+module.exports = {
 
   view: function (req, res) {
     // New aircraft if the last created entry, if it exists, display it
-    if (aircraft_data === {}) { res.send("No data found") }
-
-    else {
+    if (aircraft_data === {}) {
+      res.send("No data found")
+    } else {
       var headers = Data.getHeader();
-      return res.view("pages/table/upload-results", { data: [aircraft_data], headers: headers, me:req.me })
+      return res.view("pages/table/upload-results", {
+        data: [aircraft_data],
+        headers: headers,
+        me: req.me
+      })
     }
 
   },
@@ -27,34 +31,50 @@ module.exports = {
       if (err) {
         headers = undefined
         console.log(err)
-        return res.view('pages/table/available-data', { data: [], headers: headers, me: req.me, msn: req.param('msn'), search:true }) 
+        return res.view('pages/table/available-data', {
+          data: [],
+          headers: headers,
+          me: req.me,
+          msn: req.param('msn'),
+          search: true
+        })
       }
 
       //If successful show corresponding files in a table
 
       if (results !== undefined) {
         headers = Data.getHeader()
-        return res.view('pages/table/available-data', { data: results, headers: headers, me: req.me, msn: req.param('msn'), search:true })
+        return res.view('pages/table/available-data', {
+          data: results,
+          headers: headers,
+          me: req.me,
+          msn: req.param('msn'),
+          search: true
+        })
       }
 
-      return res.view('pages/table/available-data', { data: results, headers: undefined, me: req.me, msn: req.param('msn'), search:true  })
+      return res.view('pages/table/available-data', {
+        data: results,
+        headers: undefined,
+        me: req.me,
+        msn: req.param('msn'),
+        search: true
+      })
 
-      
-    }) 
+
+    })
   },
 
   download: function (req, res) {
     //Finding file through id on the URL and selecting file path
-    File.find({ id: req.param('id') }).exec(function (err, result) {
+    File.find({
+      id: req.param('id')
+    }).exec(function (err, result) {
       if (err) {
         res.send('error')
-      }
-
-      else if (result == undefined) {
+      } else if (result == undefined) {
         res.send('notfound')
-      }
-
-      else {
+      } else {
         var path = result[0].path;
         console.log(path)
         //Including skipper disk
@@ -62,8 +82,8 @@ module.exports = {
         var fileAdapter = SkipperDisk();
 
         fileAdapter.read(path).on('error', function (err) {
-          res.send('path error');
-        })
+            res.send('path error');
+          })
           .pipe(res);
       }
     })
@@ -79,8 +99,7 @@ module.exports = {
     var keys = Object.keys(config_data)
     var pdf_keys = Object.keys(pdf_data)
     aircraft_data = {}
-    req.file("file").upload({
-    }, async function (err, uploads) {
+    req.file("file").upload({}, async function (err, uploads) {
       if (uploads === undefined) {
         return res.send("Upload did not work")
       }
@@ -96,8 +115,11 @@ module.exports = {
           var key = keys[k]
           if (file.filename.indexOf(key) !== -1) {
             // Try to open the file, if it fails then report to the server
-            try { workbook = XLSX.readFile(file.fd); }
-            catch (error) { err = error }
+            try {
+              workbook = XLSX.readFile(file.fd);
+            } catch (error) {
+              err = error
+            }
             var sub_keys = Object.keys(config_data[key])
             for (var l = 0; l < sub_keys.length; l++) {
               sheet = sub_keys[l];
@@ -112,16 +134,14 @@ module.exports = {
                     console.log("Crawling the table")
                     // Getting the info for the table is really diffrenet from the other properties
                     aircraft_data[prop] = sails.helpers.tableCrawler(info[prop], s)
-                  }
-                  else {
+                  } else {
                     console.log("Crawling Data")
                     if (sheet === "identification") {
                       console.log(idendification_data)
                       console.log(prop)
                       console.log(s[info[prop]].v)
                       aircraft_data[prop] = idendification_data[prop][s[info[prop]].v]
-                    }
-                    else {
+                    } else {
                       aircraft_data[prop] = s[info[prop]].v
                     }
                   }
@@ -133,12 +153,15 @@ module.exports = {
       })
       console.log("Handling PDF Files")
       for (const file of pdf_files) {
- 
+
         for (const k of pdf_keys) {
           if (file.filename.toLowerCase().indexOf(k) !== -1) {
             aircraft_data[pdf_data[k]] = file.fd
             // Create a file entry in the Fike DataBase
-            var createdFileEntry = await File.create({filename: k ,path: file.fd }).fetch()
+            var createdFileEntry = await File.create({
+              filename: k,
+              path: file.fd
+            }).fetch()
             aircraft_data[pdf_data[k] + "_id"] = createdFileEntry.id;
           }
         }
@@ -147,10 +170,14 @@ module.exports = {
       aircraft_data["Validated_Status"] = ""
       aircraft_data["Results_Status"] = "Preliminary"
       // Try to open the CTR registry
-      try { CTR_dict = require("ctr.json") } catch (error) { CTR_dict = {} }
+      try {
+        CTR_dict = require("ctr.json")
+      } catch (error) {
+        CTR_dict = {}
+      }
       aircraft_data["CTR"] = CTR_dict[aircraft_data["MSN"]] !== undefined ? CTR_dict[aircraft_data["MSN"]] : ""
       // TRA is filled by hand :/
-      aircraft_data["TRA"] = "" 
+      aircraft_data["TRA"] = ""
       console.log("Finishing processing Files and redirection")
       console.log(err !== undefined && err !== null)
       console.log(err)
@@ -161,8 +188,7 @@ module.exports = {
       console.log("Redirection")
       // if it was successful redirect and display all uploaded files
       return res.redirect('/files');
-    }
-    )
+    })
 
   },
 
@@ -174,8 +200,8 @@ module.exports = {
     var pdf_keys = Object.keys(pdf_data)
 
     //Uploading new file
-    req.file('file').upload( {}, async function (err, upload) {
-      if (err){
+    req.file('file').upload({}, async function (err, upload) {
+      if (err) {
         res.send('error')
       }
 
@@ -185,7 +211,9 @@ module.exports = {
 
       var file = upload[0];
 
-      File.find({id:req.param('id')}).exec(function (err, editFile) { 
+      File.find({
+        id: req.param('id')
+      }).exec(function (err, editFile) {
         //Editing the parameter to edit in aircraft_data field
         var k = editFile[0].filename;
         aircraft_data[pdf_data[k]] = file.fd
@@ -194,68 +222,74 @@ module.exports = {
       });
 
       //Updating the path in File database
-      File.update({id:req.param('id')}).set({path:file.fd}).exec(function (err,updatedFile){
-        if (err){
+      File.update({
+        id: req.param('id')
+      }).set({
+        path: file.fd
+      }).exec(function (err, updatedFile) {
+        if (err) {
           res.send('could not update')
-        }        
+        }
       });
       return res.redirect('/files')
     })
   },
 
- 
-    validate: async function(req, res){
-        // Push Data to the server
-        console.log("Some data will be pushed back to the server")
-         var min_entry = sails.helpers.extractSubDictionary(aircraft_data)
-         var possible_entry = await Data.find(min_entry)
-         if(possible_entry.length ==1){
-           // Update Entry if there is something new
-           if(aircraft_data !== possible_entry[0]){
-            await Data.update(min_entry, aircraft_data);}
-         // See the whole table with the new entry 
-         return res.redirect("/table")
-         }
-         if(possible_entry.length == 0){
-           // Create new entry
-           var a = await Data.create(aircraft_data).fetch();
-           console.log(a)
-          // See the whole table with the new entry 
-          return res.redirect("/table")
-         }
-         if(possible_entry.length > 1){
-           // DataBase Error, Refuse Upload
-           console.log("There is a problem with the DataBase")
-           alert('Problem with the internal Database, upload was aborted')
-           return res.redirect("/table")
-         }
-      },
 
-  edit: async function(req, res){
+  validate: async function (req, res) {
+    // Push Data to the server
+    console.log("Some data will be pushed back to the server")
+    aircraft_data["Commentary"] = req.body["userCommentary"]
+    aircraft_data["Delivery_Date"] = req.body["deliveryDate"]
+
+    var min_entry = sails.helpers.extractSubDictionary(aircraft_data)
+    var possible_entry = await Data.find(min_entry)
+    if (possible_entry.length == 1) {
+      // Update Entry if there is something new
+      if (aircraft_data !== possible_entry[0]) {
+        await Data.update(min_entry, aircraft_data);
+      }
+      // See the whole table with the new entry 
+      res.status(200)
+      return res.send("Sucessful Operation")
+    }
+    if (possible_entry.length == 0) {
+      // Create new entry
+      var a = await Data.create(aircraft_data).fetch();
+      console.log(a)
+      // See the whole table with the new entry 
+      res.status(200)
+      return res.send("Sucessful Operation")
+    }
+    if (possible_entry.length > 1) {
+      // DataBase Error, Refuse Upload
+      console.log("There is a problem with the DataBase")
+      alert('Problem with the internal Database, upload was aborted')
+      res.status(200)
+      return res.send("Sucessful Operation")
+    }
+  },
+
+  edit: async function (req, res) {
     // Put this into an async function
     console.log("Updating Data Entry")
     console.log(req.body)
-    if(req.body["id"] === "" || req.body["id"] === undefined){
+    if (req.body["id"] === "" || req.body["id"] === undefined) {
       // TODO Return an error, internal should not be undefined or an empty string
       return res.serverError("The internal id of the to update row was not found")
     }
     // Update Model Entry
-    await Data.update({"id": req.body["id"]}, req.body)
+    await Data.update({
+      "id": req.body["id"]
+    }, req.body)
     console.log('Database was updated')
     // Return Sucess If update was good
     res.status(200)
     return res.send("Sucessful Operation")
   },
 
-  comment: function (req,res){
 
-    aircraft_data["Commentary"] = req.body["Commentary"]
-    res.status(200)
-    return res.send("good")
-
-  },
-  
-  test: function(req, res){
+  test: function (req, res) {
     console.log(req.body)
     console.log(req.params)
     res.status(200)
