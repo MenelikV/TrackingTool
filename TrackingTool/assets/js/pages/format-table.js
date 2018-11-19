@@ -118,6 +118,11 @@ $(document).ready(function(){
     })
     
   var table = $('#available-data').DataTable({
+    "serverSide": true,
+    "ajax": {
+      url: "/table/data",
+      method: "POST"
+    },
     "columnDefs":[{
   
       // Special Formatting for Validated Status

@@ -51,6 +51,8 @@ module.exports.routes = {
 
   'GET /ctr': "ctr/CtrController.view",
 
+  'POST /table/data': 'account/FileController.getData',
+
   'GET /requests': {
     //view: 'pages/account/view-requests',
     controller: 'account/AdminController',

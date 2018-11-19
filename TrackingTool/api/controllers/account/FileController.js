@@ -294,5 +294,21 @@ module.exports = {
     console.log(req.params)
     res.status(200)
     return res.send("Test was okay")
+  },
+
+  getData: async function(req, res){
+    console.log(req.body)
+    var draw = parseInt(req.body["draw"])
+    var data = await Data.find({})
+    for(var i=0; i<data.length;i++){
+      data["DT_RowId"] = data["id"]
+    }
+    res.status(200)
+    return res.send({
+      recordsTotal: data.length,
+      recordsFiltered: data.length,
+      draw: draw,
+      data: data,
+    })
   }
 }

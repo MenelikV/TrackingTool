@@ -30,7 +30,8 @@
     </thead>
     <!-- BODY -->
     <tbody>
-    <% for(var j=0; j < data.length; j++){ %>
+    <% var my_length = data.length > 10 ? 10 : data.length %>
+    <% for(var j=0; j < my_length; j++){ %>
       <tr id='<%=data[j]["id"]%>'>
       <% for(var i=0; i < headers.length; i++){%>
       <% var pdfHeaders = Data.pdfFields();%> 
