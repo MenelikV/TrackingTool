@@ -108,7 +108,7 @@ table.dataTable thead .sorting_desc_disabled:before,
 table.dataTable thead .sorting_desc_disabled:after {
   position: absolute;
   bottom: 0.9em;
-  display: block;
+  display: none;
   opacity: 0.3;
 }
 table.dataTable thead .sorting:before,
@@ -118,6 +118,7 @@ table.dataTable thead .sorting_asc_disabled:before,
 table.dataTable thead .sorting_desc_disabled:before {
   right: 1em;
   content: "\2191";
+  display: none
 }
 table.dataTable thead .sorting:after,
 table.dataTable thead .sorting_asc:after,
@@ -126,14 +127,17 @@ table.dataTable thead .sorting_asc_disabled:after,
 table.dataTable thead .sorting_desc_disabled:after {
   right: 0.5em;
   content: "\2193";
+  display: none
 }
 table.dataTable thead .sorting_asc:before,
 table.dataTable thead .sorting_desc:after {
   opacity: 1;
+  display: none
 }
 table.dataTable thead .sorting_asc_disabled:before,
 table.dataTable thead .sorting_desc_disabled:after {
   opacity: 0;
+  display: none;
 }
 
 div.dataTables_scrollHead table.dataTable {
