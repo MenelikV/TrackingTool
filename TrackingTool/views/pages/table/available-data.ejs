@@ -30,7 +30,7 @@
     </thead>
     <!-- BODY -->
     <tbody>
-    <% var my_length = data.length > 10 ? 10 : data.length %>
+    <% var my_length = data.length > 10 ? 0 : data.length %>
     <% for(var j=0; j < my_length; j++){ %>
       <tr id='<%=data[j]["id"]%>'>
       <% for(var i=0; i < headers.length; i++){%>
