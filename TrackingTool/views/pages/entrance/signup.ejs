@@ -49,18 +49,19 @@
         <div class="form-group">
           <ajax-button type="submit" :syncing="syncing" class="btn btn-primary btn-lg btn-block">Create account</ajax-button>
         </div>
-      </ajax-form> 
+      </ajax-form>  
       <p class="text-center">Have an account? <a href="/login">Sign in</a></p>
     </div>
-  </div>
+  </div> 
   <div class="container" v-if="cloudSuccess">
-    <h1 class="text-center">Check your email!</h1>
+    <h1 class="text-center">Sign up successful!</h1>
     <div class="success-message">
       <hr/>
-      <p>Your account is nearly ready. All you have to do is click the link we sent to <strong>{{formData.emailAddress}}</strong>.</p>
-      <p>(You can still access your dashboard now, but some features will be unvavailable until we've verified your email address.)</p>
-      <p><a class="btn btn-outline-info" href="/">Go to dashboard</a></p>
-    </div>
-  </div>
+      <p>Your account is nearly ready. We have sent an email to our support team for the confirmation of you account <strong>{{formData.emailAddress}}</strong>.</p>
+
+      <p>(Special rights may be subject to modifications depending on Admin approval)</p>
+      <p><a class="btn btn-primary" href="/login">Login</a></p>
+    </div> 
+  </div> 
 </div>
 <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

@@ -47,10 +47,10 @@ the account verification message.)`,
       type: 'string'
     }
 
-  },
+  }, 
  
 
-  exits: {
+  exits: { 
 
     invalid: {
       responseType: 'badRequest',
@@ -117,22 +117,29 @@ the account verification message.)`,
 
     // Store the user's new id in their session.
     //this.req.session.userId = newUserRecord.id;
+    if (!sails.config.custom.internalEmailAddress) {
+      throw new Error(
+`Cannot deliver incoming message from contact form because there is no internal
+email address (\`sails.config.custom.internalEmailAddress\`) configured for this
+app.  To enable contact form emails, you'll need to add this missing setting to
+your custom config -- usually in \`config/custom.js\`, \`config/staging.js\`,
+\`config/production.js\`, or via system environment variables.`
+      );
+    } 
  
-    if (sails.config.custom.verifyEmailAddresses) {
-      // Send "confirm account" email
-      await sails.helpers.sendTemplateEmail.with({
-        to: newEmailAddress,
-        subject: 'Please confirm your account',
-        template: 'email-verify-account',
-        templateData: {
-          fullName: inputs.fullName,
-          token: newUserRecord.emailProofToken
-        }
-      });
-    } else {
-      sails.log.info('Skipping new account email verification... (since `verifyEmailAddresses` is disabled)');
-    }
 
+    await sails.helpers.sendTemplateEmail.with({
+      to: sails.config.custom.internalEmailAddress,
+      subject: 'New request',
+      template: 'internal/email-request-form',
+      layout: false, 
+      templateData: {
+        contactName: inputs.fullName,
+        contactEmail: inputs.emailAddress
+      } 
+    });
+
+    console.log('email request sent!')
     // Since everything went ok, send our 200 response.
     return exits.success();
 
