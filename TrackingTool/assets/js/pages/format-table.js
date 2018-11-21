@@ -116,72 +116,35 @@ $(document).ready(function(){
         }
       })
     })
-    
-  var table = $('#available-data').DataTable({
-    "serverSide": true,
-    "columns":[
-      {"name": "CTR", "targets": 0},
-      {"name": "Results Status"},
-      {"name": "Validated Status"},
-      {"name": "Aircraft"},
-      {"name": "MSN"},
-      {"name": "Flight"},
-      {"name": "Flight Date"},
-      {"name": "Delivery Date"},
-      {"name": "Results"},
-      {"name": "Airline"},
-      {"name": "Tabulated Results"},
-      {"name": "Parameters Validation"},
-      {"name": "Fleet Follow Up"},
-      {"name": "Flight Owner"},
-      {"name": "Fuel Flowmeters"},
-      {"name": "Fuel Characteristics"},
-      {"name": "Weighing"},
-      {"name": "TRA"},
-      {"name": "Commentary"}
-    ],
-    "ajax": {
-      url: "/table/data",
-      method: "POST"
+  // JavaScript Source Data Drawing
+  var table = $('#available-data').dataTable({
+    bDeferRender: true,
+    iDisplayLength: 50,
+    bProcessing: true,
+    colReorder: true,
+    responsive: true,
+    bStateSave:true,
+    paging: true,
+    dom: 'lBfrtip',
+    fnStateSave: function(settings, data){
+      localStorage.setItem("DataTables_"+window.location.pathname, JSON.stringify(data))
     },
-    "columnDefs":[{
-  
-      // Special Formatting for Validated Status
-      "targets":1,
-      "render": function(data, type, row, meta){
-        switch(data){
-          case "Preliminary":
-            return '<font color="blue">Preliminary</font>'
-          case "Investigation":
-            return '<font color="orange">Investigation</font>'
-          case "Definitive":
-            return '<font color="green">Definitive</font>'
-          default:
-            return ''
-        }
+    fnStateLoad: function(settings){
+      var data = localStorage.getItem("DataTables_"+window.location.pathname)
+      return JSON.parse(data)
+    },
+    buttons: [{
+      extend: "colvis",
+      className: "btn btn-outline-primary ml-2",
+      columnText: function(dt, idx, title){
+        // Necessary, I do not know why
+        return title
       }
-    },
-  ],
-  colReorder: true,
-  responsive: true,
-  bStateSave:true,
-  dom: 'lBfrtip',
-  fnStateSave: function(settings, data){
-    localStorage.setItem("DataTables_"+window.location.pathname, JSON.stringify(data))
-  },
-  fnStateLoad: function(settings){
-    var data = localStorage.getItem("DataTables_"+window.location.pathname)
-    return JSON.parse(data)
-  },
-  buttons: [{
-    extend: "colvis",
-    className: "btn btn-outline-primary ml-2",
-    columnText: function(dt, idx, title){
-      // Necessary, I do not know why
-      return title
-    }
-  }]
-  });
+    }]
+    });
+  var liste = window.SAILS_LOCALS["liste"]
+  table.fnAddData(liste, false)
+  table.fnDraw();
   }
   if($("#upload-results").length){
     $("#upload-results").DataTable({

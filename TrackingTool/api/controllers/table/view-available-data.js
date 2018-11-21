@@ -17,8 +17,17 @@ module.exports = {
 
   fn: async function (inputs, exits) {
      var data = await Data.find();
-     var headers = Data.getHeader();
-    return exits.success({data:data, headers:headers, search:false});
+     if (data.length){
+       var headers = Object.keys(data[0])
+     }
+     else{
+       var headers = []
+     }
+     var liste = []
+     for(var i=0; i<data.length; i++){
+       liste.push(Object.values(data[i]))
+     }
+    return exits.success({data:data, headers:headers, liste:liste, search:false});
   }
 
 };

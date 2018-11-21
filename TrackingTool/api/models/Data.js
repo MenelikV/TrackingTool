@@ -91,5 +91,8 @@ module.exports = {
   },
   pdfFields: function () {
     return ["Airline", "Tabulated_Results", "Parameters_Validation","Fleet_Follow_Up"]
+  },
+  getFields: function(){
+      return ["Aircraft", "Airline", "Airline_id", "Commentary", "CTR", "Delivery_Date", "Fleet_Follow_Up", "Fleet_Follow_Up_id", "Flight", "Flight_Date", "Flight_Owner", "Fuel_Caracteristic", "Fuel_Flowmeters", "MSN", "Parameters_Validation", "Parameters_Validation_id", "Results", "Results_Status", "Tabulated_Results", "Tabulated_Results_id","TRA", "Validated_Status", "Weighing"]
   }
 }
