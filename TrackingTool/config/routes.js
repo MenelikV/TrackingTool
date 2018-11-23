@@ -113,7 +113,10 @@ module.exports.routes = {
   },
   'GET /table': {
     controller: "table",
-    action: "view-available-data"
+    action: "view-available-data",
+    locals: {
+      layout: "layouts/layout-table"
+    }
   },
 
 

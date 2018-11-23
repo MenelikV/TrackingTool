@@ -75,6 +75,7 @@ module.exports = {
       } else if (result == undefined) {
         res.send('notfound')
       } else {
+        if(result[0] === undefined){res.status(500); res.send("Internal Error")}
         var path = result[0].path;
         console.log(path)
         //Including skipper disk
