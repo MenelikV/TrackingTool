@@ -49,6 +49,8 @@ module.exports.routes = {
 
   'POST /account/admin/changeRights': 'account/AdminController.changeRights',
 
+  'POST /table/data': 'account/FileController.getData',
+
   'GET /requests': {
     //view: 'pages/account/view-requests',
     controller: 'account/AdminController',
@@ -109,7 +111,10 @@ module.exports.routes = {
   },
   'GET /table': {
     controller: "table",
-    action: "view-available-data"
+    action: "view-available-data",
+    locals: {
+      layout: "layouts/layout-table"
+    }
   },
 
 

@@ -75,6 +75,7 @@ module.exports = {
       } else if (result == undefined) {
         res.send('notfound')
       } else {
+        if(result[0] === undefined){res.status(500); res.send("Internal Error")}
         var path = result[0].path;
         console.log(path)
         //Including skipper disk
@@ -101,10 +102,10 @@ module.exports = {
     aircraft_data = {}
     req.file("file").upload({}, async function (err, uploads) {
       if (uploads === undefined) {
-        return res.send("Upload did not work")
+        return res.serverError("Upload did not work")
       }
       if (uploads.length > 7) {
-        return res.send("Maximum 7 files can be uploaded")
+        return res.serverError('User should only upload 7 files at once');
       }
       // Filter PDF vs XLS* Files
       var pdf_files = uploads.filter(upload => upload.filename.split(".").pop() == "pdf")
@@ -294,5 +295,21 @@ module.exports = {
     console.log(req.params)
     res.status(200)
     return res.send("Test was okay")
+  },
+
+  getData: async function(req, res){
+    console.log(req.body)
+    var draw = parseInt(req.body["draw"])
+    var data = await Data.find({})
+    for(var i=0; i<data.length;i++){
+      data["DT_RowId"] = data["id"]
+    }
+    res.status(200)
+    return res.send({
+      recordsTotal: data.length,
+      recordsFiltered: data.length,
+      draw: draw,
+      data: data,
+    })
   }
 }
