@@ -102,10 +102,10 @@ module.exports = {
     aircraft_data = {}
     req.file("file").upload({}, async function (err, uploads) {
       if (uploads === undefined) {
-        return res.send("Upload did not work")
+        return res.serverError("Upload did not work")
       }
       if (uploads.length > 7) {
-        return res.send("Maximum 7 files can be uploaded")
+        return res.serverError('User should only upload 7 files at once');
       }
       // Filter PDF vs XLS* Files
       var pdf_files = uploads.filter(upload => upload.filename.split(".").pop() == "pdf")
