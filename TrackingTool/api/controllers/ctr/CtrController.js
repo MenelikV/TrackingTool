@@ -15,7 +15,7 @@ module.exports = {
           if(err){
               res.send('error')
           }
-          if(results===undefined){results = [{MSN:8254, CTR:true, DeliveryDate: ""}]}
+          if(results===undefined){results = [{MSN:8254, CTR:"y", DeliveryDate: ""}]}
   
   
           return res.view('pages/table/ctr-table', {me: req.me, ctr: results} )

@@ -18,6 +18,7 @@
     "js-xlsx": "^0.8.22",
     "jszip": "^3.1.5",
     "mailgun-js": "^0.22.0",
+    "moment": "^2.22.2",
     "opencollective": "^1.0.3",
     "sails": "^1.1.0",
     "sails-hook-apianalytics": "^2.0.0",

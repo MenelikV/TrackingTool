@@ -80,7 +80,9 @@ $(document).ready(function(){
       modal.find(".modal-body #TRA-input").val(tra)
       modal.find('.modal-body #validatedCombo').val(r_status)
       modal.find('.modal-body #validatedCheck').prop('checked', v_status)
-      modal.find('.modal-body #Delivery-Input').val(delivery_date)
+      console.log(delivery_date)
+      console.log(moment(delivery_date).format("YYYY-MM-DD"))
+      modal.find('.modal-body #Delivery-Input').val(moment(delivery_date).format("YYYY-MM-DD"))
       modal.find('.modal-body #Comment-input').val(comment)
     })
     $("#available-data tbody").on("click", "tr", function(ev){
@@ -97,9 +99,19 @@ $(document).ready(function(){
         $("#EditButton").attr("disabled", true).addClass("disabled")
         $("#available-data tr.selected").removeClass("selected")
     }})
-
+    // Remove any validation form on keypress
+    $("#dataEdition").keypress(function(){
+      $(this)[0].classList.remove("was-validated")
+    })
     // Attach a submit handler to the form
     $( "#dataEdition" ).submit(function( event ) {
+      // Select the form and chech validity of it natively
+      if($(this)[0].checkValidity() === false){
+        event.preventDefault()
+        event.stopPropagation()
+        $(this)[0].classList.add("was-validated")
+        return false
+      }
     
       // Stop form from submitting normally
       event.preventDefault();
@@ -110,14 +122,15 @@ $(document).ready(function(){
       })
 
       // Get some values from elements on the page:
+      var moment = require("moment")
       var $form = $( this ),
       url = $form.attr("action")
        ctr = $form.find( "#CTRCheck" ).is(':checked') === true ? "true": "",
        tra = $form.find( "#TRA-input" ).val(),
         r_status = $form.find("#validatedCombo").val(),
         v_status = $form.find("#validatedCheck").is(':checked') === true ? "true": "",
-        delivery_date = $form.find("#Delivery-Input").val(),
-        comment = $form.find('#Comment-input').val()
+        delivery_date = $form.find("#Delivery-Input").val().length > 0 ? moment.parse($form.find("#Delivery-Input").val()).format("DD/MM/YYYY"): "",
+        comment = _.escape($form.find('#Comment-input').val())
         row_data = table.api().row($.selectedRowDom).data()
         tra_idx = table_header.indexOf("TRA")
         comment_idx = table_header.indexOf("Commentary")
@@ -219,7 +232,7 @@ $(document).ready(function(){
       {
         "targets": validated_status,
         "render": function(data, type, row, meta){
-          if(data === "" || data === undefined){
+          if(data !== "" && data !== undefined){
             return '<i class="fa fa-check fa-lg" style="color:green"></i>'
           }
           else{
@@ -230,7 +243,7 @@ $(document).ready(function(){
       {
         "targets": ctr_status,
         "render": function(data, type, row, meta){
-          if(data === "" || data === undefined){
+          if(data !== "" && data !== undefined){
             return '<i class="fa fa-check fa-lg" style="color:green"></i>'
           }
           else{

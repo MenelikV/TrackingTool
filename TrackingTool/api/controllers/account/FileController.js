@@ -75,7 +75,7 @@ module.exports = {
       } else if (result == undefined) {
         res.send('notfound')
       } else {
-        if(result[0] === undefined){res.status(500); res.send("Internal Error")}
+        if(result[0] === undefined){return res.serverError("Internal Error")}
         var path = result[0].path;
         console.log(path)
         //Including skipper disk
@@ -170,13 +170,17 @@ module.exports = {
       // Default Value
       aircraft_data["Validated_Status"] = ""
       aircraft_data["Results_Status"] = "Preliminary"
-      // Try to open the CTR registry
-      try {
-        CTR_dict = require("ctr.json")
-      } catch (error) {
-        CTR_dict = {}
+      // Try to open the CTR DataBase, If MSN not found then set fields to defaut
+      var CTR_dict = await CtrTot.find({MSN: aircraft_data["MSN"]})
+      if(CTR_dict.length == 1){
+        CTR_dict = CTR_dict[0]
+        aircraft_data["CTR"] = CTR_dict.CTR !== undefined ? CTR_dict.CTR : ""
+        aircraft_data["Delivery_Date"] = CTR_dict.Delivery_Date !== undefined ? CTR_dict.Delivery_Date : ""
       }
-      aircraft_data["CTR"] = CTR_dict[aircraft_data["MSN"]] !== undefined ? CTR_dict[aircraft_data["MSN"]] : ""
+      else{
+        aircraft_data["CTR"] = ""
+        aircraft_data["Delivery_Date"] = ""
+      }
       // TRA is filled by hand :/
       aircraft_data["TRA"] = ""
       console.log("Finishing processing Files and redirection")
@@ -229,7 +233,7 @@ module.exports = {
         path: file.fd
       }).exec(function (err, updatedFile) {
         if (err) {
-          res.send('could not update')
+          res.serverError('Internal Error, could not update'+err)
         }
       });
       return res.redirect('/files')
@@ -240,8 +244,10 @@ module.exports = {
   validate: async function (req, res) {
     // Push Data to the server
     console.log("Some data will be pushed back to the server")
-    aircraft_data["Commentary"] = req.body["userCommentary"]
-    aircraft_data["Delivery_Date"] = req.body["deliveryDate"]
+    aircraft_data["Commentary"] = _.escape(req.body["userCommentary"])
+    // Date Formatting if Delivery date field is not empty
+    moment = require("moment")
+    aircraft_data["Delivery_Date"] = req.body["deliveryDate"].length > 0 ? moment(req.body["deliveryDate"]).format("DD/MM/YYYY") : ''
 
     var min_entry = sails.helpers.extractSubDictionary(aircraft_data)
     var possible_entry = await Data.find(min_entry)
@@ -279,6 +285,8 @@ module.exports = {
       // TODO Return an error, internal should not be undefined or an empty string
       return res.serverError("The internal id of the to update row was not found")
     }
+    // Escaping for commentary (TODO Validation for other fields as well ?)
+    req.body["Commentary"] = _.escape(req.body["Commentary"])
     // Update Model Entry
     await Data.update({
       "id": req.body["id"]

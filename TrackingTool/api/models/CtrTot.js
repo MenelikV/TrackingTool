@@ -6,8 +6,8 @@ module.exports = {
             unique: true
         },
         CTR: {
-            type: "boolean",
-            defaultsTo: false,
+            type: "string",
+            defaultsTo: "",
         },
         Delivery_Date: {
             type: "string",

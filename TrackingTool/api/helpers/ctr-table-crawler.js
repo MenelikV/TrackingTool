@@ -21,6 +21,7 @@ module.exports = {
   
   
     fn: function (input, exits) {
+      var moment = require("moment")
       var res = {}
       res["MSN"] = []
       res["Delivery_Date"] = []
@@ -31,13 +32,13 @@ module.exports = {
       while (data !== "") {
         res['MSN'].push(data);
         idx = sails.helpers.columnShift(start_idx)
-        res['Delivery_Date'].push(input.sheet[idx].w);
+        res['Delivery_Date'].push(moment(input.sheet[idx].w).format("DD/MM/YYYY"));
         idx = sails.helpers.columnShift(idx)
         if(input.sheet[idx].v === "YES"){
-          res["CTR"].push(true)
+          res["CTR"].push("y")
         }
         else{
-          res["CTR"].push(false)
+          res["CTR"].push("")
         }
         start_idx = sails.helpers.rowShift(start_idx);
         data = input.sheet[start_idx] !== undefined ? input.sheet[start_idx].v : ""; 
