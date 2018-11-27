@@ -77,11 +77,17 @@ module.exports.routes = {
     view: 'pages/legal/privacy'
   },
   'GET /contact': {
-    view: 'pages/contact'
+    view: 'pages/contact',
+    locals: {
+      layout: 'layouts/formsLayout'
+    }
   },
 
   'GET /signup': {
-    action: 'entrance/view-signup'
+    action: 'entrance/view-signup',
+    locals: {
+      layout: 'layouts/formsLayout'
+    }
   },
   'GET /email/confirm': {
     action: 'entrance/confirm-email'

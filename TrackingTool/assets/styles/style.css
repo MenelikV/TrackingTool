@@ -1,8 +1,3 @@
-body {
-  overflow-x: hidden; /*--right gutter fix--*/
-  font-family: sans-serif;
-  color: #505962;
-}
 
 .navbar {
   text-transform: uppercase;
@@ -12,7 +7,6 @@ body {
 .navbar-brand img {
   height: 2rem;
 }
-
 
 /* Hide HTML5 Up and Down arrows. */
 input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {
@@ -85,34 +79,8 @@ h3.heading {
  padding: 2rem  0;
 }
 
-img.portfolio {
-  max-width: 100%;
-
-}
-
-.no-padding .col-md-6 {
+.no-padding .col-md-6 { 
   padding: 0;
-}
-
-.card {
-  margin: 2rem;
-}
-
-.footer .row {
-  background-color: #505962;
-}
-
-.footer img {
-  height: 2rem;
-  padding: 1rem 2rem 3rem;
-  color: white;
-  margin: 1.5rem 0;
-}
-
-.footer row {
-  height: .5rem;
-  padding: 1rem 2rem 3rem;
-  color: white;
 }
 
 .table-text {
@@ -158,18 +126,51 @@ img.portfolio {
   will-change: transform;
 }
 
-.dash{position:relative;
-background: url(../airplane.png) no-repeat center center fixed;-webkit-background-size: cover;
+.dash{
+  position:relative;
+  background: url(../airplane.png) no-repeat center center fixed;
+  -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
-  background-size: cover;width:100%;height:100%;margin:0
+  background-size: cover;
+  width:100%;
+  min-height: 100%;
+  /* Equal to height of footer */
+  /* But also accounting for potential margin-bottom of last child */
+  margin-bottom: -60px; 
 }
-.dash:after{
-    position:fixed;
-    content:"";
-    top:0;
-    left:0;
-    right:0;
-    bottom:0;
-    z-index:-1;
+ 
+.formclass {
+  position:relative;
+  background-color: rgba(226, 242, 255, 0.911);
+  background-size: cover;
+  min-height: 100%;
+  /* Equal to height of footer */
+  /* But also accounting for potential margin-bottom of last child */
+  margin-bottom: -80px;
+  
+}
+
+.myfooter, .push {
+  position:absolute;
+  bottom:0;
+  color: white;
+
+  width:100%;
+  height:80px;   /* Height of the footer */
+  background:rgba(0, 78, 126, 0.288);
+}
+
+.footer-logo img {
+  width: auto;
+  height: auto;
+  
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden; /*--right gutter fix--*/
+  font-family: sans-serif;
+  color: #0a1e33;
 }
