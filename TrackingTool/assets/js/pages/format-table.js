@@ -80,9 +80,7 @@ $(document).ready(function(){
       modal.find(".modal-body #TRA-input").val(tra)
       modal.find('.modal-body #validatedCombo').val(r_status)
       modal.find('.modal-body #validatedCheck').prop('checked', v_status)
-      console.log(delivery_date)
-      console.log(moment(delivery_date).format("YYYY-MM-DD"))
-      modal.find('.modal-body #Delivery-Input').val(moment(delivery_date).format("YYYY-MM-DD"))
+      modal.find('.modal-body #Delivery-Input').val(moment(delivery_date, "DD-MM-YYYY").format("YYYY-MM-DD"))
       modal.find('.modal-body #Comment-input').val(comment)
     })
     $("#available-data tbody").on("click", "tr", function(ev){
