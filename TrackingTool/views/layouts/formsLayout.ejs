@@ -111,19 +111,21 @@
   </div>
   <% } %>
 
-  <!--  Start body content -->
-  <div class="formclass">
+  <!-- Start background-->
+  <div class="back">
+    <!--  Start body content -->
+    <div class="site">
+      <div class="dash">
+        <div class="container-fluid">
+          <%- body %>
 
-    <%- body %>
+        </div>
+      </div>
+    </div>
+    <!-- End body content -->
 
-    <div class="push"></div>
-
-  </div>
-  <!-- End body content -->
-
-  
-  <!-- Start of footer -->
-  <footer class="myfooter">
+    <!-- Start of footer -->
+    <footer class="myfooter">
       <div class="row">
         <div class="col md-4"></div>
         <div class="col md-4 text-center">
@@ -131,7 +133,7 @@
         </div>
         <div class="col md-4"></div>
       </div>
-  
+
       <div class="row">
         <div class="col md-4"></div>
         <div class="col md-4 text-center">
@@ -140,7 +142,9 @@
         <div class="col md-4"></div>
       </div>
     </footer>
-  <!-- End of footer -->
+    <!-- End of footer -->
+  </div>
+  <!-- End of background-->
 
   <% /* Delete the global `self` to help avoid client-side bugs.
     (see https://developer.mozilla.org/en-US/docs/Web/API/Window/self) */ %>

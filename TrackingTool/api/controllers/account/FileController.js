@@ -35,8 +35,11 @@ module.exports = {
           data: [],
           headers: headers,
           me: req.me,
-          msn: req.param('msn'),
-          search: true
+          msn: req.param('msn'), 
+          search: true,
+          locals: {
+            layout: "layouts/layout-table"
+          }
         })
       }
 

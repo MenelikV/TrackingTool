@@ -1,158 +1,148 @@
 <!-- Better use d-flex ? -->
 <!-- TODO Retrigger the modal on click -->
+<div class="jumbotron jumbostyle">
+  <form action="/account/file/validate" method="post" id="uploaded">
+    <button type="button" class="btn btn-secondary btn-lg mr-5 ml-0 pb-10" data-toggle="modal" data-target="#exampleModalCenter">Reupload</button>
+    <div class="table-responsive">
+      <table id="upload-results" class="display">
+        <!-- HEADERS -->
+        <thead class="table-primary">
+          <tr>
+            <% for(var i=0; i < headers.length; i++){ %>
+            <th scope="col" data-sortable="true" style="width: auto !important">
+              <%=headers[i].replace(/_/g, ' ')%>
+            </th>
+            <%}%>
+          </tr>
+        </thead>
+        <!-- BODY -->
+        <tbody>
+          <% for(var j=0; j < data.length; j++){ %>
+          <tr>
+            <% for(var i=0; i < headers.length; i++){%>
+            <% var pdfHeaders = Data.pdfFields();%>
+            <% if(headers[i] === "Results"){%>
+            <!-- Trigger a modal for the  results table -->
+            <th scope="col" class="text-center" style="width: auto !important" id="ResultsModalButton">
+              <a href="" data-toggle="modal" data-target="#Results">
+                View
+              </a>
+            </th>
 
-<body class="dash">
+            <%} else if(headers[i] === "Commentary"){%>
+            <!-- Trigger a modal for the  results table -->
+            <th scope="col" class="text-center" style="width: auto !important">
 
-  <div class="container-fluid">
-
-    <div class="jumbotron jumbostyle">
-
-      <form action="/account/file/validate" method="post" id="uploaded">
-        <button type="button" class="btn btn-secondary btn-lg mr-5 ml-0 pb-10" data-toggle="modal" data-target="#exampleModalCenter">Reupload</button>
-        <div class="table-responsive">
-          <table id="upload-results" class="display">
-            <!-- HEADERS -->
-            <thead class="table-primary">
-              <tr>
-                <% for(var i=0; i < headers.length; i++){ %>
-                <th scope="col" data-sortable="true" style="width: auto !important">
-                  <%=headers[i].replace(/_/g, ' ')%>
-                </th>
-                <%}%>
-              </tr>
-            </thead>
-            <!-- BODY -->
-            <tbody>
-              <% for(var j=0; j < data.length; j++){ %>
-              <tr>
-                <% for(var i=0; i < headers.length; i++){%>
-                <% var pdfHeaders = Data.pdfFields();%>
-                <% if(headers[i] === "Results"){%>
-                <!-- Trigger a modal for the  results table -->
-                <th scope="col" class="text-center" style="width: auto !important" id="ResultsModalButton">
-                  <a href="" data-toggle="modal" data-target="#Results">
-                    View
-                  </a>
-                </th>
-
-                <%} else if(headers[i] === "Commentary"){%>
-                <!-- Trigger a modal for the  results table -->
-                <th scope="col" class="text-center" style="width: auto !important">
-
-                  <div class="input-group input-group-sm mb-3">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text">
+              <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">
 
 
-                        <a href="" data-target="#commentaryModal" class="table-text" data-toggle="modal" data-book-id="<%=data[j][correct_header]%>"><i
-                            class="fa fa-pencil fa-lg" style="color:rgb(20, 83, 134)"></i></a>
+                    <a href="" data-target="#commentaryModal" class="table-text" data-toggle="modal" data-book-id="<%=data[j][correct_header]%>"><i
+                        class="fa fa-pencil fa-lg" style="color:rgb(20, 83, 134)"></i></a>
 
 
-                      </span>
-                    </div>
+                  </span>
+                </div>
 
-                    <textarea disabled id="userComment" class="form-control" aria-label="With textarea"></textarea>
-                  </div>
-                </th>
+                <textarea disabled id="userComment" class="form-control" aria-label="With textarea"></textarea>
+              </div>
+            </th>
 
-                <%}  else if(headers[i].replace(/_/g, ' ') === "Delivery Date"){%>
-                  <!-- Trigger a modal for the  results table -->
-                  <th scope="col" class="text-center" style="width: auto !important">
-                        <input type="date" class="form-control" id="deliveryDate">             
-                  </th>
-  
-  
-                
-                <% } else{%>
-                <%if(pdfHeaders.indexOf(headers[i])!==-1){%>
-                <!--This should be a link to a PDF-->
-                <th scope="col" style="width: auto !important; text-align: center; vertical-align: middle;">
-                  <% var correct_header = headers[i]+"_id" %>
-                  <a href="/account/file/download/<%=data[j][correct_header]%>" target="_blank">View</a>
-                  <br>
+            <%}  else if(headers[i].replace(/_/g, ' ') === "Delivery Date"){%>
+            <!-- Trigger a modal for the  results table -->
+            <th scope="col" class="text-center" style="width: auto !important">
+              <input type="date" class="form-control" id="deliveryDate">
+            </th>
 
-                  <a href="" data-target="#editModal" class="table-text" data-toggle="modal" data-book-id="<%=data[j][correct_header]%>"><i
-                      class="fa fa-pencil fa-lg" style="color:rgb(20, 83, 134)"></i></a>
 
-                </th>
-                <%}
+
+            <% } else{%>
+            <%if(pdfHeaders.indexOf(headers[i])!==-1){%>
+            <!--This should be a link to a PDF-->
+            <th scope="col" style="width: auto !important; text-align: center; vertical-align: middle;">
+              <% var correct_header = headers[i]+"_id" %>
+              <a href="/account/file/download/<%=data[j][correct_header]%>" target="_blank">View</a>
+              <br>
+
+              <a href="" data-target="#editModal" class="table-text" data-toggle="modal" data-book-id="<%=data[j][correct_header]%>"><i
+                  class="fa fa-pencil fa-lg" style="color:rgb(20, 83, 134)"></i></a>
+
+            </th>
+            <%}
                                 else{%>
-                <th scope="col" style="width: auto !important; text-align: center; vertical-align: middle;">
-                  <%=data[j][headers[i]]%>
-                </th>
-                <%}
+            <th scope="col" style="width: auto !important; text-align: center; vertical-align: middle;">
+              <%=data[j][headers[i]]%>
+            </th>
+            <%}
                                 %>
-                <%} %>
-                <%}%>
-              </tr>
-              <%}%>
-            </tbody>
-          </table>
-        </div>
-
-        </br>
-        <div class="container center-block">
-          <button type="button" id="confirm" class="btn btn-primary ml-auto" style="float: right;" form="uploaded">Confirm
-            &raquo;</button>
-        </div>
-
-      </form>
+            <%} %>
+            <%}%>
+          </tr>
+          <%}%>
+        </tbody>
+      </table>
     </div>
-  </div>
 
-  <!-- Results Modal -->
-  <div class="modal fade" id="Results" tabindex="-1" role="dialog" aria-labelledby="ResultsTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content modal-body">
-        <div class="modal-header">
-          <h5 class="modal-title" id="ResultsTitle">Results Table</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <!-- Display the results Table TODO, Better Styling for the small table-->
-          <%-data[0]["Results"]%>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
+    </br>
+    <div class="container center-block">
+      <button type="button" id="confirm" class="btn btn-primary ml-auto" style="float: right;" form="uploaded">Confirm
+        &raquo;</button>
+    </div>
+
+  </form>
+</div>
+</div>
+
+<!-- Results Modal -->
+<div class="modal fade" id="Results" tabindex="-1" role="dialog" aria-labelledby="ResultsTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content modal-body">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ResultsTitle">Results Table</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Display the results Table TODO, Better Styling for the small table-->
+        <%-data[0]["Results"]%>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
 
 
-  <!-- Edit Modal -->
-  <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content modal-body">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editModalCenterTitle">Select the new file</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <!--    Begin Modal Body -->
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content modal-body">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalCenterTitle">Select the new file</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!--    Begin Modal Body -->
 
-          <form action="/" name="edit" method="post" enctype="multipart/form-data" id="edit">
-            <input type="file" name="file" id="file">
+        <form action="/" name="edit" method="post" enctype="multipart/form-data" id="edit">
+          <input type="file" name="file" id="file">
 
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="submit" form="edit" class="btn btn-primary">Save changes &raquo;</button>
-            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" form="edit" class="btn btn-primary">Save changes &raquo;</button>
+          </div>
 
-          </form>
-
-        </div>
+        </form>
 
       </div>
+
     </div>
-  </div>
 
-
-  <%- include ../upload-modal.ejs %>
-  <%- include commentary-modal.ejs %>
-  <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>
-</body>
+    <%- include ../upload-modal.ejs %>
+    <%- include commentary-modal.ejs %>
+    <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

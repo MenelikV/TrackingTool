@@ -111,35 +111,41 @@
   </div>
   <% } %>
 
-  <!--  Start body content -->
-  <div class="dash">
-    <div class="container-fluid">
-      <%- body %>
+  <!-- Start background-->
+  <div class="back">
+    <!--  Start body content -->
+    <div class="site">
+      <div class="dash">
+        <div class="container-fluid">
+          <%- body %>
+
+        </div>
+      </div>
     </div>
-    <div class="push"></div>
+    <!-- End body content -->
+
+    <!-- Start of footer -->
+    <footer class="myfooter">
+      <div class="row">
+        <div class="col md-4"></div>
+        <div class="col md-4 text-center">
+          <a href="https://www.assystemtechnologies.com/" class="navbar-brand"><img src="https://dwglogo.com/wp-content/uploads/2015/11/Assystem-White-Logo.png"></a>
+        </div>
+        <div class="col md-4"></div>
+      </div>
+
+      <div class="row">
+        <div class="col md-4"></div>
+        <div class="col md-4 text-center">
+          <strong>Assystem Technologies</strong>
+        </div>
+        <div class="col md-4"></div>
+      </div>
+    </footer>
+    <!-- End of footer -->
   </div>
-  <!-- End body content -->
- 
+  <!-- End of background-->
 
-  <!-- Start of footer -->
-  <footer class="myfooter">
-    <div class="row">
-      <div class="col md-4"></div>
-      <div class="col md-4 text-center">
-        <a href="https://www.assystemtechnologies.com/" class="navbar-brand"><img src="https://dwglogo.com/wp-content/uploads/2015/11/Assystem-White-Logo.png"></a>
-      </div>
-      <div class="col md-4"></div>
-    </div>
-
-    <div class="row">
-      <div class="col md-4"></div>
-      <div class="col md-4 text-center">
-        <strong>Assystem Technologies</strong>
-      </div>
-      <div class="col md-4"></div>
-    </div>
-  </footer>
-  <!-- End of footer -->
 
   <% /* Delete the global `self` to help avoid client-side bugs.
     (see https://developer.mozilla.org/en-US/docs/Web/API/Window/self) */ %>

@@ -31,6 +31,7 @@ module.exports.routes = {
 
   'POST /account/file/search': 'account/FileController.search',
 
+
   'POST /account/admin/search': 'account/AdminController.search',
 
   'POST /account/file/validate': 'account/FileController.validate',
