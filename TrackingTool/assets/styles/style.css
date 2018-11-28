@@ -147,6 +147,9 @@ h3.heading {
   color: white;
   background:rgba(131, 150, 161, 0.336);
   font-size: .9rem;
+
+  overflow-x: hidden; /*--right gutter fix--*/
+
 } 
 
 .footer-logo img {
@@ -171,4 +174,6 @@ html, body {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+  overflow-x: hidden; /*--right gutter fix--*/
+
 }
