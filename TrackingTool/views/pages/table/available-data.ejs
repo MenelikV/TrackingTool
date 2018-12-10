@@ -1,14 +1,15 @@
 <div class="jumbotron jumbostyle">
+    <br>
 
     <%if(search){%>
-    <h1 class="display4">Search results for
+    <h3>Search results for
         <%=msn%>
-    </h1>
-    <%if(data[0] == undefined || headers == undefined){%>
-
+    </h3>
+    <%if(data[0]==undefined || headers==undefined){%>
 
     <h5 style="text-decoration: underline;">No results found</h5>
     <%}}  %>
+
 
     <%if(data[0] !== undefined && headers !== undefined){%>
     <div class="table-responsive">
@@ -37,7 +38,9 @@
 
         </table>
     </div>
-</div>
+
+
+
 
 
 <!-- Add all the modal for the results -->
@@ -146,4 +149,18 @@
 
 <%}  %>
 
+<br>
+<br>
+<div class="row">
+<div class="col-md-6">
+    <h4 style="color: #2e3338;">Search </h4>
+
+
+    <form name="form" id="form" method="post" action="/account/file/search">
+        <input type="number" placeholder="Search by MSN" name="msn">
+        <button type="submit"><i class="fa fa-search"></i></button>
+    </form>
+</div>
+</div>
+</div>
 <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

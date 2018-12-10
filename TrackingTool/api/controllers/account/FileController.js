@@ -36,10 +36,7 @@ module.exports = {
           headers: headers,
           me: req.me,
           msn: req.param('msn'), 
-          search: true,
-          locals: {
-            layout: "layouts/layout-table"
-          }
+          search: true
         })
       }
 
