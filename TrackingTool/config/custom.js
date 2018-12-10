@@ -51,19 +51,24 @@ module.exports.custom = {
   * (https://app.mailgun.com/app/domains)                                   *
   *                                                                         *
   **************************************************************************/
-  // mailgunDomain: 'sandboxaa1234fake678.mailgun.org',
-  // mailgunSecret: 'key-fakeb183848139913858e8abd9a3',
+   mailgunDomain: 'sandbox5051113da83343359fcd1c1bf50e7bee.mailgun.org',
+   mailgunSecret: 'a425045a340473067075d36b801e3593-1053eade-13e5e0ef',
   //--------------------------------------------------------------------------
   // /\  Configure these to enable support for automated emails.
   // ||  (Important for password recovery, verification, contact form, etc.)
   //--------------------------------------------------------------------------
 
   // The sender that all outgoing emails will appear to come from.
-  fromEmailAddress: 'noreply@example.com',
-  fromName: 'The NEW_APP_NAME Team',
+  fromEmailAddress: 'postmaster@sandbox5051113da83343359fcd1c1bf50e7bee.mailgun.org',
+  fromName: 'Tracking Tool',
 
   // Email address for receiving support messages & other correspondences.
-  internalEmailAddress: 'support+development@example.com',
+
+
+  //////////////CHANGE ACCORDINGLY ////////////////////
+  internalEmailAddress: 'masierovictoria@gmail.com', 
+
+
 
   // Whether to require proof of email address ownership any time a new user
   // signs up, or when an existing user attempts to change their email address.

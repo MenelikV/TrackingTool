@@ -13,17 +13,10 @@ module.exports = {
       type: 'string'
     },
 
-    aircraft: {
-      type: 'string'
-    },
-
     path:{
-      type: 'string'
+      type: 'string',
+      required: true
     },
-
-    doc:{
-      type: 'string'
-    }
 
   },
 

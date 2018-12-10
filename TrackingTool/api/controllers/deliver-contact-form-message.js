@@ -58,11 +58,11 @@ app.  To enable contact form emails, you'll need to add this missing setting to
 your custom config -- usually in \`config/custom.js\`, \`config/staging.js\`,
 \`config/production.js\`, or via system environment variables.`
       );
-    }
+    } 
 
     await sails.helpers.sendTemplateEmail.with({
       to: sails.config.custom.internalEmailAddress,
-      subject: 'New contact form message',
+      subject: 'New contact message',
       template: 'internal/email-contact-form',
       layout: false,
       templateData: {
@@ -70,7 +70,7 @@ your custom config -- usually in \`config/custom.js\`, \`config/staging.js\`,
         contactEmail: inputs.emailAddress,
         topic: inputs.topic,
         message: inputs.message
-      }
+      } 
     });
 
     return exits.success();

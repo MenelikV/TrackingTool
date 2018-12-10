@@ -52,6 +52,17 @@ module.exports.datastores = {
     // url: 'mysql://user:password@host:port/database',
 
   },
-
-
+  user: {
+    adapter: "sails-disk",
+    dir: __dirname + "\\local_databases\\",
+  },
+  data: {
+    adapter: "sails-disk",
+    dir: __dirname + "\\local_databases\\"
+    
+  },
+  ctr: {
+    adapter: "sails-disk",
+    dir: __dirname+"\\local_databases\\"
+  }
 };

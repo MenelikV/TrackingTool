@@ -40,5 +40,9 @@ parasails.registerPage('homepage', {
       this.heroHeightSet = true;
     },
 
+    login: function(){
+      location.href = "/login";
+    }
+
   }
 });

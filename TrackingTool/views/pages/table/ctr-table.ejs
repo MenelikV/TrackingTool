@@ -1,0 +1,67 @@
+<body class="dash">
+        <div class="container-fluid" >
+                <div class="jumbotron jumbostyle" >
+                        <table id="ctr-table" class="display">
+                                <thead class="table-primary" style="text-align: center"> 
+                                        <tr>
+                                            <th>
+                                                MSN
+                                            </th>
+                                            <th>
+                                                CTR
+                                            </th>
+                                            <th>
+                                                Delivery Date
+                                            </th>
+                                        </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Not supported by IE -->
+                                    <% for(let aircraft of ctr){%>
+                                        <tr>
+                                            <td style="text-align: center">
+                                                <%=aircraft.MSN%>
+                                            </td>
+                                            <td style="text-align: center"> 
+                                                <% if(aircraft.CTR){%>
+                                                    <i class="fa fa-check fa-lg" style="color: forestgreen"></i>
+                                                    <%}
+                                                    else{%><%}%>
+                                            </td>
+                                            <td style="text-align: center">
+                                                <%=aircraft.DeliveryDate%>
+                                            </td>
+                                        </tr>
+                                        <%}%>
+                                </tbody>
+                        </table>
+                </div>
+            </div>
+    <!-- Upload Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content modal-body">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Select the files you wish to
+                    upload</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+    
+                <form action="/ctr/import" method="post" enctype="multipart/form-data" id="files">
+                    <input type="file" name="file" id="file" multiple>
+                </form>
+    
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="#closeButton">Close</button>
+                <button type="submit" form="files" class="btn btn-primary">Save changes &raquo;</button>
+            </div>
+        </div>
+    </div>
+    </div> 
+    
+</body>

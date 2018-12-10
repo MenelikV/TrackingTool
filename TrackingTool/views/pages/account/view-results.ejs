@@ -1,7 +1,6 @@
-<div class="container-fluid space">
-    <div class="jumbotron">
-
-<h1 class="display-5">Analysis of aircraft  <%= result[0].aircraft %> </h1>
+<% if(result.length){%>
+<h1 class="display-4">Analysis of aircraft  <%= result[0].aircraft %> </h1><%}
+<h5 ><a href="/welcome">Home</a></h5>
 
 <body>
 <div class="container">
@@ -21,14 +20,15 @@
             <tr>
             <% result.forEach(function(item){ %>                           
             <td>  
-                <a href="#"> <%= item.path %> </a>
+                <a href="/account/file/download/<%= item.id %>"> <%= item.filename %> </a>
             </td>
             <% }) %>            
             </tr>  
        
     </tbody>
 </table>
-</div> 
 </body>
-</div>
-</div>
+else {%>
+    <h4>No results found</h4>
+    <h5 ><a href="/welcome">Home</a></h5>
+<%}%>

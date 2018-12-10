@@ -40,12 +40,17 @@ the account verification message.)`,
       type: 'string',
       example: 'Frida Kahlo de Rivera',
       description: 'The user\'s full name.',
+    },
+
+    rights: {
+      //required: true,
+      type: 'string'
     }
 
-  },
+  }, 
+ 
 
-
-  exits: {
+  exits: { 
 
     invalid: {
       responseType: 'badRequest',
@@ -64,7 +69,10 @@ the account verification message.)`,
 
   fn: async function (inputs, exits) {
 
+    console.log(inputs)
+
     var newEmailAddress = inputs.emailAddress.toLowerCase();
+    var rights = inputs.rights;
 
     // Build up data for the new user record and save it to the database.
     // (Also use `fetch` to retrieve the new ID so that we can use it below.)
@@ -72,6 +80,7 @@ the account verification message.)`,
       emailAddress: newEmailAddress,
       password: await sails.helpers.passwords.hashPassword(inputs.password),
       fullName: inputs.fullName,
+      isApproved: 'false',
       tosAcceptedByIp: this.req.ip
     }, sails.config.custom.verifyEmailAddresses? {
       emailProofToken: await sails.helpers.strings.random('url-friendly'),
@@ -84,6 +93,19 @@ the account verification message.)`,
 
     // If billing feaures are enabled, save a new customer entry in the Stripe API.
     // Then persist the Stripe customer id in the database.
+
+    if(rights == 1){
+      await User.update(newUserRecord).set({
+        isSuperAdmin:true
+      });
+    }
+
+    else if(rights == 2){
+      await User.update(newUserRecord).set({
+        isBasicUser:true
+      });
+    }
+
     if (sails.config.custom.enableBillingFeatures) {
       let stripeCustomerId = await sails.helpers.stripe.saveBillingInfo.with({
         emailAddress: newEmailAddress
@@ -94,23 +116,30 @@ the account verification message.)`,
     }
 
     // Store the user's new id in their session.
-    this.req.session.userId = newUserRecord.id;
+    //this.req.session.userId = newUserRecord.id;
+    if (!sails.config.custom.internalEmailAddress) {
+      throw new Error(
+`Cannot deliver incoming message from contact form because there is no internal
+email address (\`sails.config.custom.internalEmailAddress\`) configured for this
+app.  To enable contact form emails, you'll need to add this missing setting to
+your custom config -- usually in \`config/custom.js\`, \`config/staging.js\`,
+\`config/production.js\`, or via system environment variables.`
+      );
+    } 
+ 
 
-    if (sails.config.custom.verifyEmailAddresses) {
-      // Send "confirm account" email
-      await sails.helpers.sendTemplateEmail.with({
-        to: newEmailAddress,
-        subject: 'Please confirm your account',
-        template: 'email-verify-account',
-        templateData: {
-          fullName: inputs.fullName,
-          token: newUserRecord.emailProofToken
-        }
-      });
-    } else {
-      sails.log.info('Skipping new account email verification... (since `verifyEmailAddresses` is disabled)');
-    }
+    await sails.helpers.sendTemplateEmail.with({
+      to: sails.config.custom.internalEmailAddress,
+      subject: 'New request',
+      template: 'internal/email-request-form',
+      layout: false, 
+      templateData: {
+        contactName: inputs.fullName,
+        contactEmail: inputs.emailAddress
+      } 
+    });
 
+    console.log('email request sent!')
     // Since everything went ok, send our 200 response.
     return exits.success();
 
