@@ -25,7 +25,7 @@ $(document).ready(function () {
     $("#colVisMenuLiContainer").on("show.bs.dropdown", function () {
       table.api().columns().every(function () {
         var header = this.header().innerText.trim().replace(/ /g, '_')
-        var visible = this.visible
+        var visible = this.visible()
         if (visible) {
           $("#colVis_" + header).addClass("active")
         } else {
