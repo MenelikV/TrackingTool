@@ -59,7 +59,7 @@ module.exports = {
 
   changeRights: function (req, res) {
 
-    if (req.body["isSuperAdmin"]) {
+    if (req.body["isSuperAdmin"].length) {
       User.update({
         emailAddress: req.param('emailAddress')
       }).set({
@@ -73,7 +73,7 @@ module.exports = {
         res.status(200)
         return res.send("Sucessful Operation")
       })
-    } else if (req.body["isBasicUser"]) {
+    } else if (req.body["isBasicUser"].length) {
       console.log('true for basic!')
       User.update({
         emailAddress: req.param('emailAddress')
@@ -88,7 +88,21 @@ module.exports = {
         res.status(200)
         return res.send("Sucessful Operation")
       })
-    }
+    } else {
+      User.update({
+        emailAddress: req.param('emailAddress')
+      }).set({
+        isSuperAdmin: false,
+        isBasicUser: false
+      }).exec(function (err, updatedUser) {
+        if (err) {
+          res.send('could not change rights')
+        }
+        console.log('now viewer!')
+        res.status(200)
+        return res.send("Sucessful Operation")
+      })
+    } 
   },
 
   search: async function (req, res) {
@@ -99,7 +113,6 @@ module.exports = {
       if (err) {
         res.send('notfound')
       }
-      console.log('ifoundthis' + results)
       return res.view('pages/account/view-requests', {
         result: results,
         me: req.me,

@@ -18,7 +18,6 @@ module.exports = {
       unique: true,
       isEmail: true,
       maxLength: 200,
-      example: 'carol.reyna@microsoft.com'
     },
 
     password: {
@@ -26,7 +25,6 @@ module.exports = {
       required: true,
       description: 'Securely hashed representation of the user\'s login password.',
       protect: true,
-      example: '2$28a8eabna301089103-13948134nad'
     },
 
     fullName: {
@@ -34,11 +32,11 @@ module.exports = {
       required: true,
       description: 'Full representation of the user\'s name',
       maxLength: 120,
-      example: 'Lisa Microwave van der Jenny'
     },
 
     isSuperAdmin: {
       type: 'boolean',
+      defaultsTo: false,
       description: 'Whether this user is a "super admin" with extra permissions, etc.',
     },
 
@@ -61,7 +59,6 @@ module.exports = {
     passwordResetTokenExpiresAt: {
       type: 'number',
       description: 'A JS timestamp (epoch ms) representing the moment when this user\'s `passwordResetToken` will expire (or 0 if the user currently has no such token).',
-      example: 1502844074211
     },
 
     emailProofToken: {
@@ -72,7 +69,6 @@ module.exports = {
     emailProofTokenExpiresAt: {
       type: 'number',
       description: 'A JS timestamp (epoch ms) representing the moment when this user\'s `emailProofToken` will expire (or 0 if the user currently has no such token).',
-      example: 1502844074211
     },
 
     emailStatus: {
@@ -96,7 +92,6 @@ email status until they click the link in the confirmation email.`
     lastSeenAt: {
       type: 'number',
       description: 'A JS timestamp (epoch ms) representing the moment at which this user most recently interacted with the backend while logged in (or 0 if they have not interacted with the backend at all yet).',
-      example: 1502844074211
     },
 
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗

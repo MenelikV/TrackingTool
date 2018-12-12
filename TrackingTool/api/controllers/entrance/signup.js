@@ -106,6 +106,11 @@ the account verification message.)`,
       });
     }
 
+    else {
+      isSuperAdmin:false;
+      isBasicUser:false;
+    }
+
     if (sails.config.custom.enableBillingFeatures) {
       let stripeCustomerId = await sails.helpers.stripe.saveBillingInfo.with({
         emailAddress: newEmailAddress
