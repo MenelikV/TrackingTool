@@ -57,13 +57,17 @@ $(document).ready(function () {
     var email = row.find("td").eq(1).text();
     email = email.replace(/\s/g, '')
     var url = '/account/admin/changeRights';
+    var isSuperAdmin = "true";
+    var isBasicUser = "";
 
     row.find("td").eq(3).empty();
+    row.find("td").eq(4).empty();
     row.find("td").eq(2).empty();
     row.find("td").eq(2).append('<span class="dot"></span>');
 
     var rights = {
-      isSuperAdmin: true,
+      isSuperAdmin,
+      isBasicUser,
       emailAddress: email
     };
 
@@ -85,18 +89,56 @@ $(document).ready(function () {
     var email = row.find("td").eq(1).text();
     email = email.replace(/\s/g, '')
     var url = '/account/admin/changeRights';
+    var isBasicUser = "true";
+    var isSuperAdmin = "";
 
     row.find("td").eq(2).empty();
     row.find("td").eq(3).empty();
+    row.find("td").eq(4).empty();
     row.find("td").eq(3).append('<span class="dot"></span>');
 
     var rights = {  
-      isBasicUser: true,
+      isBasicUser,
+      isSuperAdmin,
       emailAddress: email
     };
 
     $.ajax({
       url: url,
+      data: rights,
+      type: 'POST',
+      success: function () {
+        console.log('changed rights')
+      }
+    })
+
+  });
+
+
+  $('#example').on('click', 'tbody tr td:nth-child(5)', function (e) {
+
+    $(this).closest("tr").addClass('selected');
+    var row = $("#example tr.selected")
+    row.not(this).removeClass('selected')
+    var email = row.find("td").eq(1).text();
+    email = email.replace(/\s/g, '')
+    var url = '/account/admin/changeRights';
+    var isBasicUser = "";
+    var isSuperAdmin = "";
+
+    row.find("td").eq(2).empty();
+    row.find("td").eq(3).empty();
+    row.find("td").eq(4).empty();
+    row.find("td").eq(4).append('<span class="dot"></span>');
+
+    var rights = {   
+      isBasicUser,
+      isSuperAdmin,
+      emailAddress: email
+    };
+
+    $.ajax({
+      url: url, 
       data: rights,
       type: 'POST',
       success: function () {

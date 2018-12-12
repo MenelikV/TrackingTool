@@ -19,6 +19,7 @@
         <th width="300">Email</th>
         <th class="text-center">Admin</th>
         <th class="text-center">Basic</th>
+        <th class="text-center">Viewer</th>
         <th class="text-center">
           <% if (search == true) { %>
           Revoke access
@@ -43,6 +44,12 @@
         </td>
         <td class="text-center">
           <% if(item.isBasicUser) { %>
+          <span class="dot"></span>
+          <%}%>
+        </td>
+
+        <td class="text-center">
+          <% if(!item.isBasicUser && !item.isSuperAdmin) { %>
           <span class="dot"></span>
           <%}%>
         </td>
