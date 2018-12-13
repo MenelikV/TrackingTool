@@ -345,7 +345,7 @@ $(document).ready(function () {
           "name": "Fleet Follow Up",
           "data": "Fleet_Follow_Up",
           "render": function(data, type, row, meta){
-            return '<a href="/account/file/download/'+row[ffu_id]+'"'+' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
+            return '<a href="/account/file/download/'+row["Fleet_Follow_Up_id"]+'"'+' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
           }
         },
         {
@@ -355,7 +355,7 @@ $(document).ready(function () {
           "orderable": false,
           "searchable": false,
           "render": function(data, type, row, meta){
-            return '<a href="/account/file/download/'+row[pv_id]+'"'+' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
+            return '<a href="/account/file/download/'+row["Parameters_Validation_id"]+'"'+' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
           }
         },
         {
@@ -365,7 +365,7 @@ $(document).ready(function () {
           "orderable": false,
           "searchable": false,
           "render": function(data, type, row, meta){
-            return '<a href="/account/file/download/'+row[tr_id]+'"'+' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
+            return '<a href="/account/file/download/'+row["Tabulated_Results_id"]+'"'+' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
           }
         },
         {
@@ -375,7 +375,7 @@ $(document).ready(function () {
           "orderable": false,
           "searchable": false,
           "render": function(data, type, row, meta){
-            return '<a href="/account/file/download/'+row[airline_id]+'"'+' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
+            return '<a href="/account/file/download/'+row["Airline_id"]+'"'+' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
           }
         },
         {
@@ -385,7 +385,7 @@ $(document).ready(function () {
           "orderable": false,
           "searchable": false,
           "render": function(data, type, row, meta){
-            return '<button type="button" id="ResultsButton_'+row[id_id]+'"'+'class="btn btn-primary" style="text-transform:capitalize" data-toggle="modal" data-target="#Results">View Table </button>'
+            return '<button type="button" id="ResultsButton_'+row["id"]+'"'+'class="btn btn-primary" style="text-transform:capitalize" data-toggle="modal" data-target="#Results">View Table </button>'
           }
         },
         {
@@ -463,19 +463,141 @@ $(document).ready(function () {
     })
   }
   if ($("#upload-results").length) {
+    var headers = window.SAILS_LOCALS["headers"]
+    var results_status = headers.indexOf("Results_Status")
+    var validated_status = headers.indexOf("Validated_Status")
+    var ctr_status = headers.indexOf("CTR")
+    var results = headers.indexOf("Results")
+    var ffu = headers.indexOf("Fleet_Follow_Up")
+    var ffu_id = headers.indexOf("Fleet_Follow_Up_id")
+    var pv = headers.indexOf("Parameters_Validation")
+    var pv_id = headers.indexOf("Parameters_Validation_id")
+    var airline = headers.indexOf("Airline")
+    var tra = headers.indexOf("TRA")
+    var airline_id = headers.indexOf("Airline_id")
+    var tr = headers.indexOf("Tabulated_Results")
+    var tr_id = headers.indexOf("Tabulated_Results_id")
+    var id_id = headers.indexOf("id")
+    var aircraft_id = headers.indexOf("Aircraft")
+    var msn_id = headers.indexOf("MSN")
+    var flight_id = headers.indexOf("Flight")
+    var comment_id = headers.indexOf("Commentary")
+    var dd_id = headers.indexOf("Delivery Date")
     $("#upload-results").DataTable({
-      "ordering": false,
-      "paging": false,
-      "searching": false,
-      "columnDefs": [{
-          "className": "dt-center",
-          "targets": "_all"
+      ordering: false,
+      paging: false,
+      searching: false,
+      columnDefs:[
+        {"className": "dt-center", "targets":"_all"},
+        {
+          "targets": headers.indexOf("createdAt"),
+          "data": "createdAt",
+          "visible": false,
+          "name": "createdAt",
+          "orderable": false,
+          "searchable": false
+        },
+        {
+          "targets": headers.indexOf("updatedAt"),
+          "visible": false,
+          "name": "updatedAt",
+          "orderable": false,
+          "searchable": false,
+          "data": "updatedAt"
+        },
+        {
+          "targets": id_id,
+          "visible": false,
+          "name": "id",
+          "orderable": false,
+          "searchable": false,
+          "data": "id"
+        },
+        {
+          "targets": pv_id,
+          "visible": false,
+          "orderable": false,
+          "searchable": false,
+          "data": "Parameters_Validation_id"
+        },
+        {
+          "targets": tr_id,
+          "visible": false,
+          "orderable": false,
+          "searchable": false,
+          "data": "Tabulated_Results_id"
+        },
+        {
+          "targets": airline_id,
+          "visible": false,
+          "orderable": false,
+          "searchable": false,
+          "data": "Airline_id"
+        },
+        {
+          "targets": ffu_id,
+          "visible": false,
+          "orderable": false,
+          "searchable": false,
+          "data": "Fleet_Follow_Up_id"
+        },
+        {
+          "targets": dd_id,
+          "name": "Delivery Date",
+          "data": "Delivery_Date"
+        },
+        {
+          "targets": comment_id,
+          "name": "Commentary",
+          "data": "Commentary"
+        },
+        {
+          "targets": headers.indexOf("MSN"),
+          "name": "MSN",
+          "data": "MSN"
+        },
+        {
+          "targets": headers.indexOf("Aircraft"),
+          "name": "Aircraft",
+          "data": "Aircraft"
+        },
+        {
+          "targets": headers.indexOf("Flight"),
+          "name": "Flight",
+          "data": "Flight"
+        },
+        {
+          "targets": headers.indexOf("Flight_Owner"),
+          "name": "Flight Owner",
+          "data": "Flight_Owner"
+        },
+        {
+          "targets": headers.indexOf("Fuel_Flowmeters"),
+          "name": "Fuel Flowmeters",
+          "data": "Fuel_Flowmeters"
+        },
+        {
+          "targets": headers.indexOf('Flight_Date'),
+          "name": "Flight Date",
+          "data": "Flight_Date"
+        },
+        {
+          "targets": headers.indexOf("Fuel_Characteristics"),
+          "name": "Fuel Characteristics",
+          "data": "Fuel_Characteristics"
+        },
+        {
+          "targets": headers.indexOf("Weighing"),
+          "name": "Weighing",
+          "data": "Weighing"
         },
         {
           // Special Formatting for Validated Status
-          "targets": 1,
-          "render": function (data, type, row, meta) {
-            switch (data) {
+          "targets": results_status,
+          "name": "Results Status",
+          "data": "Results_Status",
+          "render": function(data, type, row, meta){
+            switch(data){
               case "Preliminary":
                 return '<font color="blue">Preliminary</font>'
               case "Investigation":
@@ -487,14 +609,63 @@ $(document).ready(function () {
             }
           }
         },
+        {
+          "targets": validated_status,
+          "name": "Validated Status",
+          "data": "Validated_Status",
+          "render": function(data, type, row, meta){
+            if(data !== "" && data !== undefined){
+              return '<i class="fa fa-check fa-lg" style="color:green"></i>'
+            }
+            else{
+              return ''
+            }
+          }
+        },
+        {
+          "targets": ctr_status,
+          "name": "CTR",
+          "data": "CTR",
+        },
+        {
+          "targets": ffu,
+          "name": "Fleet Follow Up",
+          "data": "Fleet_Follow_Up",
+        },
+        {
+          "targets": pv,
+          "data": "Parameters_Validation",
+          "name": "Parameters Validation",
+          "orderable": false,
+          "searchable": false,
+        },
+        {
+          "targets": tr,
+          "data": "Tabulated_Results",
+          "name": "Tabulated Results",
+          "orderable": false,
+          "searchable": false,
+        },
+        {
+          "targets": airline,
+          "data": "Airline",
+          "name": "Airline",
+          "orderable": false,
+          "searchable": false,
+        },
+        {
+          "targets": results,
+          "data": "Results",
+          "name": "Results",
+          "orderable": false,
+          "searchable": false,
+        },
+        {
+          "targets": tra,
+          "name": "TRA",
+          "data": "TRA",
+        }
       ]
     })
-    if ($("#Results").length) {
-      $("Results").DataTable({
-        "ordering": false,
-        "paging": false,
-        "searching": false,
-      })
-    }
   }
 })
