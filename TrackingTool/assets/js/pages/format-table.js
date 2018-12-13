@@ -41,25 +41,14 @@ $(document).ready(function () {
     $.internalIdSelection = undefined
     // Editor Modal
     $('#Editor').on('show.bs.modal', function () {
-      var calendar_button = $("#Calendar-button")
-      $('[data-toggle="datepicker"]').datepicker({
-        trigger: calendar_button,
-        format: "dd/mm/yyyy",
-        zIndex: 2048,
-      });
       var row = $("#available-data tr.selected")
       $.selectedRow = row.closest('tr').index()
       $.selectedRowDom = row
-      var table_header = []
-      table.api().columns().every(function () {
-        table_header.push(this.header().innerText.trim())
-      })
-      var complete_data_table = _.zipObject(table_header, table.api().row(row).data())
-      console.log(complete_data_table)
+      var complete_data_table = table.api().row(row).data()
       var ctr = complete_data_table["CTR"].length > 0 ? true : false
       var tra = complete_data_table["TRA"]
-      var v_status = complete_data_table["Validated Status"].length > 0 ? true : false
-      var r_status = complete_data_table["Results Status"]
+      var v_status = complete_data_table["Validated_Status"].length > 0 ? true : false
+      var r_status = complete_data_table["Results_Status"]
       if (r_status.indexOf("Preliminary") !== -1) {
         r_status = "Preliminary"
       } else {
@@ -127,18 +116,12 @@ $(document).ready(function () {
         delivery_date = $form.find("#Delivery-Input").val().length > 0 ? moment($form.find("#Delivery-Input").val()).format("DD/MM/YYYY") : "",
         comment = _.escape($form.find('#Comment-input').val())
         row_data = table.api().row($.selectedRowDom).data()
-        tra_idx = table_header.indexOf("TRA")
-        comment_idx = table_header.indexOf("Commentary")
-        dd_idx = table_header.indexOf('Delivery Date')
-        rs_idx = table_header.indexOf("Results Status")
-        v_idx = table_header.indexOf("Validated Status")
-        ctr_idx = table_header.indexOf("CTR")
-        row_data[tra_idx] = tra
-        row_data[dd_idx] = delivery_date
-        row_data[rs_idx] = r_status
-        row_data[v_idx] = v_status
-        row_data[comment_idx] = comment
-        row_data[ctr_idx] = ctr
+        row_data["TRA"] = tra
+        row_data["Delivery_Date"] = delivery_date
+        row_data["Results_Status"] = r_status
+        row_data["Validated_Status"] = v_status
+        row_data["Commentary"] = comment
+        row_data["CTR"] = ctr
       if ($form.find("#validatedCheck").length && $form.find("#validatedCombo").length) {
         //Super Admin Editing
         var data = {
@@ -203,16 +186,123 @@ $(document).ready(function () {
     var aircraft_id = headers.indexOf("Aircraft")
     var msn_id = headers.indexOf("MSN")
     var flight_id = headers.indexOf("Flight")
+    var comment_id = headers.indexOf("Commentary")
+    var dd_id = headers.indexOf("Delivery Date")
     var table = $('#available-data').dataTable({
-      columnDefs: [{
-          "className": "dt-center",
-          "targets": "_all"
+      // ServerSide done in another branch of the repo
+      serverSide: false,
+      order: [[headers.indexOf("Aircraft"), "asc"]],
+      columnDefs:[
+        {"className": "dt-center", "targets":"_all"},
+        {
+          "targets": headers.indexOf("createdAt"),
+          "data": "createdAt",
+          "visible": false,
+          "name": "createdAt",
+          "orderable": false,
+          "searchable": false
+        },
+        {
+          "targets": headers.indexOf("updatedAt"),
+          "visible": false,
+          "name": "updatedAt",
+          "orderable": false,
+          "searchable": false,
+          "data": "updatedAt"
+        },
+        {
+          "targets": id_id,
+          "visible": false,
+          "name": "id",
+          "orderable": false,
+          "searchable": false,
+          "data": "id"
+        },
+        {
+          "targets": pv_id,
+          "visible": false,
+          "orderable": false,
+          "searchable": false,
+          "data": "Parameters_Validation_id"
+        },
+        {
+          "targets": tr_id,
+          "visible": false,
+          "orderable": false,
+          "searchable": false,
+          "data": "Tabulated_Results_id"
+        },
+        {
+          "targets": airline_id,
+          "visible": false,
+          "orderable": false,
+          "searchable": false,
+          "data": "Airline_id"
+        },
+        {
+          "targets": ffu_id,
+          "visible": false,
+          "orderable": false,
+          "searchable": false,
+          "data": "Fleet_Follow_Up_id"
+        },
+        {
+          "targets": dd_id,
+          "name": "Delivery Date",
+          "data": "Delivery_Date"
+        },
+        {
+          "targets": comment_id,
+          "name": "Commentary",
+          "data": "Commentary"
+        },
+        {
+          "targets": headers.indexOf("MSN"),
+          "name": "MSN",
+          "data": "MSN"
+        },
+        {
+          "targets": headers.indexOf("Aircraft"),
+          "name": "Aircraft",
+          "data": "Aircraft"
+        },
+        {
+          "targets": headers.indexOf("Flight"),
+          "name": "Flight",
+          "data": "Flight"
+        },
+        {
+          "targets": headers.indexOf("Flight_Owner"),
+          "name": "Flight Owner",
+          "data": "Flight_Owner"
+        },
+        {
+          "targets": headers.indexOf("Fuel_Flowmeters"),
+          "name": "Fuel Flowmeters",
+          "data": "Fuel_Flowmeters"
+        },
+        {
+          "targets": headers.indexOf('Flight_Date'),
+          "name": "Flight Date",
+          "data": "Flight_Date"
+        },
+        {
+          "targets": headers.indexOf("Fuel_Characteristics"),
+          "name": "Fuel Characteristics",
+          "data": "Fuel_Characteristics"
+        },
+        {
+          "targets": headers.indexOf("Weighing"),
+          "name": "Weighing",
+          "data": "Weighing"
         },
         {
           // Special Formatting for Validated Status
           "targets": results_status,
-          "render": function (data, type, row, meta) {
-            switch (data) {
+          "name": "Results Status",
+          "data": "Results_Status",
+          "render": function(data, type, row, meta){
+            switch(data){
               case "Preliminary":
                 return '<font color="blue">Preliminary</font>'
               case "Investigation":
@@ -226,62 +316,89 @@ $(document).ready(function () {
         },
         {
           "targets": validated_status,
-          "render": function (data, type, row, meta) {
-            if (data !== "" && data !== undefined) {
+          "name": "Validated Status",
+          "data": "Validated_Status",
+          "render": function(data, type, row, meta){
+            if(data !== "" && data !== undefined){
               return '<i class="fa fa-check fa-lg" style="color:green"></i>'
-            } else {
+            }
+            else{
               return ''
             }
           }
         },
         {
           "targets": ctr_status,
-          "render": function (data, type, row, meta) {
-            if (data !== "" && data !== undefined) {
+          "name": "CTR",
+          "data": "CTR",
+          "render": function(data, type, row, meta){
+            if(data !== "" && data !== undefined){
               return '<i class="fa fa-check fa-lg" style="color:green"></i>'
-            } else {
+            }
+            else{
               return ''
             }
           }
         },
         {
           "targets": ffu,
-          "render": function (data, type, row, meta) {
-            return '<a href="/account/file/download/' + row[ffu_id] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
+          "name": "Fleet Follow Up",
+          "data": "Fleet_Follow_Up",
+          "render": function(data, type, row, meta){
+            return '<a href="/account/file/download/'+row[ffu_id]+'"'+' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
           }
         },
         {
           "targets": pv,
-          "render": function (data, type, row, meta) {
-            return '<a href="/account/file/download/' + row[pv_id] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
+          "data": "Parameters_Validation",
+          "name": "Parameters Validation",
+          "orderable": false,
+          "searchable": false,
+          "render": function(data, type, row, meta){
+            return '<a href="/account/file/download/'+row[pv_id]+'"'+' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
           }
         },
         {
           "targets": tr,
-          "render": function (data, type, row, meta) {
-            return '<a href="/account/file/download/' + row[tr_id] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
+          "data": "Tabulated_Results",
+          "name": "Tabulated Results",
+          "orderable": false,
+          "searchable": false,
+          "render": function(data, type, row, meta){
+            return '<a href="/account/file/download/'+row[tr_id]+'"'+' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
           }
         },
         {
           "targets": airline,
-          "render": function (data, type, row, meta) {
-            return '<a href="/account/file/download/' + row[airline_id] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
+          "data": "Airline",
+          "name": "Airline",
+          "orderable": false,
+          "searchable": false,
+          "render": function(data, type, row, meta){
+            return '<a href="/account/file/download/'+row[airline_id]+'"'+' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>'
           }
         },
         {
           "targets": results,
-          "render": function (data, type, row, meta) {
-            return '<button type="button" id="ResultsButton_' + row[id_id] + '"' + 'class="btn btn-primary" style="text-transform:capitalize" data-toggle="modal" data-target="#Results">View Table </button>'
+          "data": "Results",
+          "name": "Results",
+          "orderable": false,
+          "searchable": false,
+          "render": function(data, type, row, meta){
+            return '<button type="button" id="ResultsButton_'+row[id_id]+'"'+'class="btn btn-primary" style="text-transform:capitalize" data-toggle="modal" data-target="#Results">View Table </button>'
           }
         },
         {
           "targets": tra,
-          "render": function (data, type, row, meta) {
-            if (data === undefined || data === "") {
+          "name": "TRA",
+          "data": "TRA",
+          "render": function(data, type, row, meta){
+            if(data === undefined || data === ""){
               return ''
-            } else {
-              var linkName = "CRUISE PERFORMANCE " + row[aircraft_id] + " MSN " + row[msn_id] + " FLIGHT " + row[flight_id]
-              return '<a href=' + data + ' target="_blank">' + linkName + "</a>"
+            }
+            else{
+              var linkName = "CRUISE PERFORMANCE "+row[aircraft_id]+" MSN "+row[msn_id]+" FLIGHT "+row[flight_id]
+              return '<a href='+data+' target="_blank">'+linkName+"</a>"
             }
           }
         }
