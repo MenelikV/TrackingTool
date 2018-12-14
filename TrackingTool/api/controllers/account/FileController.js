@@ -35,7 +35,7 @@ module.exports = {
           data: [],
           headers: headers,
           me: req.me,
-          msn: req.param('msn'), 
+          msn: req.param('msn'),
           search: true
         })
       }
@@ -75,7 +75,7 @@ module.exports = {
       } else if (result == undefined) {
         res.send('notfound')
       } else {
-        if(result[0] === undefined){return res.serverError("Internal Error")}
+        if (result[0] === undefined) { return res.serverError("Internal Error") }
         var path = result[0].path;
         console.log(path)
         //Including skipper disk
@@ -83,8 +83,8 @@ module.exports = {
         var fileAdapter = SkipperDisk();
 
         fileAdapter.read(path).on('error', function (err) {
-            res.send('path error');
-          })
+          res.send('path error');
+        })
           .pipe(res);
       }
     })
@@ -92,6 +92,7 @@ module.exports = {
 
 
   upload: async function (req, res) {
+    var fs = require('fs')
     var XLSX = require("js-xlsx")
     var config_data = require("./config.json")
     var idendification_data = require("./ident_config.json")
@@ -108,10 +109,14 @@ module.exports = {
         return res.serverError('User should only upload 7 files at once');
       }
       // Filter PDF vs XLS* Files
+      var xlsDirectory = [];
       var pdf_files = uploads.filter(upload => upload.filename.split(".").pop() == "pdf")
+
       var xls_files = uploads.filter(upload => upload.filename.split(".").pop().indexOf("xls") !== -1)
       // Handle Excel Files First
       xls_files.forEach(file => {
+
+        xlsDirectory.push(file.fd)
         for (var k = 0; k < keys.length; k++) {
           var key = keys[k]
           if (file.filename.indexOf(key) !== -1) {
@@ -152,6 +157,13 @@ module.exports = {
           }
         }
       })
+
+      //Deleting excel files after uploading and extracting info
+      xlsDirectory.forEach(function (item) {
+        fs.unlink(item, function (err) {
+          if (err) return console.log('Could not delete excel file',err);});
+      });
+
       console.log("Handling PDF Files")
       for (const file of pdf_files) {
 
@@ -171,18 +183,21 @@ module.exports = {
       aircraft_data["Validated_Status"] = ""
       aircraft_data["Results_Status"] = "Preliminary"
       // Try to open the CTR DataBase, If MSN not found then set fields to defaut
-      var CTR_dict = await CtrTot.find({MSN: aircraft_data["MSN"]})
-      if(CTR_dict.length == 1){
+      var CTR_dict = await CtrTot.find({ MSN: aircraft_data["MSN"] })
+      if (CTR_dict.length == 1) {
         CTR_dict = CTR_dict[0]
         aircraft_data["CTR"] = CTR_dict.CTR !== undefined ? CTR_dict.CTR : ""
         aircraft_data["Delivery_Date"] = CTR_dict.Delivery_Date !== undefined ? CTR_dict.Delivery_Date : ""
       }
-      else{
+      else {
         aircraft_data["CTR"] = ""
         aircraft_data["Delivery_Date"] = ""
       }
       // TRA is filled by hand :/
       aircraft_data["TRA"] = ""
+
+
+
       console.log("Finishing processing Files and redirection")
       console.log(err !== undefined && err !== null)
       console.log(err)
@@ -233,7 +248,7 @@ module.exports = {
         path: file.fd
       }).exec(function (err, updatedFile) {
         if (err) {
-          res.serverError('Internal Error, could not update'+err)
+          res.serverError('Internal Error, could not update' + err)
         }
       });
       return res.redirect('/files')
@@ -305,11 +320,11 @@ module.exports = {
     return res.send("Test was okay")
   },
 
-  getData: async function(req, res){
+  getData: async function (req, res) {
     console.log(req.body)
     var draw = parseInt(req.body["draw"])
     var data = await Data.find({})
-    for(var i=0; i<data.length;i++){
+    for (var i = 0; i < data.length; i++) {
       data["DT_RowId"] = data["id"]
     }
     res.status(200)
