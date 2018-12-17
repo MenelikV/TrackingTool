@@ -16,7 +16,10 @@ module.exports.routes = {
   //  ╚╩╝╚═╝╚═╝╩  ╩ ╩╚═╝╚═╝╚═╝
 
   'GET /': {
-    action: 'view-homepage-or-redirect'
+    action: 'view-homepage-or-redirect',
+    locals: {
+      layout: 'layouts/layout-home'
+    }
   },
 
   'GET /welcome': {

@@ -10,7 +10,7 @@
 
   <% /*
         Stylesheets
-        ========================
+        ======================== 
 
         Stylesheets can be hard-coded as «link» tags, automatically injected
         by the asset pipeline between "STYLES" and "STYLES END", or both.
@@ -147,6 +147,8 @@
   <% /* Delete the global `self` to help avoid client-side bugs.
     (see https://developer.mozilla.org/en-US/docs/Web/API/Window/self) */ %>
   <script>delete window.self;</script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
 
 
   <% /* Auto-injected «script» tags: */ %>

@@ -1,3 +1,6 @@
+'use strict';
+
+
 parasails.registerPage('account-overview', {
   //  ╦╔╗╔╦╔╦╗╦╔═╗╦    ╔═╗╔╦╗╔═╗╔╦╗╔═╗
   //  ║║║║║ ║ ║╠═╣║    ╚═╗ ║ ╠═╣ ║ ║╣
@@ -13,7 +16,7 @@ parasails.registerPage('account-overview', {
     syncingRemoveCard: false,
 
     // Form data
-    formData: { /* … */ },
+    formData: {/* … */},
 
     // Server error state for the form
     cloudError: '',
@@ -22,100 +25,206 @@ parasails.registerPage('account-overview', {
     checkoutHandler: undefined,
 
     // For the confirmation modal:
-    removeCardModalVisible: false,
+    removeCardModalVisible: false
   },
 
   //  ╦  ╦╔═╗╔═╗╔═╗╦ ╦╔═╗╦  ╔═╗
   //  ║  ║╠╣ ║╣ ║  ╚╦╝║  ║  ║╣
   //  ╩═╝╩╚  ╚═╝╚═╝ ╩ ╚═╝╩═╝╚═╝
-  beforeMount: function (){
+  beforeMount: function beforeMount() {
     _.extend(this, window.SAILS_LOCALS);
 
     this.isBillingEnabled = !!this.stripePublishableKey;
 
     // Determine whether there is billing info for this user.
-    this.me.hasBillingCard = (
-      this.me.billingCardBrand &&
-      this.me.billingCardLast4 &&
-      this.me.billingCardExpMonth &&
-      this.me.billingCardExpYear
-    );
+    this.me.hasBillingCard = this.me.billingCardBrand && this.me.billingCardLast4 && this.me.billingCardExpMonth && this.me.billingCardExpYear;
   },
-  mounted: async function() {
-    //…
-  },
+  mounted: function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+            case 'end':
+              return _context.stop();
+          }
+        }
+      }, _callee, this);
+    }));
+
+    function mounted() {
+      return _ref.apply(this, arguments);
+    }
+
+    return mounted;
+  }(),
 
   //  ╦╔╗╔╔╦╗╔═╗╦═╗╔═╗╔═╗╔╦╗╦╔═╗╔╗╔╔═╗
   //  ║║║║ ║ ║╣ ╠╦╝╠═╣║   ║ ║║ ║║║║╚═╗
   //  ╩╝╚╝ ╩ ╚═╝╩╚═╩ ╩╚═╝ ╩ ╩╚═╝╝╚╝╚═╝
   methods: {
 
-    clickStripeCheckoutButton: async function() {
+    clickStripeCheckoutButton: function () {
+      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+        var _this = this;
 
-      // Prevent double-posting if it's still loading.
-      if(this.syncingUpdateCard) { return; }
+        var billingCardInfo;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (!this.syncingUpdateCard) {
+                  _context2.next = 2;
+                  break;
+                }
 
-      // Show syncing state for opening checkout.
-      this.syncingOpenCheckout = true;
+                return _context2.abrupt('return');
 
-      // Clear out error states.
-      this.cloudError = false;
+              case 2:
 
-      // Open Stripe Checkout.
-      var billingCardInfo = await parasails.util.openStripeCheckout(this.stripePublishableKey, this.me.emailAddress);
-      // Clear the loading state for opening checkout.
-      this.syncingOpenCheckout = false;
-      if (!billingCardInfo) {
-        // (if the user canceled the dialog, avast)
-        return;
+                // Show syncing state for opening checkout.
+                this.syncingOpenCheckout = true;
+
+                // Clear out error states.
+                this.cloudError = false;
+
+                // Open Stripe Checkout.
+                _context2.next = 6;
+                return parasails.util.openStripeCheckout(this.stripePublishableKey, this.me.emailAddress);
+
+              case 6:
+                billingCardInfo = _context2.sent;
+
+                // Clear the loading state for opening checkout.
+                this.syncingOpenCheckout = false;
+
+                if (billingCardInfo) {
+                  _context2.next = 10;
+                  break;
+                }
+
+                return _context2.abrupt('return');
+
+              case 10:
+
+                // Now that payment info has been successfully added, update the billing
+                // info for this user in our backend.
+                this.syncingUpdateCard = true;
+                _context2.next = 13;
+                return Cloud.updateBillingCard.with(billingCardInfo).tolerate(function () {
+                  _this.cloudError = true;
+                });
+
+              case 13:
+                this.syncingUpdateCard = false;
+
+                // Upon success, update billing info in the UI.
+                if (!this.cloudError) {
+                  Object.assign(this.me, _.pick(billingCardInfo, ['billingCardLast4', 'billingCardBrand', 'billingCardExpMonth', 'billingCardExpYear']));
+                  this.me.hasBillingCard = true;
+                }
+
+              case 15:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function clickStripeCheckoutButton() {
+        return _ref2.apply(this, arguments);
       }
 
-      // Now that payment info has been successfully added, update the billing
-      // info for this user in our backend.
-      this.syncingUpdateCard = true;
-      await Cloud.updateBillingCard.with(billingCardInfo)
-      .tolerate(()=>{
-        this.cloudError = true;
-      });
-      this.syncingUpdateCard = false;
+      return clickStripeCheckoutButton;
+    }(),
 
-      // Upon success, update billing info in the UI.
-      if (!this.cloudError) {
-        Object.assign(this.me, _.pick(billingCardInfo, ['billingCardLast4', 'billingCardBrand', 'billingCardExpMonth', 'billingCardExpYear']));
-        this.me.hasBillingCard = true;
+    clickRemoveCardButton: function () {
+      var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                this.removeCardModalVisible = true;
+
+              case 1:
+              case 'end':
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      }));
+
+      function clickRemoveCardButton() {
+        return _ref3.apply(this, arguments);
       }
-    },
 
-    clickRemoveCardButton: async function() {
-      this.removeCardModalVisible = true;
-    },
+      return clickRemoveCardButton;
+    }(),
 
-    closeRemoveCardModal: async function() {
-      this.removeCardModalVisible = false;
-      this.cloudError = false;
-    },
+    closeRemoveCardModal: function () {
+      var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                this.removeCardModalVisible = false;
+                this.cloudError = false;
 
-    submittedRemoveCardForm: async function() {
+              case 2:
+              case 'end':
+                return _context4.stop();
+            }
+          }
+        }, _callee4, this);
+      }));
 
-      // Update billing info on success.
-      this.me.billingCardLast4 = undefined;
-      this.me.billingCardBrand = undefined;
-      this.me.billingCardExpMonth = undefined;
-      this.me.billingCardExpYear = undefined;
-      this.me.hasBillingCard = false;
+      function closeRemoveCardModal() {
+        return _ref4.apply(this, arguments);
+      }
 
-      // Close the modal and clear it out.
-      this.closeRemoveCardModal();
+      return closeRemoveCardModal;
+    }(),
 
-    },
+    submittedRemoveCardForm: function () {
+      var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
 
-    handleParsingRemoveCardForm: function() {
+                // Update billing info on success.
+                this.me.billingCardLast4 = undefined;
+                this.me.billingCardBrand = undefined;
+                this.me.billingCardExpMonth = undefined;
+                this.me.billingCardExpYear = undefined;
+                this.me.hasBillingCard = false;
+
+                // Close the modal and clear it out.
+                this.closeRemoveCardModal();
+
+              case 6:
+              case 'end':
+                return _context5.stop();
+            }
+          }
+        }, _callee5, this);
+      }));
+
+      function submittedRemoveCardForm() {
+        return _ref5.apply(this, arguments);
+      }
+
+      return submittedRemoveCardForm;
+    }(),
+
+    handleParsingRemoveCardForm: function handleParsingRemoveCardForm() {
       return {
         // Set to empty string to indicate the default payment source
         // for this customer is being completely removed.
         stripeToken: ''
       };
-    },
+    }
 
   }
 });
