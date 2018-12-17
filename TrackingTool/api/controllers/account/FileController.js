@@ -109,14 +109,11 @@ module.exports = {
         return res.serverError('User should only upload 7 files at once');
       }
       // Filter PDF vs XLS* Files
-      var xlsDirectory = [];
       var pdf_files = uploads.filter(upload => upload.filename.split(".").pop() == "pdf")
 
       var xls_files = uploads.filter(upload => upload.filename.split(".").pop().indexOf("xls") !== -1)
       // Handle Excel Files First
       xls_files.forEach(file => {
-
-        xlsDirectory.push(file.fd)
         for (var k = 0; k < keys.length; k++) {
           var key = keys[k]
           if (file.filename.indexOf(key) !== -1) {
@@ -156,13 +153,12 @@ module.exports = {
             }
           }
         }
+        fs.unlink(file.fd, function (err) {
+          if (err) {
+            return console.log('Could not delete excel file', err);
+          }
+        });
       })
-
-      //Deleting excel files after uploading and extracting info
-      xlsDirectory.forEach(function (item) {
-        fs.unlink(item, function (err) {
-          if (err) return console.log('Could not delete excel file',err);});
-      });
 
       console.log("Handling PDF Files")
       for (const file of pdf_files) {
