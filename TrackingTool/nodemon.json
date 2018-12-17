@@ -1,0 +1,4 @@
+{
+    "verbose": true,
+    "ignore": ["test/*", "config/local_databases/*", ".tmp/*", ".vscode/*"]
+}
