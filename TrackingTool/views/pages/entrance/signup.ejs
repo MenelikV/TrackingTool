@@ -58,7 +58,7 @@
         </div>
       </ajax-form>
     </div>
-    <div class="row text-center" v-if="!formErrors.confirmPassword && !formErrors.password && !formErrors.emailAddress && !formErrors.fullName">
+    <div class="row text-center" v-if="!formErrors.confirmPassword && !formErrors.password && !formErrors.emailAddress && !formErrors.fullName && !(cloudSuccess || cloudError)">
       <div class="col-md-12">
         <div class="lds-ring text-center" id="load" style="display:none">
           <div></div>
