@@ -1,6 +1,5 @@
 <div class="jumbotron jumbostyle">
     <br>
-
     <%if(search){%>
     <h3>Search results for
         <%=msn%>
@@ -10,7 +9,6 @@
     <h5 style="text-decoration: underline;">No results found</h5>
     <%}}  %>
 
-
     <%if(data[0] !== undefined && headers !== undefined){%>
     <div class="table-responsive">
         <!--TODO Correct That!-->
@@ -18,7 +16,6 @@
         <button type="button" id="EditButton" class="btn btn-danger btn-lg mr-5 ml-0 mb-2" data-toggle="modal"
             data-target="#Editor" disabled>Edit <i class="fa fa-edit fa-lg" style="color:white"></i></button>
         <%}%>
-
 
         <table id="available-data" class="display">
             <!-- HEADERS -->
@@ -39,128 +36,122 @@
         </table>
     </div>
 
-
-
-
-
-<!-- Add all the modal for the results -->
-<div class="modal fade" id='Results' tabindex="-1" role="dialog" aria-labelledby="ResultsTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content modal-body">
-            <div class="modal-header">
-                <h5 class="modal-title" id="ResultsTitle">Results Table</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id='TableContainer'>
-                <!-- Display the results Table TODO, Better Styling for the small table-->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <!-- Add all the modal for the results -->
+    <div class="modal fade" id='Results' tabindex="-1" role="dialog" aria-labelledby="ResultsTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ResultsTitle">Results Table</h5>
+                </div>
+                <hr>
+                <div class="modal-body" id='TableContainer'>
+                    <!-- Display the results Table TODO, Better Styling for the small table-->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Add a Modal for row edition -->
-<!-- TODO Update Model according to current state -->
-<form action="/account/file/edit" method="post" id="dataEdition" novalidate>
-    <div class="modal fade" id='Editor' tabindex="-1" role="dialog" aria-labelledby="EditorTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content modal-body">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="EditorTitle">Row Editor</h5>
-                </div>
-                <div class="modal-body">
+    <!-- Add a Modal for row edition -->
+    <!-- TODO Update Model according to current state -->
+    <form action="/account/file/edit" method="post" id="dataEdition" novalidate>
+        <div class="modal fade" id='Editor' tabindex="-1" role="dialog" aria-labelledby="EditorTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="EditorTitle">Row Editor</h5>
+                    </div>
+                    <hr>
+                    <div class="modal-body">
 
-                    <!--Small form to edit the table -->
-                    <div class="container">
+                        <!--Small form to edit the table -->
+                        <div class="container">
 
-                        <div class="form-group row">
-                            <label for="TRA-input" class="col-2 col-form-label">TRA</label>
-                            <div class="col-10">
-                                <input class="form-control" type="url" value="" id="TRA-input" placeholder="Put your TRA here">
-                                <div class="invalid-feedback">
-                                    Please type in a valid url.
+                            <div class="form-group row">
+                                <label for="TRA-input" class="col-2 col-form-label">TRA</label>
+                                <div class="col-10">
+                                    <input class="form-control" type="url" value="" id="TRA-input" placeholder="Put your TRA here">
+                                    <div class="invalid-feedback">
+                                        Please type in a valid url.
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="form-group row">
-                            <label for="Comment-input" class="col-2 col-form-label">Comment</label>
-                            <div class="col-10">
-                                <input class="form-control" type="text" value="" id="Comment-input" placeholder="Write a comment here">
+                            <div class="form-group row">
+                                <label for="Comment-input" class="col-2 col-form-label">Comment</label>
+                                <div class="col-10">
+                                    <input class="form-control" type="text" value="" id="Comment-input" placeholder="Write a comment here">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-form-label col-sm-2" id="Validated">Delivery Date</label>
+                                <div class="input-group col-sm-10">
+                                    <input type="date" class="form-control docs-date" id="Delivery-Input" name="date"
+                                        data-toggle="datepicker" placeholder="Pick a date">
+                                </div>
+                            </div>
+
+                            <% if(me.isSuperAdmin){%>
+                            <div class="form-group row">
+                                <label class="col-form-label col-sm-2" id="Validated">Results Status</label>
+                                <div class="col-sm-10">
+                                    <select class="custom-select" id="validatedCombo" title="Choose an option" required>
+                                        <option value="Preliminary">Preliminary</option>
+                                        <option value="Definitive">Definitive</option>
+                                        <option value="Investigation">Investigation</option>
+                                    </select>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please select a validation option.
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-2">Validated</label>
+                                <label class="form-check-label">
+                                    <input class="form-check-input col-sm-2" type="checkbox" id="validatedCheck">
+                                </label>
+                                </label>
+                            </div>
+                            <%}%>
+
+                            <div class="form-group row">
+                                <label class="col-sm-2">CTR</label>
+                                <label class="form-check-label">
+                                    <input class="form-check-input col-sm-2" type="checkbox" id="CTRCheck">
+                                </label>
+                                </label>
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label class="col-form-label col-sm-2" id="Validated">Delivery Date</label>
-                            <div class="input-group col-sm-10">
-                                <input type="date" class="form-control docs-date" id="Delivery-Input" name="date"
-                                    data-toggle="datepicker" placeholder="Pick a date">
-                            </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeEditorButton">Close</button>
+                            <button type="submit" class="btn btn-success">Update</button>
                         </div>
 
-                        <% if(me.isSuperAdmin){%>
-                        <div class="form-group row">
-                            <label class="col-form-label col-sm-2" id="Validated">Results Status</label>
-                            <div class="col-sm-10">
-                                <select class="custom-select" id="validatedCombo" title="Choose an option" required>
-                                    <option value="Preliminary">Preliminary</option>
-                                    <option value="Definitive">Definitive</option>
-                                    <option value="Investigation">Investigation</option>
-                                </select>
-                            </div>
-                            <div class="invalid-feedback">
-                                Please select a validation option.
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="col-sm-2">Validated</label>
-                            <label class="form-check-label">
-                                <input class="form-check-input col-sm-2" type="checkbox" id="validatedCheck">
-                            </label>
-                            </label>
-                        </div>
-                        <%}%>
-
-                        <div class="form-group row">
-                            <label class="col-sm-2">CTR</label>
-                            <label class="form-check-label">
-                                <input class="form-check-input col-sm-2" type="checkbox" id="CTRCheck">
-                            </label>
-                            </label>
-                        </div>
                     </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeEditorButton">Close</button>
-                        <button type="submit" class="btn btn-success">Update</button>
-                    </div>
-
                 </div>
             </div>
         </div>
-    </div>
-</form>
-
-
-<%}  %>
-
-<br>
-<br>
-<div class="row">
-<div class="col-md-6">
-    <h4 style="color: #2e3338;">Search </h4>
-
-
-    <form name="form" id="form" method="post" action="/account/file/search">
-        <input type="number" placeholder="Search by MSN" name="msn">
-        <button type="submit"><i class="fa fa-search"></i></button>
     </form>
-</div>
-</div>
+    <%}  %>
+
+    <br>
+    <br>
+    <div class="row">
+        <form name="form" id="form" method="post" action="/account/file/search">
+            <div class="input-group md-form form-sm form-2 pl-0">
+                <input class="form-control my-0 py-1 amber-border" type="number" name="msn" placeholder="Search by MSN"
+                    aria-label="Search">
+                <div class="input-group-append">
+                    <button type="submit" class="input-group-text amber lighten-3" id="basic-text1"><i class="fa fa-search text-grey"
+                            aria-hidden="true"></i></button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

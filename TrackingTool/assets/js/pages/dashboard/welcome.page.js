@@ -91,6 +91,7 @@ parasails.registerPage('welcome', {
 });
 
 jQuery(document).ready(function ($) {
+  $('[data-toggle="popover"]').popover();   
 
   // Disable scroll when focused on a number input.
   $('form').on('focus', 'input[type=number]', function (e) {
