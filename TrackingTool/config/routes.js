@@ -66,7 +66,9 @@ module.exports.routes = {
 
   },
 
-  "POST /state_save": "accout/FileController.test",
+  'POST /ctr/import': 'ctr/CtrController.import',
+
+  'GET /ctr': "ctr/CtrController.view",
   
   'GET /faq': {
     view: 'pages/faq'

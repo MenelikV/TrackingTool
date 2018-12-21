@@ -78,6 +78,7 @@ module.exports = {
         if (result[0] === undefined) { return res.serverError("Internal Error") }
         var path = result[0].path;
         console.log(path)
+        // Watermark file Here or not 
         //Including skipper disk
         var SkipperDisk = require('skipper-disk');
         var fileAdapter = SkipperDisk();
