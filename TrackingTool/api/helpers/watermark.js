@@ -33,12 +33,12 @@ module.exports = {
         for(var i = 0; i < pdfReader.getPagesCount(); i++){
             // Pages Dimensions
             const pageDimensions = pdfReader.parsePage(i).getCropBox()
-            var result = getTextMatrix(matrixCache, WatermarkText, font, fontSize, pageDimensions[2], pageDimensions[3],
+            var result = sails.helpers.getTextMatrix(matrixCache, WatermarkText, font, fontSize, pageDimensions[2], pageDimensions[3],
                 opacity)
             const tmMatrix = result.tmMatrix
             matrixCache = result.matrixCache
 
-            result = createXObject(tmMatrix, objectCache, WatermarkText, font, pageDimensions, pdfWriter)
+            result = sails.helpers.createXObject(tmMatrix, objectCache, WatermarkText, font, pageDimensions, pdfWriter)
             var xObject = result.xObject
             objectCache = result.objectCache
 

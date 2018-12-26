@@ -1,5 +1,5 @@
 module.exports = {
-  friendlyName: 'setXObject',
+  friendlyName: 'createXObject',
 
   description: '',
   inputs: {
@@ -32,11 +32,11 @@ module.exports = {
 
   fn: function (req, exits) {
     //Check if we have created an object for this page size already
-    let cachedObject = req.objectCache[`${pageDimensions[2]} ${pageDimensions[3]}`];
+    let cachedObject = req.objectCache[`${req.pageDimensions[2]} ${req.pageDimensions[3]}`];
     if (cachedObject) {
       exits.success({
         xObject: cachedObject,
-        objectCache: objectCache
+        objectCache: req.objectCache
       });
     }
 
@@ -48,21 +48,21 @@ module.exports = {
     var gsId = sails.helpers.createTransparencyObject(pdfWriter);
 
     //Create a "page object" that we can later assign the transparency object to
-    var xObject = req.pdfWriter.createFormXObject(0, 0, pageDimensions[2], pageDimensions[3]);
+    var xObject = req.pdfWriter.createFormXObject(0, 0, req.pageDimensions[2], req.pageDimensions[3]);
 
     //Add the graphic state to the "page object" and get the name back
     var gsName = sails.helpers.assignGsStateToResource(xObject, gsId);
 
     //Write the text to the "page object"
-    sails.helpers.setXObject(xObject, gsName, font, tmMatrix, watermarkText);
+    sails.helpers.setXObject(xObject, gsName, req.font, req.tmMatrix, req.watermarkText);
     req.pdfWriter.endFormXObject(xObject);
 
     //Save the page size object to the cache
-    req.objectCache[`${pageDimensions[2]} ${pageDimensions[3]}`] = xObject;
+    req.objectCache[`${req.pageDimensions[2]} ${req.pageDimensions[3]}`] = xObject;
 
-    return {
+    exits.success({
       xObject: xObject,
-      objectCache: objectCache
-    };
+      objectCache: req.objectCache
+    });
   }
 }
