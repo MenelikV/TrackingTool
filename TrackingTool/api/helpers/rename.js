@@ -26,7 +26,7 @@ module.exports = {
       if(!newName.endsWith(ext)){
           newName+=ext
       }
-      var res = path.join([dir, newName])
+      var res = path.join(dir, newName)
       exits.success(res)
     }
   }

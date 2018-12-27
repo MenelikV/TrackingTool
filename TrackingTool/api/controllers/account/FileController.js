@@ -9,17 +9,12 @@ module.exports = {
 
   view: function (req, res) {
     // New aircraft if the last created entry, if it exists, display it
-    if (aircraft_data === {}) {
-      res.send("No data found")
-    } else {
-      var headers = Data.getHeader();
-      return res.view("pages/table/upload-results", {
-        data: [aircraft_data],
-        headers: headers,
-        me: req.me
-      })
-    }
-
+    var headers = Data.getHeader();
+    console.log(req)
+    return res.view("pages/table/upload-results", {
+      data: [req.aircraft_data],
+      headers: headers,
+      me: req.me})
   },
 
   search: function (req, res) {
@@ -65,11 +60,11 @@ module.exports = {
     })
   },
 
-  download: function (req, res) {
+  download: async function (req, res) {
     //Finding file through id on the URL and selecting file path
     File.find({
       id: req.param('id')
-    }).exec(function (err, result) {
+    }).exec(async function (err, result) {
       if (err) {
         res.send('error')
       } else if (result == undefined) {
@@ -80,13 +75,34 @@ module.exports = {
         console.log(path)
         // Watermark file Here or not 
         //Including skipper disk
-        var SkipperDisk = require('skipper-disk');
-        var fileAdapter = SkipperDisk();
+        console.log(result[0].aircraft_id)
+        var status  =  await Data.find({id: result[0].aircraft_id})
+        if(status===undefined){
+          return res.serverError("Unable to find aircraft linked to the file")
+        }
+        else{
+          if(status.length !== 1){return res.serverError("Not able to download this file")}
+          console.log(status)
+          if(status[0].Results_Status === "Preliminary"){
+            // Watermark PDF
+            console.log("PDF Should be Watermarked")
+            try {
+              var path = sails.helpers.watermark(path, "Preliminary Results")
+            } catch (error) {
+              console.error(error)
+            }
+          }
+          
+          var SkipperDisk = require('skipper-disk');
+          var fileAdapter = SkipperDisk();
+  
+          fileAdapter.read(path).on('error', function (err) {
+            res.send('path error');
+          })
+            .pipe(res);
+          
 
-        fileAdapter.read(path).on('error', function (err) {
-          res.send('path error');
-        })
-          .pipe(res);
+        }
       }
     })
   },
@@ -101,7 +117,7 @@ module.exports = {
     var pdf_data = require("./pdf_config.json")
     var keys = Object.keys(config_data)
     var pdf_keys = Object.keys(pdf_data)
-    aircraft_data = {}
+    var aircraft_data = {}
     req.file("file").upload({}, async function (err, uploads) {
       if (uploads === undefined) {
         return res.serverError("Upload did not work")
@@ -160,7 +176,9 @@ module.exports = {
           }
         });
       })
-
+      // Add Entry to DataBase now
+      var uploaded_entry = await Data.findOrCreate(aircraft_data, aircraft_data)
+      aircraft_data = {}
       console.log("Handling PDF Files")
       for (const file of pdf_files) {
 
@@ -170,7 +188,8 @@ module.exports = {
             // Create a file entry in the Fike DataBase
             var createdFileEntry = await File.create({
               filename: k,
-              path: file.fd
+              path: file.fd,
+              aircraft_id: uploaded_entry.id
             }).fetch()
             aircraft_data[pdf_data[k] + "_id"] = createdFileEntry.id;
           }
@@ -192,6 +211,7 @@ module.exports = {
       }
       // TRA is filled by hand :/
       aircraft_data["TRA"] = ""
+      var data = await Data.update(uploaded_entry).set(aircraft_data).fetch()
 
 
 
@@ -204,7 +224,11 @@ module.exports = {
       }
       console.log("Redirection")
       // if it was successful redirect and display all uploaded files
-      return res.redirect('/files');
+      var headers = Data.getHeader()
+      return res.view("pages/table/upload-results", {
+        data: data,
+        headers: headers,
+        me: req.me})
     })
 
   },
@@ -256,13 +280,12 @@ module.exports = {
   validate: async function (req, res) {
     // Push Data to the server
     console.log("Some data will be pushed back to the server")
+    var aircraft_data = {}
     aircraft_data["Commentary"] = _.escape(req.body["userCommentary"])
     // Date Formatting if Delivery date field is not empty
     moment = require("moment")
     aircraft_data["Delivery_Date"] = req.body["deliveryDate"].length > 0 ? moment(req.body["deliveryDate"]).format("DD/MM/YYYY") : ''
-
-    var min_entry = sails.helpers.extractSubDictionary(aircraft_data)
-    var possible_entry = await Data.find(min_entry)
+    var possible_entry = await Data.find(req.body.aircraft)
     if (possible_entry.length == 1) {
       // Update Entry if there is something new
       if (aircraft_data !== possible_entry[0]) {
@@ -307,14 +330,6 @@ module.exports = {
     // Return Sucess If update was good
     res.status(200)
     return res.send("Sucessful Operation")
-  },
-
-
-  test: function (req, res) {
-    console.log(req.body)
-    console.log(req.params)
-    res.status(200)
-    return res.send("Test was okay")
   },
 
   getData: async function (req, res) {
