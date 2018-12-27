@@ -446,11 +446,7 @@ $(document).ready(function () {
       }
 
       $.selectedRow = row.closest('tr').index()
-      var table_header = []
-      table.api().columns().every(function () {
-        table_header.push(this.header().innerText.trim())
-      })
-      var complete_data_table = _.zipObject(table_header, table.api().row(row).data())
+      var complete_data_table = table.api().row(row).data()
       console.log(complete_data_table)
       var results_table = complete_data_table["Results"]
       console.log(results_table)
