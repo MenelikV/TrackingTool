@@ -12,7 +12,8 @@
  * For more information on configuring datastores, check out:
  * https://sailsjs.com/config/datastores
  */
-
+const path = require("path")
+const local_db_folder = path.join(__dirname, "local_databases")
 module.exports.datastores = {
 
 
@@ -48,21 +49,8 @@ module.exports.datastores = {
     *    (See https://sailsjs.com/config/datastores for help.)                 *
     *                                                                          *
     ***************************************************************************/
-    // adapter: 'sails-mysql',
-    // url: 'mysql://user:password@host:port/database',
+    adapter: 'sails-disk',
+    dir: local_db_folder
 
   },
-  user: {
-    adapter: "sails-disk",
-    dir: __dirname + "\\local_databases\\",
-  },
-  data: {
-    adapter: "sails-disk",
-    dir: __dirname + "\\local_databases\\"
-    
-  },
-  ctr: {
-    adapter: "sails-disk",
-    dir: __dirname+"\\local_databases\\"
-  }
 };

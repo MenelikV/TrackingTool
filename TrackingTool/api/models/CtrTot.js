@@ -14,5 +14,5 @@ module.exports = {
             defaultsTo: ""
         }
     },
-    datastore: "ctr"
+    //datastore: "ctr"
 }

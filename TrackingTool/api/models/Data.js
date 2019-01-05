@@ -85,7 +85,7 @@ module.exports = {
             defaultsTo: ""
         }
     },
-    datastore: "data",
+    //datastore: "data",
     getHeader: function(){
         return Object.keys(this.attributes)
   },
