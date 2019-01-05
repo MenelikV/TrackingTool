@@ -10,7 +10,6 @@ module.exports = {
   view: function (req, res) {
     // New aircraft if the last created entry, if it exists, display it
     var headers = Data.getHeader();
-    console.log('\x1b[36m%s\x1b[0m', req);
     return res.view("pages/table/upload-results", {
       data: [req.aircraft_data],
       headers: headers,

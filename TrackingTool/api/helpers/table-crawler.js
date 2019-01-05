@@ -46,10 +46,7 @@ module.exports = {
       // DSR Formatting
       res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(2))
       start_idx = sails.helpers.rowShift(start_idx);
-      console.log(start_idx)
       data = input.sheet[start_idx].v;
-      console.log(data === "")
-      console.log(data === "\n")
       res += "</tr>"
     }
     res+="</table>"
