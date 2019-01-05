@@ -413,23 +413,11 @@ $(document).ready(function () {
         alert("Did you click somewhere ?");
       }
 
-<<<<<<< HEAD
       $.selectedRow = row.closest('tr').index()
       var complete_data_table = table.api().row(row).data()
       console.log(complete_data_table)
       var results_table = complete_data_table["Results"]
       console.log(results_table)
-=======
-      $.selectedRow = row.closest('tr').index();
-      var table_header = [];
-      table.api().columns().every(function () {
-        table_header.push(this.header().innerText.trim());
-      });
-      var complete_data_table = _.zipObject(table_header, table.api().row(row).data());
-      console.log(complete_data_table);
-      var results_table = complete_data_table["Results"];
-      console.log(results_table);
->>>>>>> cceeaa0... fix on IE
       // insertAfter is not the one to use, maybe append
       $("#TableContainer").append(results_table);
     });
