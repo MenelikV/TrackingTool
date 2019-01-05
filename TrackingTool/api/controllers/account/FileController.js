@@ -10,7 +10,7 @@ module.exports = {
   view: function (req, res) {
     // New aircraft if the last created entry, if it exists, display it
     var headers = Data.getHeader();
-    console.log(req)
+    console.log('\x1b[36m%s\x1b[0m', req);
     return res.view("pages/table/upload-results", {
       data: [req.aircraft_data],
       headers: headers,
@@ -113,7 +113,6 @@ module.exports = {
     var XLSX = require("js-xlsx")
     var config_data = require("./config.json")
     var idendification_data = require("./ident_config.json")
-    console.log(idendification_data)
     var pdf_data = require("./pdf_config.json")
     var keys = Object.keys(config_data)
     var pdf_keys = Object.keys(pdf_data)
@@ -157,9 +156,6 @@ module.exports = {
                   } else {
                     console.log("Crawling Data")
                     if (sheet === "identification") {
-                      console.log(idendification_data)
-                      console.log(prop)
-                      console.log(s[info[prop]].v)
                       aircraft_data[prop] = idendification_data[prop][s[info[prop]].v]
                     } else {
                       aircraft_data[prop] = s[info[prop]].v
@@ -214,10 +210,7 @@ module.exports = {
       var data = await Data.update(uploaded_entry).set(aircraft_data).fetch()
 
 
-
       console.log("Finishing processing Files and redirection")
-      console.log(err !== undefined && err !== null)
-      console.log(err)
       if (err !== undefined && err !== null) {
         console.log('error uploading files')
         return res.serverError(err)
@@ -289,7 +282,7 @@ module.exports = {
     if (possible_entry.length == 1) {
       // Update Entry if there is something new
       if (aircraft_data !== possible_entry[0]) {
-        await Data.update(min_entry, aircraft_data);
+        await Data.update(req.body.aircraft, aircraft_data);
       }
       // See the whole table with the new entry 
       res.status(200)
