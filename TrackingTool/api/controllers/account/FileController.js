@@ -85,7 +85,7 @@ module.exports = {
           var rs = status[0].Results_Status
           var vs = status[0].Validated_Status
           var text = ""
-          if(rs === "Preliminary" && vs.length){
+          if(rs === "Preliminary" && vs === "true"){
             text = "Preliminary Results"
           }
           else{

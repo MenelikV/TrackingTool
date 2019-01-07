@@ -25,6 +25,7 @@ $(document).ready(function () {
     });
     // On Show, detect which columns are currently visible
     $("#colVisMenuLiContainer").on("show.bs.dropdown", function () {
+      alert("YOLO")
       table.api().columns().every(function () {
         var header = this.header().innerText.trim().replace(/ /g, '_');
         var visible = this.visible();
@@ -116,8 +117,8 @@ $(document).ready(function () {
         r_status = $form.find("#validatedCombo").val(),
         v_status = $form.find("#validatedCheck").is(':checked') === true ? "true" : "",
         delivery_date = $form.find("#Delivery-Input").val().length > 0 ? moment($form.find("#Delivery-Input").val()).format("DD/MM/YYYY") : "",
-        comment = _.escape($form.find('#Comment-input').val());
-      row_data = table.api().row($.selectedRowDom).data();
+        comment = _.escape($form.find('#Comment-input').val()),
+        row_data = table.api().row($.selectedRowDom).data();
       row_data["TRA"] = tra;
       row_data["Delivery_Date"] = delivery_date;
       row_data["Results_Status"] = r_status;
