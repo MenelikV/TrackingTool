@@ -110,8 +110,13 @@ $(document).ready(function () {
 
       // Get some values from elements on the page:
       var $form = $(this),
-          url = $form.attr("action");
-      ctr = $form.find("#CTRCheck").is(':checked') === true ? "true" : "", tra = $form.find("#TRA-input").val(), r_status = $form.find("#validatedCombo").val(), v_status = $form.find("#validatedCheck").is(':checked') === true ? "true" : "", delivery_date = $form.find("#Delivery-Input").val().length > 0 ? moment($form.find("#Delivery-Input").val()).format("DD/MM/YYYY") : "", comment = _.escape($form.find('#Comment-input').val());
+        url = $form.attr("action"),
+        ctr = $form.find("#CTRCheck").is(':checked') === true ? "true" : "",
+        tra = $form.find("#TRA-input").val(),
+        r_status = $form.find("#validatedCombo").val(),
+        v_status = $form.find("#validatedCheck").is(':checked') === true ? "true" : "",
+        delivery_date = $form.find("#Delivery-Input").val().length > 0 ? moment($form.find("#Delivery-Input").val()).format("DD/MM/YYYY") : "",
+        comment = _.escape($form.find('#Comment-input').val());
       row_data = table.api().row($.selectedRowDom).data();
       row_data["TRA"] = tra;
       row_data["Delivery_Date"] = delivery_date;
@@ -188,8 +193,13 @@ $(document).ready(function () {
     var table = $('#available-data').dataTable({
       // ServerSide done in another branch of the repo
       serverSide: false,
-      order: [[headers.indexOf("Aircraft"), "asc"]],
-      columnDefs: [{ "className": "dt-center", "targets": "_all" }, {
+      order: [
+        [headers.indexOf("Aircraft"), "asc"]
+      ],
+      columnDefs: [{
+        "className": "dt-center",
+        "targets": "_all"
+      }, {
         "targets": headers.indexOf("createdAt"),
         "data": "createdAt",
         "visible": false,
@@ -451,7 +461,10 @@ $(document).ready(function () {
       ordering: false,
       paging: false,
       searching: false,
-      columnDefs: [{ "className": "dt-center", "targets": "_all" }, {
+      columnDefs: [{
+        "className": "dt-center",
+        "targets": "_all"
+      }, {
         "targets": headers.indexOf("createdAt"),
         "data": "createdAt",
         "visible": false,
