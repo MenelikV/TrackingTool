@@ -82,11 +82,22 @@ module.exports = {
         else{
           if(status.length !== 1){return res.serverError("Not able to download this file")}
           console.log(status)
-          if(status[0].Results_Status === "Preliminary"){
+          var rs = status[0].Results_Status
+          var vs = status[0].Validated_Status
+          var text = ""
+          if(rs === "Preliminary" && vs.length){
+            text = "Preliminary Results"
+          }
+          else{
+            if(!vs.length){
+              text = "Non Validated Data"
+            }
+          }
+          if(text.length){
             // Watermark PDF
             console.log("PDF Should be Watermarked")
             try {
-              var path = sails.helpers.watermark(path, "Preliminary Results")
+              var path = sails.helpers.watermark(path, text)
             } catch (error) {
               console.error(error)
             }
