@@ -25,7 +25,6 @@ $(document).ready(function () {
     });
     // On Show, detect which columns are currently visible
     $("#colVisMenuLiContainer").on("show.bs.dropdown", function () {
-      alert("YOLO")
       table.api().columns().every(function () {
         var header = this.header().innerText.trim().replace(/ /g, '_');
         var visible = this.visible();
