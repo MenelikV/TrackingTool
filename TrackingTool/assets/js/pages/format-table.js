@@ -11,7 +11,7 @@ $(document).ready(function () {
       e.preventDefault();
     });
     // Detect when user click on a button and hide accordlingly the column
-    $("[id^=colVis_]").click(function (e) {
+    $("[id^=button_colVis_]").click(function(e){
       $(this).toggleClass("active");
       var table_header = [];
       table.api().columns().every(function () {
@@ -22,6 +22,18 @@ $(document).ready(function () {
       var idx = table_header.indexOf(header_to_toggle);
       var visible = $(this).hasClass("active");
       table.api().column(idx).visible(visible);
+    })
+    $("[id^=colVis_]").click(function (e) {
+      $(this).find("[id^=button_colVis_]").toggleClass("active");
+      var table_header = [];
+      table.api().columns().every(function () {
+        table_header.push(this.header().innerText.trim());
+      });
+      var header_to_toggle = e.target.innerText.trim();
+      console.log(header_to_toggle);
+      var idx = table_header.indexOf(header_to_toggle);
+      var visible = $(this).find("[id^=button_colVis_]").hasClass("active");
+      table.api().column(idx).visible(visible);
     });
     // On Show, detect which columns are currently visible
     $("#colVisMenuLiContainer").on("show.bs.dropdown", function () {
@@ -29,9 +41,9 @@ $(document).ready(function () {
         var header = this.header().innerText.trim().replace(/ /g, '_');
         var visible = this.visible();
         if (visible) {
-          $("#colVis_" + header).addClass("active");
+          $("#button_colVis_" + header).addClass("active");
         } else {
-          $("#colVis_" + header).removeClass("active");
+          $("#button_colVis_" + header).removeClass("active");
         }
       });
     });
