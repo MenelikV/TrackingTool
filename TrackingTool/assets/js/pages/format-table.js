@@ -17,11 +17,13 @@ $(document).ready(function () {
       table.api().columns().every(function () {
         table_header.push(this.header().innerText.trim());
       });
-      var header_to_toggle = e.target.innerText.trim();
+      var header_to_toggle = e.currentTarget.parentElement.innerText.trim();
       console.log(header_to_toggle);
       var idx = table_header.indexOf(header_to_toggle);
       var visible = $(this).hasClass("active");
       table.api().column(idx).visible(visible);
+      // Prevent from trigerring the parent
+      e.stopPropagation()
     })
     $("[id^=colVis_]").click(function (e) {
       $(this).find("[id^=button_colVis_]").toggleClass("active");
@@ -259,48 +261,59 @@ $(document).ready(function () {
       }, {
         "targets": dd_id,
         "name": "Delivery Date",
+        "width": "5%",
         "data": "Delivery_Date"
       }, {
         "targets": comment_id,
         "name": "Commentary",
+        "width": "5%",
         "data": "Commentary"
       }, {
         "targets": headers.indexOf("MSN"),
         "name": "MSN",
-        "data": "MSN"
+        "data": "MSN",
+        "width": "5%"
       }, {
         "targets": headers.indexOf("Aircraft"),
         "name": "Aircraft",
-        "data": "Aircraft"
+        "data": "Aircraft",
+        "width": "5%"
       }, {
         "targets": headers.indexOf("Flight"),
         "name": "Flight",
-        "data": "Flight"
+        "data": "Flight",
+        "width": "5%"
       }, {
         "targets": headers.indexOf("Flight_Owner"),
         "name": "Flight Owner",
-        "data": "Flight_Owner"
+        "data": "Flight_Owner",
+        "width": "5%"
       }, {
         "targets": headers.indexOf("Fuel_Flowmeters"),
         "name": "Fuel Flowmeters",
-        "data": "Fuel_Flowmeters"
+        "data": "Fuel_Flowmeters",
+        "width": "5%"
       }, {
         "targets": headers.indexOf('Flight_Date'),
         "name": "Flight Date",
-        "data": "Flight_Date"
+        "data": "Flight_Date",
+        "width": "5%"
       }, {
         "targets": headers.indexOf("Fuel_Characteristics"),
         "name": "Fuel Characteristics",
-        "data": "Fuel_Characteristics"
+        "data": "Fuel_Characteristics",
+        "width": "5%"
       }, {
         "targets": headers.indexOf("Weighing"),
         "name": "Weighing",
-        "data": "Weighing"
+        "data": "Weighing",
+        "width": "5%"
       }, {
         // Special Formatting for Validated Status
         "targets": results_status,
         "name": "Results Status",
         "data": "Results_Status",
+        "width": "5%",
         "render": function render(data, type, row, meta) {
           switch (data) {
             case "Preliminary":
@@ -317,6 +330,7 @@ $(document).ready(function () {
         "targets": validated_status,
         "name": "Validated Status",
         "data": "Validated_Status",
+        "width": "5%",
         "render": function render(data, type, row, meta) {
           if (data !== "" && data !== undefined) {
             return '<i class="fa fa-check fa-lg" style="color:green"></i>';
@@ -328,6 +342,7 @@ $(document).ready(function () {
         "targets": ctr_status,
         "name": "CTR",
         "data": "CTR",
+        "width": "5%",
         "render": function render(data, type, row, meta) {
           if (data !== "" && data !== undefined) {
             return '<i class="fa fa-check fa-lg" style="color:green"></i>';
@@ -339,6 +354,7 @@ $(document).ready(function () {
         "targets": ffu,
         "name": "Fleet Follow Up",
         "data": "Fleet_Follow_Up",
+        "width": "5%",
         "render": function render(data, type, row, meta) {
           return '<a href="/account/file/download/' + row["Fleet_Follow_Up_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
         }
@@ -348,6 +364,7 @@ $(document).ready(function () {
         "name": "Parameters Validation",
         "orderable": false,
         "searchable": false,
+        "width": "5%",
         "render": function render(data, type, row, meta) {
           return '<a href="/account/file/download/' + row["Parameters_Validation_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
         }
@@ -357,6 +374,7 @@ $(document).ready(function () {
         "name": "Tabulated Results",
         "orderable": false,
         "searchable": false,
+        "width": "5%",
         "render": function render(data, type, row, meta) {
           return '<a href="/account/file/download/' + row["Tabulated_Results_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
         }
@@ -366,6 +384,7 @@ $(document).ready(function () {
         "name": "Airline",
         "orderable": false,
         "searchable": false,
+        "width": "5%",
         "render": function render(data, type, row, meta) {
           return '<a href="/account/file/download/' + row["Airline_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
         }
@@ -375,6 +394,7 @@ $(document).ready(function () {
         "name": "Results",
         "orderable": false,
         "searchable": false,
+        "width": "5%",
         "render": function render(data, type, row, meta) {
           return '<button type="button" id="ResultsButton_' + row["id"] + '"' + 'class="btn btn-primary" style="text-transform:capitalize" data-toggle="modal" data-target="#Results">View Table </button>';
         }
@@ -382,6 +402,7 @@ $(document).ready(function () {
         "targets": tra,
         "name": "TRA",
         "data": "TRA",
+        "width": "5%",
         "render": function render(data, type, row, meta) {
           if (data === undefined || data === "") {
             return '';
