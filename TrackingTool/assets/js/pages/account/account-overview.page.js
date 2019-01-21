@@ -229,3 +229,17 @@ parasails.registerPage('account-overview', {
     },
   }
 });
+ 
+$(document).ready(function () {
+  $("#change_home").on('click', function(){
+    !$("#home_file").get(0).files.length ? $("#home_file").focus() : $("#home_form").submit();
+  })
+
+  $("#change_site").on('click', function(){
+    !$("#site_file").get(0).files.length ? $("#site_file").focus()  : $("#site_form").submit();
+  })
+
+  $("#change_logo").on('click', function(){
+    !$("#logo_file").get(0).files.length ? $("#logo_file").focus()  : $("#logo_form").submit();
+  })
+})

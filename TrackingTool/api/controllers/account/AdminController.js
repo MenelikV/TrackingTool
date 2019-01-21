@@ -117,22 +117,19 @@ module.exports = {
         result: results,
         me: req.me,
         search: true,
-        email: req.param('user')
+        email: req.param('user') 
       })
     })
   },
 
   changeStyle: async function (req, res) {
-    if(!req.body('file')){
-      return res.serverError("No image uploaded")
-    }
     var name = req.param('id')+'.png';
     var fs = require('fs')
     fs.unlink('assets/images/'+name, function (err) {
       if (err) {
-        return res.send('Could not delete file', err);
+        return res.serverError('Could not delete file', err);
       }
-    });  
+    });
     req.file("file").upload({
       dirname: require('path').resolve(sails.config.appPath, 'assets/images'),
       saveAs: name
