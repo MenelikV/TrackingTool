@@ -17,6 +17,7 @@
         <div class="col-3">Name:</div>
         <div class="col"><strong>{{me.fullName}}</strong></div>
       </div>
+      <br>
       <div class="row">
         <div class="col-3">Email:</div>
         <div class="col">
@@ -26,7 +27,6 @@
         </div>
       </div>
       <hr />
-
       <div class="row mb-3">
         <div class="col-sm-6">
           <h4>Password</h4>
@@ -42,13 +42,12 @@
         <div class="col"><strong>••••••••••</strong></div>
       </div>
       <hr />
-
+      <% if(me.isSuperAdmin) { %>
       <div class="row mb-3">
         <div class="col-sm-6">
           <h4>Website Styles</h4>
         </div>
       </div>
-
       <div class="row">
         <div class="col-3">
           Home Background
@@ -63,10 +62,8 @@
           </form>
         </div>
       </div>
-
       <br>
       <br>
-
       <div class="row">
         <div class="col-3">
           Site Background
@@ -81,17 +78,13 @@
           </form>
         </div>
       </div>
-
       <br>
       <br>
-
       <div class="row">
         <div class="col-3">
           Footer Logo
         </div>
         <div class="col">
-
-          
           <form action="/account/admin/changeStyle/Logo" method="post" enctype="multipart/form-data" id="back_form">
             <input type="file" name="file" id="file">
             <span class="float-sm-right">
@@ -102,7 +95,8 @@
           </form>
         </div>
       </div>
-      <hr />
+      <hr/>
+      <% } %>
     </div>
   </div>
 </div>
