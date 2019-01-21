@@ -53,6 +53,8 @@ module.exports.routes = {
 
   'POST /account/admin/changeRights': 'account/AdminController.changeRights',
 
+  'POST /account/admin/changeStyle/:id': 'account/AdminController.changeStyle',
+
   'POST /table/data': 'account/FileController.getData',
 
   'GET /requests': {

@@ -64,6 +64,8 @@ parasails.registerPage('account-overview', {
   //  ╩╝╚╝ ╩ ╚═╝╩╚═╩ ╩╚═╝ ╩ ╩╚═╝╝╚╝╚═╝
   methods: {
 
+     
+
     clickStripeCheckoutButton: function () {
       var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
         var _this = this;
@@ -224,7 +226,6 @@ parasails.registerPage('account-overview', {
         // for this customer is being completely removed.
         stripeToken: ''
       };
-    }
-
+    },
   }
 });
