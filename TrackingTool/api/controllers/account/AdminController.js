@@ -117,15 +117,15 @@ module.exports = {
         result: results,
         me: req.me,
         search: true,
-        email: req.param('user') 
+        email: req.param('user')
       })
     })
   },
 
   changeStyle: async function (req, res) {
-    var name = req.param('id')+'.png';
+    var name = req.param('id') + '.png';
     var fs = require('fs')
-    fs.unlink('assets/images/'+name, function (err) {
+    fs.unlink('assets/images/' + name, function (err) {
       if (err) {
         return res.serverError('Could not delete file', err);
       }
@@ -134,11 +134,29 @@ module.exports = {
       dirname: require('path').resolve(sails.config.appPath, 'assets/images'),
       saveAs: name
     }, async function (err, uploads) {
-      if (uploads === undefined) { 
+      if (!uploads) {
         return res.serverError("Upload did not work")
       }
-     return res.redirect('/')
+      return res.view('pages/account/account-overview', {
+        me: req.me
+      })
     })
+  },
+
+  restore: async function (req, res) {
+    const fs = require('fs');
+    fs.copyFile('assets/images/default_home.png', 'assets/images/background_home.png', (err) => {
+      if (err) throw err;
+      console.log('ok home');
+    });
+    fs.copyFile('assets/images/default_site.png', 'assets/images/background_site.png', (err) => {
+      if (err) throw err;
+      console.log('ok site');
+    });
+    fs.copyFile('assets/images/default_Logo.png', 'assets/images/Logo.png', (err) => {
+      if (err) throw err;
+      console.log('ok logo');
+    });
+    return res.redirect('/');
   }
 }
- 

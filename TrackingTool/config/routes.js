@@ -55,6 +55,8 @@ module.exports.routes = {
 
   'POST /account/admin/changeStyle/:id': 'account/AdminController.changeStyle',
 
+  'GET /account/admin/restore': 'account/AdminController.restore',
+
   'POST /table/data': 'account/FileController.getData',
 
   'GET /requests': {
