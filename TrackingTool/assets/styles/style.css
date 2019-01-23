@@ -108,7 +108,7 @@ h3.heading {
 }
 
 .home-inner {
-  background-image: url('https://image-store.slidesharecdn.com/7e38eff5-72e3-49d5-a9f5-1a85002ef366-original.jpeg');
+  background-image: url(../images/background_home.png);
   position: fixed;
   display: table;
   top: 0;
@@ -125,13 +125,14 @@ h3.heading {
 .site {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* 1 */
+  min-height: 100vh;
 } 
 
 .dash{
-  flex: 1 0 auto; /* 2 */
-  padding: 0 1em;
+  position: relative;
+  flex: 1;
 }
+
 
 .formclass {
   background-color: rgba(226, 242, 255, 0.911);
@@ -165,7 +166,7 @@ html, body {
 }
 
 .back {
-  background: url(../airplane.png) no-repeat center center fixed;
+  background: url(../images/background_site.png) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

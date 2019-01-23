@@ -64,6 +64,8 @@ parasails.registerPage('account-overview', {
   //  ╩╝╚╝ ╩ ╚═╝╩╚═╩ ╩╚═╝ ╩ ╩╚═╝╝╚╝╚═╝
   methods: {
 
+     
+
     clickStripeCheckoutButton: function () {
       var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
         var _this = this;
@@ -224,7 +226,20 @@ parasails.registerPage('account-overview', {
         // for this customer is being completely removed.
         stripeToken: ''
       };
-    }
-
+    },
   }
 });
+ 
+$(document).ready(function () {
+  $("#change_home").on('click', function(){
+    !$("#home_file").get(0).files.length ? $("#home_file").focus() : $("#home_form").submit();
+  })
+
+  $("#change_site").on('click', function(){
+    !$("#site_file").get(0).files.length ? $("#site_file").focus()  : $("#site_form").submit();
+  })
+
+  $("#change_logo").on('click', function(){
+    !$("#logo_file").get(0).files.length ? $("#logo_file").focus()  : $("#logo_form").submit();
+  })
+})
