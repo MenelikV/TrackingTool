@@ -77,20 +77,8 @@ module.exports.routes = {
 
   'GET /ctr': "ctr/CtrController.view",
   
-  'GET /faq': {
-    view: 'pages/faq'
-  },
-  'GET /legal/terms': {
-    view: 'pages/legal/terms'
-  },
-  'GET /legal/privacy': {
-    view: 'pages/legal/privacy'
-  },
   'GET /contact': {
     view: 'pages/contact',
-    locals: {
-      layout: 'layouts/formsLayout'
-    }
   },
 
   'GET /signup': {
@@ -173,7 +161,6 @@ module.exports.routes = {
   //  ╔╦╗╦╔═╗╔═╗  ╦═╗╔═╗╔╦╗╦╦═╗╔═╗╔═╗╔╦╗╔═╗
   //  ║║║║╚═╗║    ╠╦╝║╣  ║║║╠╦╝║╣ ║   ║ ╚═╗
   //  ╩ ╩╩╚═╝╚═╝  ╩╚═╚═╝═╩╝╩╩╚═╚═╝╚═╝ ╩ ╚═╝
-  '/terms': '/legal/terms',
   '/logout': '/api/v1/account/logout',
 
 };
