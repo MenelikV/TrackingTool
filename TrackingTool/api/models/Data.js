@@ -36,6 +36,12 @@ module.exports = {
             type: "string",
             defaultsTo: ""
         },
+        Aircraft_Identification:{
+            type: "string"
+        },
+        Aircraft_Identification_id:{
+            type: "string"
+        },
         Airline: {
             type: "string"
         },
@@ -90,11 +96,11 @@ module.exports = {
         return Object.keys(this.attributes)
   },
   pdfFields: function () {
-    return ["Airline", "Tabulated_Results", "Parameters_Validation","Fleet_Follow_Up"]
+    return ["Aircraft_Identification", "Airline", "Tabulated_Results", "Parameters_Validation","Fleet_Follow_Up"]
   },
   getVisibleFields: function(){
     var visible_headers = Object.keys(this.attributes)
-    for(let name of ["createdAt", "updatedAt", "id", "Airline_id", "Tabulated_Results_id", "Parameters_Validation_id", "Fleet_Follow_Up_id"]){
+    for(let name of ["createdAt", "updatedAt", "id", "Aircraft_Identification_id",  "Airline_id", "Tabulated_Results_id", "Parameters_Validation_id", "Fleet_Follow_Up_id"]){
         visible_headers.splice(visible_headers.indexOf(name), 1)
       }
     visible_headers = visible_headers.map(l => l.replace(/_/g, ' '))

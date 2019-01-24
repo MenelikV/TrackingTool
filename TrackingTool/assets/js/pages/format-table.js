@@ -195,6 +195,8 @@ $(document).ready(function () {
     var pv_id = headers.indexOf("Parameters_Validation_id");
     var airline = headers.indexOf("Airline");
     var tra = headers.indexOf("TRA");
+    var aircraft_ident = headers.indexOf("Aircraft_Identification")
+    var aircraft_ident_id = headers.indexOf("Aircraft_Identification_id")
     var airline_id = headers.indexOf("Airline_id");
     var tr = headers.indexOf("Tabulated_Results");
     var tr_id = headers.indexOf("Tabulated_Results_id");
@@ -258,6 +260,12 @@ $(document).ready(function () {
         "orderable": false,
         "searchable": false,
         "data": "Fleet_Follow_Up_id"
+      }, {
+        "targets": aircraft_ident_id,
+        "visible": false,
+        "orderable": false,
+        "searchable": false,
+        "data": "Aircraft_Identification_id"
       }, {
         "targets": dd_id,
         "name": "Delivery Date",
@@ -357,6 +365,14 @@ $(document).ready(function () {
         "width": "5%",
         "render": function render(data, type, row, meta) {
           return '<a href="/account/file/download/' + row["Fleet_Follow_Up_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
+        }
+      }, {
+        "targets": aircraft_ident,
+        "name": "Aircraft Identification",
+        "data": "Aircraft_Identification",
+        "width": "5%",
+        "render": function render(data, type, row, meta) {
+          return '<a href="/account/file/download/' + row["Aircraft_Identification_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
         }
       }, {
         "targets": pv,
@@ -481,6 +497,8 @@ $(document).ready(function () {
     var pv_id = headers.indexOf("Parameters_Validation_id");
     var airline = headers.indexOf("Airline");
     var tra = headers.indexOf("TRA");
+    var aircraft_ident = headers.indexOf("Aircraft_Identification")
+    var aircraft_ident_id = headers.indexOf("Aircraft_Identification_id")
     var airline_id = headers.indexOf("Airline_id");
     var tr = headers.indexOf("Tabulated_Results");
     var tr_id = headers.indexOf("Tabulated_Results_id");
@@ -542,6 +560,12 @@ $(document).ready(function () {
         "orderable": false,
         "searchable": false,
         "data": "Fleet_Follow_Up_id"
+      },{
+        "targets": aircraft_ident_id,
+        "visible": false,
+        "orderable": false,
+        "searchable": false,
+        "data": "Aircraft_Identification_id"
       }, {
         "targets": dd_id,
         "name": "Delivery Date",
@@ -634,6 +658,12 @@ $(document).ready(function () {
         "targets": airline,
         "data": "Airline",
         "name": "Airline",
+        "orderable": false,
+        "searchable": false
+      },{
+        "targets": aircraft_ident,
+        "data": "Aircraft_Identification",
+        "name": "Aircraft_identification",
         "orderable": false,
         "searchable": false
       }, {

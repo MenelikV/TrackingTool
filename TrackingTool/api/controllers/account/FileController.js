@@ -217,7 +217,11 @@ module.exports = {
       }
       // TRA is filled by hand :/
       aircraft_data["TRA"] = ""
-      var data = await Data.update(uploaded_entry).set(aircraft_data).fetch()
+      try{
+      var data = await Data.update(uploaded_entry).set(aircraft_data).fetch()}
+      catch(error){
+        err = error
+      }
 
 
       console.log("Finishing processing Files and redirection")
