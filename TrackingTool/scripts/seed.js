@@ -1,10 +1,29 @@
 const base_url = "http://localhost:1337"
 const request_module = require("request")
 // Folder with files to upload
-const root_folder = "D:\\DEV\\XLSX_Parsing\\"
-const path = require("path")
-const fs = require("fs")
+/*
+Script based on this folder architecture
+Root folder 
+   |
+    ------ Aircraft Folder 
+                  |
+                   ----------- PERFOTO_*.xlsx
+                   ----------- *.pdf
+*/
+const root_folder = ""
+const filters = [
+  "PERFOTO_*.xls",
+  "*identification.xlsm",
+  "*tabulated results.pdf",
+  "*parameters validation.pdf",
+  "*airline.pdf",
+  "Fleet follow-up.pdf",
+  "*identification.pdf"
 
+]
+const fs = require("fs")
+const path = require("path")
+const glob = require("glob").GlobSync
 var cookie = request_module.jar()
 const request = request_module.defaults({
   jar: cookie,
@@ -15,17 +34,36 @@ var user = {
     emailAddress: "mvero-ext@assystemtechnologies.com",
     password: "TEST"
 }
+// Post Request Handler
 var doPostRequest = function (form, encoding, url) {
     var used_url = url || base_url
-    // TODO Check Server Status Message and Raise an Error
-    if (encoding === undefined) {
-      var enc = "utf8"
-    } else {
-      var enc = encoding
-    }
-    //console.log(form)
+    var enc = encoding || "utf8"
     return new Promise(function (resolve, reject) {
       request.post({
+        url: used_url,
+        formData: form,
+        encoding: enc
+      }, function (err, res) {
+        if(res === undefined){
+          reject(err)
+          return
+        }
+        console.log(res.headers)
+        if (!err && res.statusCode === 200) {
+          resolve(res.body)
+        } else {
+          console.error(err)
+          reject(err)
+        }
+      })
+    })
+}
+// Put Request Handler
+var doPutRequest = function (form, encoding, url) {
+    var used_url = url || base_url
+    var enc = encoding || "utf8"
+    return new Promise(function (resolve, reject) {
+      request.put({
         url: used_url,
         form: form,
         encoding: enc
@@ -44,53 +82,52 @@ var doPostRequest = function (form, encoding, url) {
       })
     })
 }
-var doPutRequest = function (form, encoding, url) {
-    var used_url = url || base_url
-    // TODO Check Server Status Message and Raise an Error
-    if (encoding === undefined) {
-      var enc = "utf8"
-    } else {
-      var enc = encoding
+// Read/Upload Airccraft Folder Data Function
+var data_upload = function(folder){
+  // Read Aircraft Folder
+  var aircraft_folder_abs_path = path.join(root_folder, folder)
+  filtered_content = []
+  for(let filter of filters){
+    var matched = new glob(filter, {cwd: aircraft_folder_abs_path, nocase:true})
+    if(matched.found.length != 1){
+      console.log()
+      console.log("Pattern not found")
+      console.log(filter)
+      console.log(aircraft_folder_abs_path)
+      console.log()
+      continue
     }
-    //console.log(form)
-    return new Promise(function (resolve, reject) {
-      request.put({
-        url: url,
-        form: form,
-        encoding: enc
-      }, function (err, res) {
-        if(res === undefined){
-          reject(err)
-          return
-        }
-        console.log(res.headers)
-        if (!err && res.statusCode === 200) {
-          resolve(res.body)
-        } else {
-          console.error(err)
-          reject(err)
-        }
-      })
-    })
+    else{
+      filtered_content.push(matched.found[0])
+    }
+  }
+  if(filtered_content.length != 7){
+    console.log(`found ${filtered_content.length} files intead of 7`)
+    console.error(`Problem with the matching pattern for the folder ${aircraft_folder_abs_path}`)
+    return Promise.reject(`Data has not been crawled properly in the following folder: ${aircraft_folder_abs_path}`)
+  }
+  var streams = filtered_content.map(d=>fs.createReadStream(path.join(aircraft_folder_abs_path, d)))
+  // Create the form to upload
+  var upload_path = '/account/file/upload'
+  var complete_url = base_url + upload_path
+  var formdata = {
+      file:streams
+  }
+  return doPostRequest(formdata, null, complete_url)
+}
+var main_upload_maker = function(){
+    // Read Root Folder Content
+    var content = fs.readdirSync(root_folder)
+    var p = Promise.resolve()
+    content.forEach(
+      folder => p = p.then(() => data_upload(folder))
+    )
 }
 // Login
 var login_path = '/api/v1/entrance/login'
 var complete_url = base_url+login_path
 let res = doPutRequest(user, null, complete_url)
-// Read Folder Content
-var content = fs.readdirSync(root_folder)
-var streams = content.map(d=>fs.createReadStream(path.join(root_folder, d)))
-// Create the form to upload
-var upload_path = '/account/file/upload'
-var complete_url = base_url + upload_path
-var formdata = {
-    file:streams
-}
-try{
-    doPostRequest(formdata, null, complete_url)
-}
-catch(error){
-    console.log('\x1b[36m%s\x1b[0m', error)
-}
+// Scan and Upload the data found in the different folders
+res.then(main_upload_maker)
 module.exports = {}
 
