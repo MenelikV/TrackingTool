@@ -83,10 +83,8 @@ module.exports.routes = {
 
   'GET /signup': {
     action: 'entrance/view-signup',
-    locals: {
-      layout: 'layouts/formsLayout'
-    }
   },
+  
   'GET /email/confirm': {
     action: 'entrance/confirm-email'
   },
