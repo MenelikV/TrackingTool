@@ -17,11 +17,22 @@ $(document).ready(function () {
 
   $('#confirm').on('click', function (e) {
     var url = '/account/file/validate'
+    // TODO Add Minimal Set To Determine Which Aircraft is being modified
     var delivery = $.trim($("#deliveryDate").val());
     var comment = $.trim($("#userComment").val());
+    var flight = $.trim($('[data-header="Flight"]').text())
+    var msn = $.trim($('[data-header="MSN"]').text())
+    var flightDate = $.trim($('[data-header="Flight_Date"]').text())
+    var Aircraft = $.trim($('[data-header="Aircraft"]').text())
     var data = {
       deliveryDate: delivery,
-      userCommentary: comment
+      userCommentary: comment,
+      aircraft:{
+        Aircraft: Aircraft,
+        Flight_Date: flightDate,
+        MSN: msn,
+        Flight: flight
+      }
     }
     $.ajax({
       url: url,

@@ -9,17 +9,11 @@ module.exports = {
 
   view: function (req, res) {
     // New aircraft if the last created entry, if it exists, display it
-    if (aircraft_data === {}) {
-      res.send("No data found")
-    } else {
-      var headers = Data.getHeader();
-      return res.view("pages/table/upload-results", {
-        data: [aircraft_data],
-        headers: headers,
-        me: req.me
-      })
-    }
-
+    var headers = Data.getHeader();
+    return res.view("pages/table/upload-results", {
+      data: [req.aircraft_data],
+      headers: headers,
+      me: req.me})
   },
 
   search: function (req, res) {
@@ -35,11 +29,8 @@ module.exports = {
           data: [],
           headers: headers,
           me: req.me,
-          msn: req.param('msn'), 
-          search: true,
-          locals: {
-            layout: "layouts/layout-table"
-          }
+          msn: req.param('msn'),
+          search: true
         })
       }
 
@@ -68,41 +59,74 @@ module.exports = {
     })
   },
 
-  download: function (req, res) {
+  download: async function (req, res) {
     //Finding file through id on the URL and selecting file path
     File.find({
       id: req.param('id')
-    }).exec(function (err, result) {
+    }).exec(async function (err, result) {
       if (err) {
         res.send('error')
       } else if (result == undefined) {
         res.send('notfound')
       } else {
-        if(result[0] === undefined){return res.serverError("Internal Error")}
+        if (result[0] === undefined) { return res.serverError("Internal Error") }
         var path = result[0].path;
         console.log(path)
+        // Watermark file Here or not 
         //Including skipper disk
-        var SkipperDisk = require('skipper-disk');
-        var fileAdapter = SkipperDisk();
-
-        fileAdapter.read(path).on('error', function (err) {
+        console.log(result[0].aircraft_id)
+        var status  =  await Data.find({id: result[0].aircraft_id})
+        if(status===undefined){
+          return res.serverError("Unable to find aircraft linked to the file")
+        }
+        else{
+          if(status.length !== 1){return res.serverError("Not able to download this file")}
+          console.log(status)
+          var rs = status[0].Results_Status
+          var vs = status[0].Validated_Status
+          var text = ""
+          if(rs === "Preliminary" && vs === "true"){
+            text = "Preliminary Results"
+          }
+          else{
+            if(!vs.length){
+              text = "Non Validated Data"
+            }
+          }
+          if(text.length){
+            // Watermark PDF
+            console.log("PDF Should be Watermarked")
+            try {
+              var path = sails.helpers.watermark(path, text)
+            } catch (error) {
+              console.error(error)
+            }
+          }
+          
+          var SkipperDisk = require('skipper-disk');
+          var fileAdapter = SkipperDisk();
+  
+          fileAdapter.read(path).on('error', function (err) {
             res.send('path error');
           })
-          .pipe(res);
+            .pipe(res);
+          
+
+        }
       }
     })
   },
 
 
   upload: async function (req, res) {
+    var fs = require('fs')
     var XLSX = require("js-xlsx")
     var config_data = require("./config.json")
     var idendification_data = require("./ident_config.json")
-    console.log(idendification_data)
     var pdf_data = require("./pdf_config.json")
     var keys = Object.keys(config_data)
     var pdf_keys = Object.keys(pdf_data)
-    aircraft_data = {}
+    var aircraft_data = {}
     req.file("file").upload({}, async function (err, uploads) {
       if (uploads === undefined) {
         return res.serverError("Upload did not work")
@@ -112,6 +136,7 @@ module.exports = {
       }
       // Filter PDF vs XLS* Files
       var pdf_files = uploads.filter(upload => upload.filename.split(".").pop() == "pdf")
+
       var xls_files = uploads.filter(upload => upload.filename.split(".").pop().indexOf("xls") !== -1)
       // Handle Excel Files First
       xls_files.forEach(file => {
@@ -141,9 +166,6 @@ module.exports = {
                   } else {
                     console.log("Crawling Data")
                     if (sheet === "identification") {
-                      console.log(idendification_data)
-                      console.log(prop)
-                      console.log(s[info[prop]].v)
                       aircraft_data[prop] = idendification_data[prop][s[info[prop]].v]
                     } else {
                       aircraft_data[prop] = s[info[prop]].v
@@ -154,7 +176,15 @@ module.exports = {
             }
           }
         }
+        fs.unlink(file.fd, function (err) {
+          if (err) {
+            return console.log('Could not delete excel file', err);
+          }
+        });
       })
+      // Add Entry to DataBase now
+      var uploaded_entry = await Data.findOrCreate(aircraft_data, aircraft_data)
+      aircraft_data = {}
       console.log("Handling PDF Files")
       for (const file of pdf_files) {
 
@@ -164,7 +194,8 @@ module.exports = {
             // Create a file entry in the Fike DataBase
             var createdFileEntry = await File.create({
               filename: k,
-              path: file.fd
+              path: file.fd,
+              aircraft_id: uploaded_entry.id
             }).fetch()
             aircraft_data[pdf_data[k] + "_id"] = createdFileEntry.id;
           }
@@ -174,28 +205,37 @@ module.exports = {
       aircraft_data["Validated_Status"] = ""
       aircraft_data["Results_Status"] = "Preliminary"
       // Try to open the CTR DataBase, If MSN not found then set fields to defaut
-      var CTR_dict = await CtrTot.find({MSN: aircraft_data["MSN"]})
-      if(CTR_dict.length == 1){
+      var CTR_dict = await CtrTot.find({ MSN: aircraft_data["MSN"] })
+      if (CTR_dict.length == 1) {
         CTR_dict = CTR_dict[0]
         aircraft_data["CTR"] = CTR_dict.CTR !== undefined ? CTR_dict.CTR : ""
         aircraft_data["Delivery_Date"] = CTR_dict.Delivery_Date !== undefined ? CTR_dict.Delivery_Date : ""
       }
-      else{
+      else {
         aircraft_data["CTR"] = ""
         aircraft_data["Delivery_Date"] = ""
       }
       // TRA is filled by hand :/
       aircraft_data["TRA"] = ""
+      try{
+      var data = await Data.update(uploaded_entry).set(aircraft_data).fetch()}
+      catch(error){
+        err = error
+      }
+
+
       console.log("Finishing processing Files and redirection")
-      console.log(err !== undefined && err !== null)
-      console.log(err)
       if (err !== undefined && err !== null) {
         console.log('error uploading files')
         return res.serverError(err)
       }
       console.log("Redirection")
       // if it was successful redirect and display all uploaded files
-      return res.redirect('/files');
+      var headers = Data.getHeader()
+      return res.view("pages/table/upload-results", {
+        data: data,
+        headers: headers,
+        me: req.me})
     })
 
   },
@@ -236,7 +276,7 @@ module.exports = {
         path: file.fd
       }).exec(function (err, updatedFile) {
         if (err) {
-          res.serverError('Internal Error, could not update'+err)
+          res.serverError('Internal Error, could not update' + err)
         }
       });
       return res.redirect('/files')
@@ -247,17 +287,16 @@ module.exports = {
   validate: async function (req, res) {
     // Push Data to the server
     console.log("Some data will be pushed back to the server")
+    var aircraft_data = {}
     aircraft_data["Commentary"] = _.escape(req.body["userCommentary"])
     // Date Formatting if Delivery date field is not empty
     moment = require("moment")
     aircraft_data["Delivery_Date"] = req.body["deliveryDate"].length > 0 ? moment(req.body["deliveryDate"]).format("DD/MM/YYYY") : ''
-
-    var min_entry = sails.helpers.extractSubDictionary(aircraft_data)
-    var possible_entry = await Data.find(min_entry)
+    var possible_entry = await Data.find(req.body.aircraft)
     if (possible_entry.length == 1) {
       // Update Entry if there is something new
       if (aircraft_data !== possible_entry[0]) {
-        await Data.update(min_entry, aircraft_data);
+        await Data.update(req.body.aircraft, aircraft_data);
       }
       // See the whole table with the new entry 
       res.status(200)
@@ -300,19 +339,11 @@ module.exports = {
     return res.send("Sucessful Operation")
   },
 
-
-  test: function (req, res) {
-    console.log(req.body)
-    console.log(req.params)
-    res.status(200)
-    return res.send("Test was okay")
-  },
-
-  getData: async function(req, res){
+  getData: async function (req, res) {
     console.log(req.body)
     var draw = parseInt(req.body["draw"])
     var data = await Data.find({})
-    for(var i=0; i<data.length;i++){
+    for (var i = 0; i < data.length; i++) {
       data["DT_RowId"] = data["id"]
     }
     res.status(200)

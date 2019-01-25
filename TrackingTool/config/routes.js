@@ -16,7 +16,10 @@ module.exports.routes = {
   //  ╚╩╝╚═╝╚═╝╩  ╩ ╩╚═╝╚═╝╚═╝
 
   'GET /': {
-    action: 'view-homepage-or-redirect'
+    action: 'view-homepage-or-redirect',
+    locals: {
+      layout: 'layouts/layout-home'
+    }
   },
 
   'GET /welcome': {
@@ -50,6 +53,10 @@ module.exports.routes = {
 
   'POST /account/admin/changeRights': 'account/AdminController.changeRights',
 
+  'POST /account/admin/changeStyle/:id': 'account/AdminController.changeStyle',
+
+  'GET /account/admin/restore': 'account/AdminController.restore',
+
   'POST /table/data': 'account/FileController.getData',
 
   'GET /requests': {
@@ -68,30 +75,18 @@ module.exports.routes = {
     view: 'pages/account/view-results'
   },
 
-  "POST /state_save": "accout/FileController.test",
+  'POST /ctr/import': 'ctr/CtrController.import',
+
+  'GET /ctr': "ctr/CtrController.view",
   
-  'GET /faq': {
-    view: 'pages/faq'
-  },
-  'GET /legal/terms': {
-    view: 'pages/legal/terms'
-  },
-  'GET /legal/privacy': {
-    view: 'pages/legal/privacy'
-  },
   'GET /contact': {
     view: 'pages/contact',
-    locals: {
-      layout: 'layouts/formsLayout'
-    }
   },
 
   'GET /signup': {
     action: 'entrance/view-signup',
-    locals: {
-      layout: 'layouts/formsLayout'
-    }
   },
+  
   'GET /email/confirm': {
     action: 'entrance/confirm-email'
   },
@@ -166,7 +161,6 @@ module.exports.routes = {
   //  ╔╦╗╦╔═╗╔═╗  ╦═╗╔═╗╔╦╗╦╦═╗╔═╗╔═╗╔╦╗╔═╗
   //  ║║║║╚═╗║    ╠╦╝║╣  ║║║╠╦╝║╣ ║   ║ ╚═╗
   //  ╩ ╩╩╚═╝╚═╝  ╩╚═╚═╝═╩╝╩╩╚═╚═╝╚═╝ ╩ ╚═╝
-  '/terms': '/legal/terms',
   '/logout': '/api/v1/account/logout',
 
 };

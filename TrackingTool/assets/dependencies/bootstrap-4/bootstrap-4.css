@@ -5474,7 +5474,7 @@ button.close {
   background-color: #fff;
   background-clip: padding-box;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 0.3rem;
+  border-radius: 1rem !important;
   outline: 0;
 }
 
@@ -5485,7 +5485,7 @@ button.close {
   bottom: 0;
   left: 0;
   z-index: 1040;
-  background-color: #000;
+  background-color: rgba(0, 0, 0, 0.281) !important;
 }
 
 .modal-backdrop.fade {
@@ -5528,6 +5528,7 @@ button.close {
   -ms-flex: 1 1 auto;
   flex: 1 1 auto;
   padding: 1rem;
+  
 }
 
 .modal-footer {
@@ -5566,7 +5567,7 @@ button.close {
     margin: 1.75rem auto;
   }
   .modal-dialog-centered {
-    min-height: calc(100% - (1.75rem * 2));
+    height: calc(100% - (1.75rem * 2));
   }
   .modal-sm {
     max-width: 300px;
@@ -5689,7 +5690,7 @@ button.close {
   background-color: #000;
   border-radius: 0.25rem;
 }
-
+ 
 .popover {
   position: absolute;
   top: 0;

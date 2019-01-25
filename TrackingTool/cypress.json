@@ -1,0 +1,7 @@
+{
+    "baseUrl": "http://localhost:1337",
+    "integrationFolder": "test/integration/cypress",
+    "pluginsFile": "test/integration/cypress/plugins/index.js",
+    "fixturesFolder": "test/integration/cypress/fixtures",
+    "supportFile": "test/integration/cypress/support/index.js"
+}

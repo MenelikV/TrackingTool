@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="/dependencies/datepicker.css">
 </head>
 
+<!-- TABLE LAYOUT -->
 <body class="site">
 
   <!-- Navbar Section -->
@@ -55,10 +56,14 @@
               <!-- data-dropdown is removed on purposes here, it is controlled by JS -->
               <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="colVisMenu" aria-haspopup="true"
                 data-toggle="dropdown" aria-expanded="false" href="">Column Visibility</a>
-              <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link" id="colVis">
+              <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link" id="colVis" style="width:250px">
                 <% for(let name of visible_headers){%>
-                <a class="dropdown-item nav-drop" href="" id='<%="colVis_"+name.replace(/ /g, "_")%>'>
-                  <%=name%></a>
+                  <a class="dropdown-item nav-drop" href="#" id='<%="colVis_"+name.replace(/ /g, "_")%>' style="height:30px;display: inline-block;">
+                      <%=name%>
+                      <button type="button" class="btn btn-xs btn-toggle float-right mt-1" data-toggle="button" id='<%="button_colVis_"+name.replace(/ /g, "_")%>' aria-pressed="true" autocomplete="off">
+                        <div class="handle"></div> 
+                      </button>
+                  </a>
                 <%}%>
               </div>
             </li>
@@ -77,8 +82,8 @@
               <a class="nav-item nav-link " href="/contact">Help</a>
             </li>
 
-            <div class="nav-item dropdown">
-              <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="header-account-menu-link" data-toggle="dropdown"
+            <div style="padding-right:3.5rem;" class="nav-item dropdown">
+                <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="header-account-menu-link" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false" href="">Account</a>
               <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link">
                 <% if(me.isSuperAdmin) { %>
@@ -141,7 +146,7 @@
       <div class="row">
         <div class="col md-4"></div>
         <div class="col md-4 text-center">
-          <a href="https://www.assystemtechnologies.com/" class="navbar-brand"><img src="https://dwglogo.com/wp-content/uploads/2015/11/Assystem-White-Logo.png"></a>
+          <a href="https://www.assystemtechnologies.com/" class="navbar-brand"><img src="/images/Logo.png"></a>
         </div>
         <div class="col md-4"></div>
       </div>
@@ -161,6 +166,7 @@
   <% /* Delete the global `self` to help avoid client-side bugs.
     (see https://developer.mozilla.org/en-US/docs/Web/API/Window/self) */ %>
   <script>delete window.self;</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
 
   <% /* Auto-injected «script» tags: */ %>
 
@@ -190,24 +196,19 @@
   <script src="/js/components/ajax-button.component.js"></script>
   <script src="/js/components/ajax-form.component.js"></script>
   <script src="/js/components/modal.component.js"></script>
-  <script src="/js/utilities/open-stripe-checkout.js"></script>
   <script src="/js/pages/498.page.js"></script>
   <script src="/js/pages/account/account-overview.page.js"></script>
   <script src="/js/pages/account/edit-password.page.js"></script>
   <script src="/js/pages/account/edit-profile.page.js"></script>
   <script src="/js/pages/account/view-requests.page.js"></script>
-  <script src="/js/pages/contact.page.js"></script>
   <script src="/js/pages/dashboard/welcome.page.js"></script>
   <script src="/js/pages/entrance/confirmed-email.page.js"></script>
   <script src="/js/pages/entrance/forgot-password.page.js"></script>
   <script src="/js/pages/entrance/login.page.js"></script>
   <script src="/js/pages/entrance/new-password.page.js"></script>
   <script src="/js/pages/entrance/signup.page.js"></script>
-  <script src="/js/pages/faq.page.js"></script>
   <script src="/js/pages/format-table.js"></script>
   <script src="/js/pages/homepage.page.js"></script>
-  <script src="/js/pages/legal/privacy.page.js"></script>
-  <script src="/js/pages/legal/terms.page.js"></script>
   <script src="/js/pages/table/upload-results.page.js"></script>
   <script src="/js/pages/table/ctr.page.js"></script>
   <script src="/dependencies/datepicker.js"></script>

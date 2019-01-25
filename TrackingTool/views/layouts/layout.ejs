@@ -10,7 +10,7 @@
 
   <% /*
         Stylesheets
-        ========================
+        ======================== 
 
         Stylesheets can be hard-coded as «link» tags, automatically injected
         by the asset pipeline between "STYLES" and "STYLES END", or both.
@@ -31,9 +31,8 @@
   <link rel="stylesheet" href="/dependencies/datepicker.css">
 </head>
 
-<body>
-
-
+<!-- NAVIGATION LAYOUT-->
+<body class="back">
   <!-- Navbar Section -->
 
   <header id="page-header">
@@ -65,7 +64,7 @@
               <a class="nav-item nav-link " href="/contact">Help</a>
             </li>
 
-            <div class="nav-item dropdown">
+            <div style="padding-right:3.5rem;" class="nav-item dropdown">
               <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="header-account-menu-link" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false" href="">Account</a>
               <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link">
@@ -112,7 +111,6 @@
   <% } %>
 
   <!-- Start background-->
-  <div class="back">
     <!--  Start body content -->
     <div class="site">
       <div class="dash">
@@ -121,7 +119,6 @@
 
         </div>
       </div>
-    </div>
     <!-- End body content -->
 
     <!-- Start of footer -->
@@ -129,7 +126,7 @@
       <div class="row">
         <div class="col md-4"></div>
         <div class="col md-4 text-center">
-          <a href="https://www.assystemtechnologies.com/" class="navbar-brand"><img src="https://dwglogo.com/wp-content/uploads/2015/11/Assystem-White-Logo.png"></a>
+          <a href="https://www.assystemtechnologies.com/" class="navbar-brand"><img src="/images/Logo.png"></a>
         </div>
         <div class="col md-4"></div>
       </div>
@@ -150,6 +147,8 @@
   <% /* Delete the global `self` to help avoid client-side bugs.
     (see https://developer.mozilla.org/en-US/docs/Web/API/Window/self) */ %>
   <script>delete window.self;</script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
 
 
   <% /* Auto-injected «script» tags: */ %>
@@ -184,27 +183,24 @@
   <script src="/js/components/ajax-button.component.js"></script>
   <script src="/js/components/ajax-form.component.js"></script>
   <script src="/js/components/modal.component.js"></script>
-  <script src="/js/utilities/open-stripe-checkout.js"></script>
   <script src="/js/pages/498.page.js"></script>
   <script src="/js/pages/account/account-overview.page.js"></script>
   <script src="/js/pages/account/edit-password.page.js"></script>
   <script src="/js/pages/account/edit-profile.page.js"></script>
   <script src="/js/pages/account/view-requests.page.js"></script>
-  <script src="/js/pages/contact.page.js"></script>
   <script src="/js/pages/dashboard/welcome.page.js"></script>
   <script src="/js/pages/entrance/confirmed-email.page.js"></script>
   <script src="/js/pages/entrance/forgot-password.page.js"></script>
   <script src="/js/pages/entrance/login.page.js"></script>
   <script src="/js/pages/entrance/new-password.page.js"></script>
   <script src="/js/pages/entrance/signup.page.js"></script>
-  <script src="/js/pages/faq.page.js"></script>
   <script src="/js/pages/format-table.js"></script>
   <script src="/js/pages/homepage.page.js"></script>
-  <script src="/js/pages/legal/privacy.page.js"></script>
-  <script src="/js/pages/legal/terms.page.js"></script>
+  <script src="/js/pages/upload-modal.page.js"></script>
   <script src="/js/pages/table/upload-results.page.js"></script>
   <script src="/js/pages/table/ctr.page.js"></script>
   <script src="/dependencies/datepicker.js"></script>
+  <script src="/dependencies/moment.js"></script>
 </body>
 
 </html>

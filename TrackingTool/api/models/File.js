@@ -17,7 +17,10 @@ module.exports = {
       type: 'string',
       required: true
     },
-
+    aircraft_id: {
+      type: "number",
+      required: true
+    }
   },
 
 };

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Tracking Tool</title>
+
+  <% /* Viewport tag for sensible mobile support */ %>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta charset="utf-8">
+
+  <% /*
+        Stylesheets
+        ======================== 
+
+        Stylesheets can be hard-coded as «link» tags, automatically injected
+        by the asset pipeline between "STYLES" and "STYLES END", or both.
+        (https://sailsjs.com/docs/concepts/assets/task-automation)
+    */ %>
+
+  <% /* Auto-injected «link» tags: */ %>
+  <link rel="stylesheet" href="/dependencies/bootstrap-4/bootstrap-4.css">
+  <link rel="stylesheet" href="/dependencies/ColReorder-1.5.0/css/colReorder.bootstrap4.css">
+  <link rel="stylesheet" href="/dependencies/ColReorder-1.5.0/css/colReorder.dataTables.css">
+  <link rel="stylesheet" href="/dependencies/ColReorder-1.5.0/css/colReorder.jqueryui.css">
+  <link rel="stylesheet" href="/dependencies/DataTables-1.10.18/css/dataTables.bootstrap4.css">
+  <link rel="stylesheet" href="/dependencies/DataTables-1.10.18/css/jquery.dataTables.css">
+  <link rel="stylesheet" href="/dependencies/datatables.css">
+  <link rel="stylesheet" href="/dependencies/font-awesome-4/css/font-awesome.css">
+  <link rel="stylesheet" href="/styles/importer.css">
+  <link rel="stylesheet" href="/styles/style.css">
+  <link rel="stylesheet" href="/dependencies/datepicker.css">
+</head>
+
+<!-- NAVIGATION LAYOUT-->
+<body class="home-inner">
+  <!-- Navbar Section -->
+
+  <header id="page-header">
+
+    <nav class="navbar navbar-expand-md fixed-top">
+      <div class="container-fluid">
+        <!--  Logo icon -->
+        <a href="/" class="navbar-brand"><img src="https://media.glassdoor.com/sqll/3059/airbus-group-squarelogo-1484558058652.png"></a>
+        <% if(me) { %>
+        <strong class="logged-name"> <a href="/" class="nav-link">
+            <%= me.fullName %> </a></strong>
+        <% } %>
+
+
+        <div class="collapse navbar-collapse" id="menu">
+          <ul class="navbar-nav ml-auto">
+
+            <% if(me) { %>
+            <% if(me.isSuperAdmin){%>
+            <div class="nav-item dropdown">
+              <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="header-account-menu-link" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false" href="">Manage</a>
+              <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link">
+                <a class="dropdown-item nav-drop" href="/ctr">CTR / Delivery Date</a>
+              </div>
+            </div>
+            <%}%>
+            <li class="nav-item">
+              <a class="nav-item nav-link " href="/contact">Help</a>
+            </li>
+
+            <div style="padding-right:3.5rem;" class="nav-item dropdown">
+                <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="header-account-menu-link" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false" href="">Account</a>
+              <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link">
+                <% if(me.isSuperAdmin) { %>
+                <a class="dropdown-item nav-drop" href="/requests">Requests</a>
+                <% } %>
+
+                <a class="dropdown-item nav-drop" href="/account">Settings</a>
+                <a class="dropdown-item nav-drop" href="/logout">Sign out</a>
+              </div>
+            </div>
+
+            <%} else { %>
+            <li class="nav-item">
+              <a href="/login" class="nav-link">Log in</a>
+            </li>
+            <li class="nav-item">
+              <a href="/signup" class="nav-link">Sign up</a>
+            </li>
+            <% } %>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Alert if email has not been confirmed -->
+  <% if(me&&me.emailChangeCandidate) { %>
+  <div class="container-fluid">
+    <div class="alert alert-secondary mt-2" role="alert">
+      Your updated email address needs verification. Until you click the link sent to <strong>
+        <%= me.emailChangeCandidate %></strong>, you'll still need to sign in as <strong>
+        <%= me.emailAddress %></strong>.
+    </div>
+  </div>
+  <% } else if(me&&me.emailStatus === 'unconfirmed') { %>
+  <div class="container-fluid">
+    <div class="alert alert-secondary mt-2" role="alert">
+      Your email address still needs verification. Your account access may be limited until you click the link sent to
+      <strong>
+        <%= me.emailChangeCandidate ? me.emailChangeCandidate : me.emailAddress%></strong>.
+    </div>
+  </div>
+  <% } %>
+
+  <!-- Start background-->
+    <!--  Start body content -->
+    <div class="site">
+      <div class="dash">
+        <div class="container-fluid">
+          <%- body %>
+
+        </div>
+      </div>
+    <!-- End body content -->
+
+    <!-- Start of footer -->
+    <footer class="myfooter">
+      <div class="row">
+        <div class="col md-4"></div>
+        <div class="col md-4 text-center">
+          <a href="https://www.assystemtechnologies.com/" class="navbar-brand"><img src="/images/Logo.png"></a>
+        </div>
+        <div class="col md-4"></div>
+      </div>
+
+      <div class="row">
+        <div class="col md-4"></div>
+        <div class="col md-4 text-center">
+          <strong>Assystem Technologies</strong>
+        </div>
+        <div class="col md-4"></div>
+      </div>
+    </footer>
+    <!-- End of footer -->
+  </div>
+  <!-- End of background-->
+
+
+  <% /* Delete the global `self` to help avoid client-side bugs.
+    (see https://developer.mozilla.org/en-US/docs/Web/API/Window/self) */ %>
+  <script>delete window.self;</script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
+
+
+  <% /* Auto-injected «script» tags: */ %>
+
+  <script src="/dependencies/sails.io.js"></script>
+  <script src="/dependencies/lodash.js"></script>
+  <script src="/dependencies/jquery.min.js"></script>
+  <script src="/dependencies/bowser.js"></script>
+  <script src="/dependencies/vue.js"></script>
+  <script src="/dependencies/bootstrap-4/bootstrap-4.bundle.js"></script>
+  <script src="/dependencies/cloud.js"></script>
+  <script src="/dependencies/DataTables-1.10.18/js/jquery.dataTables.js"></script>
+  <script src="/dependencies/DataTables-1.10.18/js/dataTables.bootstrap.js"></script>
+  <script src="/dependencies/DataTables-1.10.18/js/dataTables.bootstrap4.js"></script>
+  <script src="/dependencies/DataTables-1.10.18/js/dataTables.foundation.js"></script>
+  <script src="/dependencies/DataTables-1.10.18/js/dataTables.jqueryui.js"></script>
+  <script src="/dependencies/ColReorder-1.5.0/js/colReorder.bootstrap.js"></script>
+  <script src="/dependencies/ColReorder-1.5.0/js/colReorder.bootstrap4.js"></script>
+  <script src="/dependencies/ColReorder-1.5.0/js/colReorder.dataTables.js"></script>
+  <script src="/dependencies/ColReorder-1.5.0/js/colReorder.foundation.js"></script>
+  <script src="/dependencies/ColReorder-1.5.0/js/colReorder.jqueryui.js"></script>
+  <script src="/dependencies/ColReorder-1.5.0/js/dataTables.colReorder.js"></script>
+  <script src="/dependencies/Buttons-1.5.4/js/dataTables.buttons.js"></script>
+  <script src="/dependencies/Buttons-1.5.4/js/buttons.jqueryui.js"></script>
+  <script src="/dependencies/Buttons-1.5.4/js/buttons.bootstrap.js"></script>
+  <script src="/dependencies/Buttons-1.5.4/js/buttons.bootstrap4.js"></script>
+  <script src="/dependencies/Buttons-1.5.4/js/buttons.colVis.js"></script>
+  <script src="/dependencies/Buttons-1.5.4/js/buttons.html5.js"></script>
+  <script src="/dependencies/datatables.js"></script>
+  <script src="/dependencies/parasails.js"></script>
+  <script src="/js/cloud.setup.js"></script>
+  <script src="/js/components/ajax-button.component.js"></script>
+  <script src="/js/components/ajax-form.component.js"></script>
+  <script src="/js/components/modal.component.js"></script>
+  <script src="/js/pages/498.page.js"></script>
+  <script src="/js/pages/account/account-overview.page.js"></script>
+  <script src="/js/pages/account/edit-password.page.js"></script>
+  <script src="/js/pages/account/edit-profile.page.js"></script>
+  <script src="/js/pages/account/view-requests.page.js"></script>
+  <script src="/js/pages/dashboard/welcome.page.js"></script>
+  <script src="/js/pages/entrance/confirmed-email.page.js"></script>
+  <script src="/js/pages/entrance/forgot-password.page.js"></script>
+  <script src="/js/pages/entrance/login.page.js"></script>
+  <script src="/js/pages/entrance/new-password.page.js"></script>
+  <script src="/js/pages/entrance/signup.page.js"></script>
+  <script src="/js/pages/format-table.js"></script>
+  <script src="/js/pages/homepage.page.js"></script>
+  <script src="/js/pages/upload-modal.page.js"></script>
+  <script src="/js/pages/table/upload-results.page.js"></script>
+  <script src="/js/pages/table/ctr.page.js"></script>
+  <script src="/dependencies/datepicker.js"></script>
+</body>
+
+</html>

@@ -59,7 +59,7 @@ module.exports = {
 
   changeRights: function (req, res) {
 
-    if (req.body["isSuperAdmin"]) {
+    if (req.body["isSuperAdmin"].length) {
       User.update({
         emailAddress: req.param('emailAddress')
       }).set({
@@ -73,7 +73,7 @@ module.exports = {
         res.status(200)
         return res.send("Sucessful Operation")
       })
-    } else if (req.body["isBasicUser"]) {
+    } else if (req.body["isBasicUser"].length) {
       console.log('true for basic!')
       User.update({
         emailAddress: req.param('emailAddress')
@@ -88,6 +88,20 @@ module.exports = {
         res.status(200)
         return res.send("Sucessful Operation")
       })
+    } else {
+      User.update({
+        emailAddress: req.param('emailAddress')
+      }).set({
+        isSuperAdmin: false,
+        isBasicUser: false
+      }).exec(function (err, updatedUser) {
+        if (err) {
+          res.send('could not change rights')
+        }
+        console.log('now viewer!')
+        res.status(200)
+        return res.send("Sucessful Operation")
+      })
     }
   },
 
@@ -99,7 +113,6 @@ module.exports = {
       if (err) {
         res.send('notfound')
       }
-      console.log('ifoundthis' + results)
       return res.view('pages/account/view-requests', {
         result: results,
         me: req.me,
@@ -107,5 +120,43 @@ module.exports = {
         email: req.param('user')
       })
     })
+  },
+
+  changeStyle: async function (req, res) {
+    var name = req.param('id') + '.png';
+    var fs = require('fs')
+    fs.unlink('assets/images/' + name, function (err) {
+      if (err) {
+        return res.serverError('Could not delete file', err);
+      }
+    });
+    req.file("file").upload({
+      dirname: require('path').resolve(sails.config.appPath, 'assets/images'),
+      saveAs: name
+    }, async function (err, uploads) {
+      if (!uploads) {
+        return res.serverError("Upload did not work")
+      }
+      return res.view('pages/account/account-overview', {
+        me: req.me
+      })
+    })
+  },
+
+  restore: async function (req, res) {
+    const fs = require('fs');
+    fs.copyFile('assets/images/default_home.png', 'assets/images/background_home.png', (err) => {
+      if (err) throw err;
+      console.log('ok home');
+    });
+    fs.copyFile('assets/images/default_site.png', 'assets/images/background_site.png', (err) => {
+      if (err) throw err;
+      console.log('ok site');
+    });
+    fs.copyFile('assets/images/default_Logo.png', 'assets/images/Logo.png', (err) => {
+      if (err) throw err;
+      console.log('ok logo');
+    });
+    return res.redirect('/');
   }
 }
