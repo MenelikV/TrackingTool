@@ -43,7 +43,7 @@
     <nav class="navbar navbar-expand-md fixed-top">
       <div class="container-fluid">
         <!--  Logo icon -->
-        <a href="/" class="navbar-brand"><img src="https://media.glassdoor.com/sqll/3059/airbus-group-squarelogo-1484558058652.png"></a>
+        <a href="/" class="navbar-brand"><img src="/images/airbus-group-squarelogo.png"></a>
         <% if(me) { %>
         <strong class="logged-name"> <a href="/" class="nav-link">
             <%= me.fullName %> </a></strong>
@@ -166,7 +166,7 @@
   <% /* Delete the global `self` to help avoid client-side bugs.
     (see https://developer.mozilla.org/en-US/docs/Web/API/Window/self) */ %>
   <script>delete window.self;</script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
+  <script src="/dependencies/polyfill.min.js"></script>
 
   <% /* Auto-injected «script» tags: */ %>
 
