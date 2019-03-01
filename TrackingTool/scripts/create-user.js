@@ -28,6 +28,11 @@ module.exports = {
           description: "Is the user part of High Speed Performance Team",
           type: "bool",
           defaultsTo: false
+      },
+      mail: {
+          description: 'When the mail is special (could happen when they are duplicate names in the Airbus DB...',
+          type: 'string',
+          defaultsTo: ''
       }
     },
   
@@ -48,6 +53,10 @@ module.exports = {
         }
         else{
             var mail = `${firstName.toLowerCase()}.${LastName.toLowerCase()}@airbus.com`
+        }
+        // Ignore previous computation if mail is given by hand
+        if(inputs.mail.length){
+            var mail = inputs.mail
         }
         if(inputs.randomPass){
             // Simple random string generation
