@@ -127,7 +127,7 @@ module.exports = {
     var keys = Object.keys(config_data)
     var pdf_keys = Object.keys(pdf_data)
     var aircraft_data = {}
-    req.file("file").upload({}, async function (err, uploads) {
+    req.file("file").upload({dirname: "\\\\sfs.corp\\Projects\\ENGINEERING_2\\DDP\\DDP_EV_EG_EP\\PDFs\\"}, async function (err, uploads) {
       if (uploads === undefined) {
         return res.serverError("Upload did not work")
       }
