@@ -86,6 +86,16 @@ $(document).ready(function () {
       modal.find('.modal-body #Comment-input').val(comment);
     });
     $("#available-data tbody").on("click", "tr", function (ev) {
+      const regex = /^ResultsButton_\d+$/gm;
+      if(regex.exec(ev.target.id) !== null){
+        /* Special Way of showing the modal 
+        This is because, once the user moved the columns, 
+        The click event is not redirected to the button anymore
+        */
+       $.selectedRowDom = $(this).closest("tr");
+       $("#Results").modal("show");
+       return true
+      }
       if ($.isSuperADmin) {
         ev.stopPropagation();
         $("#EditButton").removeAttr("disabled").removeClass("disabled");
@@ -461,10 +471,11 @@ $(document).ready(function () {
       table.fnDraw();
     }
     // Trigger the Results Modal when the user clicks on the "View Table" Button
+    /*
     $("[id^=ResultsButton_]").click(function () {
       $.selectedRowDom = $(this).closest("tr");
       $("#Results").modal("show");
-    });
+    });*/
     // Results Modal
     $("#Results").on("show.bs.modal", function () {
       var row = $.selectedRowDom;
