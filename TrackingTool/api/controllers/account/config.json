@@ -1,5 +1,5 @@
 {
-    "PERFOTO_[A-Z]\\d{1,5}":
+    "PERFOTO_[A-Z]\\d{1,5}.xls":
     {
         "Results":
         {
