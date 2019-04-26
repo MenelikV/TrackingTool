@@ -12,7 +12,7 @@ Root folder
 */
 const root_folder = ""
 const filters = [
-  "PERFOTO_*.xls",
+  "PERFOTO_[A-Z]*.xls",
   "*identification.xlsm",
   "*tabulated results.pdf",
   "*parameters validation.pdf",
