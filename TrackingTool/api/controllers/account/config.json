@@ -1,5 +1,5 @@
 {
-    "PERFOTO_":
+    "PERFOTO_[A-Z]\\d{4}":
     {
         "Results":
         {

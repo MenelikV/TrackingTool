@@ -142,7 +142,8 @@ module.exports = {
       xls_files.forEach(file => {
         for (var k = 0; k < keys.length; k++) {
           var key = keys[k]
-          if (file.filename.indexOf(key) !== -1) {
+          var r = RegExp(`${key}`, "g")
+          if (r.exec(file.filename) !== null) {
             // Try to open the file, if it fails then report to the server
             try {
               workbook = XLSX.readFile(file.fd);
@@ -313,8 +314,9 @@ module.exports = {
     if (possible_entry.length > 1) {
       // DataBase Error, Refuse Upload
       console.log("There is a problem with the DataBase")
-      alert('Problem with the internal Database, upload was aborted')
-      res.status(200)
+      console.log("Entries found:")
+      console.log(possible_entry)
+      res.status(500)
       return res.send("Sucessful Operation")
     }
   },
