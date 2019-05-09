@@ -121,7 +121,7 @@ var main_upload_maker = function(){
     var content = fs.readFileSync("base.txt", {encoding:"utf8"}).split("\r\n")
     var p = Promise.resolve()
     content.forEach(
-      folder => p = p.then(() => data_upload(folder))
+      folder => p = p.then(() => data_upload(folder).catch(err => console.error(err)))
     )
 }
 // Login
