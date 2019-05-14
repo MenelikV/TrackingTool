@@ -1,10 +1,10 @@
 "use strict";
 
 $(document).ready(function () {
-  $.fn.dataTable.moment( 'DD/MM/YYYY' );
   // Launch DataTable to make the table look nicer, if there is a table to display...
   if ($('#available-data').length) {
-
+    // Formatting Available Data
+    $.fn.dataTable.moment( 'DD/MM/YYYY' );
     // Control the Column Visibility Toggles 
     // Prevent the dropdown from auto closing when user click inside
     $("#colVis").on("click.bs.dropdown", function (e) {
@@ -434,7 +434,7 @@ $(document).ready(function () {
           if (data === undefined || data === "") {
             return '';
           } else {
-            var linkName = "CRUISE PERFORMANCE " + row[aircraft_id] + " MSN " + row[msn_id] + " FLIGHT " + row[flight_id];
+            var linkName = "CRUISE PERFORMANCE " + row["Aircraft"] + " MSN " + row["MSN"] + " FLIGHT " + row["Flight"];
             return '<a href=' + data + ' target="_blank">' + linkName + "</a>";
           }
         }
