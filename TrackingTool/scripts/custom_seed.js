@@ -12,13 +12,13 @@ Root folder
 */
 const root_folder = ""
 const filters = [
-  "PERFOTO_[A-Z]*.xls",
+  "PERFOTO_[A-Z]+([0-9]).xls",
   "*identification.xlsm",
   "*tabulated results.pdf",
   "*parameters validation.pdf",
   "*airline.pdf",
   "Fleet follow-up.pdf",
-  "*identification.pdf"
+  "aircraft*identification.pdf"
 
 ]
 const fs = require("fs")
@@ -118,7 +118,7 @@ var data_upload = function(folder){
 }
 var main_upload_maker = function(){
     // Read Root Folder Content
-    var content = fs.readFileSync("base.txt", {encoding:"utf8"}).split("\r\n")
+    var content = fs.readFileSync("base2.txt", {encoding:"utf8"}).split("\r\n")
     var p = Promise.resolve()
     content.forEach(
       folder => p = p.then(() => data_upload(folder).catch(err => console.error(err)))
