@@ -1,6 +1,7 @@
 "use strict";
 
 $(document).ready(function () {
+  $.fn.dataTable.moment( 'DD/MM/YYYY' );
   // Launch DataTable to make the table look nicer, if there is a table to display...
   if ($('#available-data').length) {
 
