@@ -373,6 +373,8 @@ $(document).ready(function () {
         "targets": ffu,
         "name": "Fleet Follow Up",
         "data": "Fleet_Follow_Up",
+        "orderable": false,
+        "searchable": false,
         "width": "5%",
         "render": function render(data, type, row, meta) {
           return '<a href="/account/file/download/' + row["Fleet_Follow_Up_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
@@ -381,6 +383,8 @@ $(document).ready(function () {
         "targets": aircraft_ident,
         "name": "Aircraft Identification",
         "data": "Aircraft_Identification",
+        "orderable": false,
+        "searchable": false,
         "width": "5%",
         "render": function render(data, type, row, meta) {
           return '<a href="/account/file/download/' + row["Aircraft_Identification_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
