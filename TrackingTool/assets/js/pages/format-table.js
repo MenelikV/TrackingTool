@@ -340,6 +340,7 @@ $(document).ready(function () {
         "name": "Validated Status",
         "data": "Validated_Status",
         "width": "5%",
+        "sType": "cbool", // Special type to support custom sorting
         "render": function render(data, type, row, meta) {
           if (data !== "" && data !== undefined) {
             return '<i class="fa fa-check fa-lg" style="color:green"></i>';
@@ -352,6 +353,7 @@ $(document).ready(function () {
         "name": "CTR",
         "data": "CTR",
         "width": "5%",
+        "type": "cbool", // Special type to support custom sorting
         "render": function render(data, type, row, meta) {
           if (data !== "" && data !== undefined) {
             return '<i class="fa fa-check fa-lg" style="color:green"></i>';
@@ -681,3 +683,18 @@ $(document).ready(function () {
     });
   }
 });
+
+// Adding Extension to handle sorting ticks
+
+jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+  "cbool-asc": function(x, y){
+    var a = x.length ? x.length : 0
+    var b = y.length ? y.length : 0
+    return a < b ? -1 : a > b ? 1 : 0;
+  },
+  "cbool-desc": function(x, y){
+    var a = x.length ? x.length : 0
+    var b = y.length ? y.length : 0
+    return a < b ? 1 : a > b ? -1 : 0;
+  }
+})
