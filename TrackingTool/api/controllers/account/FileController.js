@@ -183,9 +183,16 @@ module.exports = {
           }
         });
       })
+      var criteria = _.pick(aircraft_data, ["Aircraft", "MSN", "Flight"])
       // Add Entry to DataBase now
-      var uploaded_entry = await Data.findOrCreate(aircraft_data, aircraft_data)
-      aircraft_data = {}
+      try{
+        var uploaded_entry = await Data.findOrCreate(criteria, criteria)
+      }
+      catch(error){
+        console.log("More than one entry found")
+        return res.serverError(err)
+      }
+      //aircraft_data = {}
       console.log("Handling PDF Files")
       for (const file of pdf_files) {
 
