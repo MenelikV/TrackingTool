@@ -304,16 +304,21 @@ module.exports = {
     if (possible_entry.length == 1) {
       // Update Entry if there is something new
       if (aircraft_data !== possible_entry[0]) {
-        await Data.update(req.body.aircraft, aircraft_data);
+        var data = await Data.update(req.body.aircraft, aircraft_data).fetch();
       }
       // See the whole table with the new entry 
       res.status(200)
+      Data.publish(_.pluck(data, 'id'), {
+        verb: 'published',
+      });
       return res.send("Sucessful Operation")
     }
     if (possible_entry.length == 0) {
       // Create new entry
-      var a = await Data.create(aircraft_data).fetch();
-      console.log(a)
+      var data = await Data.create(aircraft_data).fetch();
+      Data.publish(_.pluck(data, 'id'), {
+        verb: 'published',
+      });
       // See the whole table with the new entry 
       res.status(200)
       return res.send("Sucessful Operation")

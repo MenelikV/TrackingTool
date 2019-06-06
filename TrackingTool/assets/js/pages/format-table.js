@@ -3,6 +3,16 @@
 $(document).ready(function () {
   // Launch DataTable to make the table look nicer, if there is a table to display...
   if ($('#available-data').length) {
+    // Subsribe to the Socket Model
+    io.socket.get("/data")
+    // On change display a message on the console
+    io.socket.on('data', function (msg) {
+      console.log("Page was reloaded because some data has been added to the DataBase")
+      // This is heavy, this may have to change in the future.
+      // Display a modal to tell user DataBase has been updated.
+      // Use MSG in the future
+      document.location.reload(true);
+    });
     // Formatting Available Data
     $.fn.dataTable.moment( 'DD/MM/YYYY' );
     // Control the Column Visibility Toggles 
