@@ -305,11 +305,11 @@ module.exports = {
     if (possible_entry.length == 1) {
       // Update Entry if there is something new
       if (aircraft_data !== possible_entry[0]) {
-        var data = await Data.update(req.body.aircraft, aircraft_data).fetch();
+        await Data.update(req.body.aircraft, aircraft_data);
       }
       // See the whole table with the new entry 
       res.status(200)
-      Data.publish(_.pluck(data, 'id'), {
+      Data.publish(_.pluck(possible_entry, 'id'), {
         verb: 'published',
       });
       return res.send("Sucessful Operation")
