@@ -105,7 +105,8 @@ module.exports = {
           
           var SkipperDisk = require('skipper-disk');
           var fileAdapter = SkipperDisk();
-  
+          // Tell the browser we are handling a PDF File
+          res.setHeader('Content-Type', 'application/pdf');
           fileAdapter.read(path).on('error', function (err) {
             res.send('path error');
           })
