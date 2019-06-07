@@ -368,5 +368,18 @@ module.exports = {
       draw: draw,
       data: data,
     })
+  },
+
+  delete: async function(req, res){
+    console.log(req.body);
+    try{
+      await Data.destroy(req.body)
+      res.status(200);
+      return res.send("Successful Operation");
+    }
+    catch(error){
+      res.status(500);
+      return res.send(error);
+    }
   }
 }

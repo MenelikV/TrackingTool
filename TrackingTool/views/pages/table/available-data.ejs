@@ -16,6 +16,11 @@
         <button type="button" id="EditButton" class="btn btn-danger btn-lg mr-5 ml-0 mb-2" data-toggle="modal"
             data-target="#Editor" disabled>Edit <i class="fa fa-edit fa-lg" style="color:white"></i></button>
         <%}%>
+        <%if(me.isSuperAdmin){%>
+        <% console.log("Button should be created")%>
+        <button type="button" id="DeleteButton" class="btn btn-dark btn-lg mr-2 ml-2 mb-2" data-toggle="modal"
+            data-target="#Deletor" disabled>Delete <i class="fa fa-trash fa-lg" style="color:white"></i></button>
+        <%}%>
 
         <table id="available-data" class="display">
             <!-- HEADERS -->
@@ -133,6 +138,47 @@
                             <button type="submit" class="btn btn-success">Update</button>
                         </div>
 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!--Delete Form-->
+    <form action="/account/file/delete" method="post" id="dataDelete" novalidate>
+        <div class="modal fade" id='Deletor' tabindex="-1" role="dialog" aria-labelledby="DeletorTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="DeletorTitle">Delete Confirmation</h5>
+                    </div>
+                    <hr>
+                    <div class="modal-body">
+                        <p>Do you want to delete the following row ?</p>
+                        <table class="table text-center">
+                            <thead>
+                                <th>
+                                    Aircraft
+                                </th>
+                                <th>
+                                    MSN
+                                </th>
+                                <th>
+                                    Flight
+                                </th>
+                            </thead>
+                            <tbody>
+                                <!--data attribute needed here ?-->
+                                <tr id="row" data-complete="">
+                                    <td id="aircraft"></td>
+                                    <td id="msn"></td>
+                                    <td id="flight"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeDeletorButton">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
                     </div>
                 </div>
             </div>
