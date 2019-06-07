@@ -582,3 +582,19 @@ html, body {
 .btn-toggle.btn-secondary.active {
   background-color: #ff8300;
 }
+
+/* Request made by Michel Lucas */
+.table-bordered{
+  border:1px solid black;
+  /*margin-top:20px;*/
+}
+.table-bordered th,
+.table-bordered td{
+  border: 1px solid black
+}
+.table-bordered > thead > tr > th{
+  border:1px solid black;
+}
+.table-bordered > tbody > tr > td{
+  border:1px solid black;
+}
