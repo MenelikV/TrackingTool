@@ -51,7 +51,19 @@ $(document).ready(function () {
       });
     });
     var headers = window.SAILS_LOCALS["headers"];
-    // Modify Modal On Show
+    // Modify Delete Modal On Show
+    $("#Deletor").on("show.bs.modal", function(){
+      var row = $("#available-data tr.selected");
+      $.selectedRow = row.closest('tr').index();
+      $.selectedRowDom = row
+      var complete_data_table = table.api().row(row).data();
+      var modal = $(this);
+      modal.find(".modal-body #aircraft").text(complete_data_table["Aircraft"]);
+      modal.find(".modal-body #msn").text(complete_data_table["MSN"]);
+      modal.find(".modal-body #flight").text(complete_data_table["Flight"]);
+      modal.find(".modal-body #row").data("complete", complete_data_table);
+    })
+    // Modify Editor Modal On Show
     $.isSuperADmin = $("#EditButton").length > 0;
     $.selectedRow = undefined;
     $.selectedRowDom = undefined;
@@ -100,6 +112,7 @@ $(document).ready(function () {
       if ($.isSuperADmin) {
         ev.stopPropagation();
         $("#EditButton").removeAttr("disabled").removeClass("disabled");
+        $("#DeleteButton").removeAttr("disabled").removeClass("disabled");
         $(this).closest("tr").addClass('selected').siblings().removeClass('selected');
         return true;
       }
@@ -108,6 +121,7 @@ $(document).ready(function () {
     $(document).click(function () {
       if ($.isSuperADmin && $("#available-data tr.selected").length) {
         $("#EditButton").attr("disabled", true).addClass("disabled");
+        $("#DeleteButton").attr("disabled", true).addClass("disabled");
         $("#available-data tr.selected").removeClass("selected");
       }
     });
@@ -195,6 +209,35 @@ $(document).ready(function () {
         }
       });
     });
+    $("#dataDelete").submit(function(event){
+      event.preventDefault();
+      var form = $(this);
+      var url = form.attr("action");
+      var test_data = form.find("#row").data("complete")
+      var aicraft = form.find("#aircraft").text();
+      var flight = form.find("#flight").text();
+      var msn = form.find("#msn").text();
+      $.ajax({
+        url:url,
+        method: "POST",
+        data: test_data,
+        success:function(){
+          // Reload the entire page or juste delete the row ?
+          table.api().row($.selectedRowDom).remove().draw();
+          $("#closeDeletorButton").click();
+          $.selectedRow = undefined;
+          $.selectedRowDom = undefined;
+          $.internalIdSelection = undefined;
+        },
+        error: function(){
+          $("#closeDeletorButton").click();
+          alert("Failure during row deletion");
+          $.selectedRow = undefined;
+          $.selectedRowDom = undefined;
+          $.internalIdSelection = undefined;
+        }
+      })
+    })
     // JavaScript Source Data Drawing
     var results_status = headers.indexOf("Results_Status");
     var validated_status = headers.indexOf("Validated_Status");
