@@ -263,6 +263,7 @@ $(document).ready(function () {
     var table = $('#available-data').dataTable({
       // ServerSide done in another branch of the repo
       "scrollY": "400px",
+      "scrollX": true,
       "scrollCollapse": true,
       serverSide: false,
       order: [
