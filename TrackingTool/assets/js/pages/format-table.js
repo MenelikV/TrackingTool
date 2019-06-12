@@ -260,9 +260,9 @@ $(document).ready(function () {
     var flight_id = headers.indexOf("Flight");
     var comment_id = headers.indexOf("Commentary");
     var dd_id = headers.indexOf("Delivery Date");
-    var table = $('#available-data').DataTable({
+    var table = $('#available-data').dataTable({
       // ServerSide done in another branch of the repo
-      "scrollY": "550px",
+      "scrollY": "400px",
       "scrollCollapse": true,
       serverSide: false,
       order: [
