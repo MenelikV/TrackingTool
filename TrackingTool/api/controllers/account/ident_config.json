@@ -13,5 +13,9 @@
     {
         "g": "Before",
         "c": "Not Weighed"
+    },
+    "Text Weighing":{
+        "Weighing before flight and recorded Fuel Used (+ APU).": "Before",
+        "Weighing after flight and recorded Fuel Used (+ APU).": "After"
     }
 }

@@ -16,7 +16,8 @@
         {
             "Fuel_Flowmeters": "B23",
             "Fuel_Characteristics": "B26",
-            "Weighing": "B36"
+            "Weighing": "B36",
+            "Text Weighing": "C36"
         },
         "premiere_page":
         {
