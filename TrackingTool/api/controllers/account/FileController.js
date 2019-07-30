@@ -185,6 +185,11 @@ module.exports = {
         });
       })
       var criteria = _.pick(aircraft_data, ["Aircraft", "MSN", "Flight"])
+      // Patching Aircraft in case the flight is weighted after
+      if(aircraft_data["Text Weighing"] === "After"){
+        aircraft_data["Weighing"] = "After"
+      }
+      delete aircraft_data["Text_Weighing"]
       // Add Entry to DataBase now
       try{
         var uploaded_entry = await Data.findOrCreate(criteria, criteria)
