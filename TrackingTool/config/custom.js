@@ -66,7 +66,7 @@ module.exports.custom = {
 
 
   //////////////CHANGE ACCORDINGLY ////////////////////
-  internalEmailAddress: 'masierovictoria@gmail.com', 
+  internalEmailAddress: 'menelik.vero.external@airbus.com', 
 
 
 
