@@ -3,7 +3,9 @@
 $(document).ready(function () {
   // Launch DataTable to make the table look nicer, if there is a table to display...
   if ($('#available-data').length) {
+    // Avoid self notification (werid publish should take that into account)
     $.edition = false
+    $.toast_id = 0;
     // Subsribe to the Socket Model
     io.socket.get("/data")
     // On change display a message on the console
@@ -12,22 +14,29 @@ $(document).ready(function () {
         $.edition = false
         return
       }
-      console.log(msg);
-      // Modal Template
+      $.toast_id += 1
+      //console.log(msg);
+      // Modal Template 
+      // TODO just now should be updated every minutes for each toasts!
       var test = `<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
       <div class="toast-header">
-        <strong class="mr-auto">Bootstrap</strong>
+        <strong class="mr-auto">${msg.verb}</strong>
         <small class="text-muted">just now</small>
         <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="toast-body">
-        See? Just like this.
+        ${msg.msg}
       </div>
     </div>`
       $("#toaster").append(test);
       $(".toast").toast('show');
+      $('.toast').on("hidden.bs.toast", function(){
+        //Clean dom after closing them
+        console.log("Remove evrything")
+        $(this).remove()
+      })
       $.ajax({
         url: "/api/v1/data",
         method: "POST",

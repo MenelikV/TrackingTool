@@ -311,7 +311,8 @@ module.exports = {
       Data.publish(_.pluck(possible_entry, 'id'), {
         verb: 'Update',
         author: req["me"].fullName,
-        raw: possible_entry
+        raw: possible_entry,
+        msg: `${req["me"].fullName} has updated ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`
       });
       return res.send("Sucessful Operation")
     }
@@ -321,7 +322,8 @@ module.exports = {
       Data.publish(_.pluck(data, 'id'), {
         verb: 'Creation',
         author: req["me"].fullName,
-        raw: data
+        raw: data,
+        msg: `${req["me"].fullName} has created ${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`
       });
       // See the whole table with the new entry 
       res.status(200)
@@ -348,16 +350,17 @@ module.exports = {
     // Escaping for commentary (TODO Validation for other fields as well ?)
     req.body["Commentary"] = _.escape(req.body["Commentary"])
     // Update Model Entry
-    await Data.update({
+    var data = await Data.update({
       "id": req.body["id"]
-    }, req.body)
+    }, req.body).fetch()
     console.log('Database was updated')
     // Return Sucess If update was good
     res.status(200)
-    Data.publish(_.pluck([req.body], 'id'), {
-      verb: 'Update',
+    Data.publish(_.pluck(data, 'id'), {
+      verb: 'Edition',
       author: req["me"].fullName,
-      raw: req.body
+      raw: req.body,
+      msg: `${req["me"].fullName} has edited ${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`
     }, req);
     return res.send("Sucessful Operation")
   },
@@ -386,7 +389,8 @@ module.exports = {
       Data.publish(_.pluck([req.body], 'id'), {
         verb: 'Deletion',
         author: req["me"].fullName,
-        raw: req.body
+        raw: req.body,
+        msg: `${req["me"].fullName} has deleted ${req.body.Aircraft} - ${req.body.MSN} - ${req.body.Flight}`
       }, req);
       return res.send("Successful Operation");
     }
