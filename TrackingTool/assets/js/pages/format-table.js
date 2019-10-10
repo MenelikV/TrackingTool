@@ -3,15 +3,52 @@
 $(document).ready(function () {
   // Launch DataTable to make the table look nicer, if there is a table to display...
   if ($('#available-data').length) {
+    $.edition = false
     // Subsribe to the Socket Model
     io.socket.get("/data")
     // On change display a message on the console
     io.socket.on('data', function (msg) {
-      console.log("Page was reloaded because some data has been added to the DataBase")
-      // This is heavy, this may have to change in the future.
-      // Display a modal to tell user DataBase has been updated.
-      // Use MSG in the future
-      document.location.reload(true);
+      if($.edition){
+        $.edition = false
+        return
+      }
+      console.log(msg);
+      // Modal Template
+      var test = `<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+      <div class="toast-header">
+        <strong class="mr-auto">Bootstrap</strong>
+        <small class="text-muted">just now</small>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="toast-body">
+        See? Just like this.
+      </div>
+    </div>`
+      $("#toaster").append(test);
+      $(".toast").toast('show');
+      $.ajax({
+        url: "/api/v1/data",
+        method: "POST",
+        data: {},
+        error: function(){
+          console.error("Update Failed")
+        },
+        success: function(data){
+          liste = data["data"]
+          window.SAILS_LOCALS["data"] = liste
+          table.api().clear()
+          table.fnAddData(liste, false);
+          var _arr = ["id", "Airline_id", "Tabulated_Results_id", "Parameters_Validation_id", "Fleet_Follow_Up_id"];
+          for (var _i = 0; _i < _arr.length; _i++) {
+            table.fnSetColumnVis(headers.indexOf(_arr[_i]), false);
+          }
+          // Draw the table
+          table.fnDraw();
+        }
+      })
+
     });
     // Formatting Available Data
     $.fn.dataTable.moment( 'DD/MM/YYYY' );
@@ -138,7 +175,7 @@ $(document).ready(function () {
         $(this)[0].classList.add("was-validated");
         return false;
       }
-
+      $.edition = true
       // Stop form from submitting normally
       event.preventDefault();
 
@@ -217,6 +254,7 @@ $(document).ready(function () {
       var aicraft = form.find("#aircraft").text();
       var flight = form.find("#flight").text();
       var msn = form.find("#msn").text();
+      $.edition = true
       $.ajax({
         url:url,
         method: "POST",

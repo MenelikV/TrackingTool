@@ -1,4 +1,4 @@
-<div class="jumbotron jumbostyle">
+<div class="jumbotron jumbostyle" style="padding-bottom: 0px;margin-bottom: 0px">
     <br>
     <%if(search){%>
     <h3>Search results for
@@ -8,7 +8,10 @@
 
     <h5 style="text-decoration: underline;">No results found</h5>
     <%}}  %>
-
+    <div class="position-absolute w-100 mx-md-n5 d-flex flex-column align-items-end" style="z-index: 10000">
+        <div class="mx-md-n5 w-25" id="toaster" style="position: relative; left:-50px">
+        </div>
+    </div>
     <%if(data[0] !== undefined && headers !== undefined){%>
         <div class="container" style="margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; padding-bottom: 10px;">
             <%if(me.isSuperAdmin || me.isBasicUser){%>
@@ -21,8 +24,7 @@
                     data-target="#Deletor" disabled>Delete <i class="fa fa-trash fa-lg" style="color:white"></i></button>
             <%}%>
         </div>
-    
-    <div class="table-responsive">
+    <div class="table-responsive" style="z-index:0">
         <!--TODO Correct That!-->
 
         <table id="available-data" class="display">

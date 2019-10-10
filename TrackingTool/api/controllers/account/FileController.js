@@ -4,7 +4,6 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
 module.exports = {
 
   view: function (req, res) {
@@ -310,7 +309,9 @@ module.exports = {
       // See the whole table with the new entry 
       res.status(200)
       Data.publish(_.pluck(possible_entry, 'id'), {
-        verb: 'published',
+        verb: 'Update',
+        author: req["me"].fullName,
+        raw: possible_entry
       });
       return res.send("Sucessful Operation")
     }
@@ -318,7 +319,9 @@ module.exports = {
       // Create new entry
       var data = await Data.create(aircraft_data).fetch();
       Data.publish(_.pluck(data, 'id'), {
-        verb: 'published',
+        verb: 'Creation',
+        author: req["me"].fullName,
+        raw: data
       });
       // See the whole table with the new entry 
       res.status(200)
@@ -351,6 +354,11 @@ module.exports = {
     console.log('Database was updated')
     // Return Sucess If update was good
     res.status(200)
+    Data.publish(_.pluck([req.body], 'id'), {
+      verb: 'Update',
+      author: req["me"].fullName,
+      raw: req.body
+    }, req);
     return res.send("Sucessful Operation")
   },
 
@@ -375,11 +383,22 @@ module.exports = {
     try{
       await Data.destroy(req.body)
       res.status(200);
+      Data.publish(_.pluck([req.body], 'id'), {
+        verb: 'Deletion',
+        author: req["me"].fullName,
+        raw: req.body
+      }, req);
       return res.send("Successful Operation");
     }
     catch(error){
       res.status(500);
       return res.send(error);
     }
+  },
+  getApiData: async function(req, res){
+    var data = await Data.find();
+    var headers = Data.getHeader()
+    var visible_headers = Data.getVisibleFields()
+   return res.send({data:data, headers:headers, search:false, visible_headers: visible_headers});
   }
 }

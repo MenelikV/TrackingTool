@@ -34,7 +34,7 @@ module.exports.routes = {
 
   'POST /account/file/search': 'account/FileController.search',
 
-  'POST /account/file/delete': 'accout/FileController.delete',
+  'POST /account/file/delete': 'account/FileController.delete',
 
   'POST /account/admin/search': 'account/AdminController.search',
 
@@ -151,6 +151,10 @@ module.exports.routes = {
   },
   'POST  /api/v1/deliver-contact-form-message': {
     action: 'deliver-contact-form-message'
+  },
+
+  'POST /api/v1/data': {
+    action: 'account/File/getApiData'
   },
 
 
