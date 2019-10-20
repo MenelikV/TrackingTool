@@ -22,12 +22,12 @@ $(document).ready(function () {
       <div class="toast-header">
         <strong class="mr-auto">${msg.verb}</strong>
         <small class="text-muted">just now</small>
-        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+        <button type="button" id="close_toast_${$.toast_id}" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="toast-body">
-        ${msg.msg}
+        <a id="toast_${$.toast_id}" data-id="${msg.data}" href="#">${msg.msg}</a>
       </div>
     </div>`
       $("#toaster").append(test);
@@ -36,6 +36,21 @@ $(document).ready(function () {
         //Clean dom after closing them
         console.log("Remove evrything")
         $(this).remove()
+      })
+      $("a[id^='toast_'").click(function(){
+        var raw = $(this).data("id")
+        console.log(raw)
+        if(raw !== undefined){
+          if(raw.length){
+            var data_split = raw.split(" - ")
+            // TODO recreate local mapping because it can changes after replacing the columns
+            table.api().column(aircraft_id).search(data_split[0]).column(msn_id).search(data_split[1]).column(flight_id).search(data_split[2]).draw()
+          }
+        }
+      })
+      $("button[id^='close_toast_'").click(function(){
+        // Reset Filers when user closes toast
+        table.api().search('').columns().search('').draw()
       })
       $.ajax({
         url: "/api/v1/data",
@@ -155,7 +170,7 @@ $(document).ready(function () {
       modal.find('.modal-body #Comment-input').val(comment);
     });
     $("#available-data tbody").on("click", "tr", function (ev) {
-      const regex = /^ResultsButton_\d+$/gm;
+      const regex = /(^ResultsButton_\d+$)|(^ResultsFa_\d+$)/gm;
       if(regex.exec(ev.target.id) !== null){
         /* Special Way of showing the modal 
         This is because, once the user moved the columns, 
@@ -532,7 +547,7 @@ $(document).ready(function () {
         "searchable": false,
         "width": "5%",
         "render": function render(data, type, row, meta) {
-          return '<button type="button" id="ResultsButton_' + row["id"] + '"' + 'class="btn btn-primary" style="text-transform:capitalize" data-toggle="modal" data-target="#Results">View Table </button>';
+          return `<button type="button" id="ResultsButton_${row["id"]}" class="btn btn-link" style="text-transform:capitalize" data-toggle="modal" data-target="#Results"><i class="fa fa-table fa-lg" id="ResultsFa_${row["id"]}"></i></button>`;
         }
       }, {
         "targets": tra,
@@ -709,7 +724,7 @@ $(document).ready(function () {
         "data": "Flight"
       }, {
         "targets": headers.indexOf("Flight_Owner"),
-        "name": "Flight Owner",
+        "name": "Owner",
         "data": "Flight_Owner"
       }, {
         "targets": headers.indexOf("Fuel_Flowmeters"),
@@ -746,7 +761,7 @@ $(document).ready(function () {
         }
       }, {
         "targets": validated_status,
-        "name": "Validated Status",
+        "name": "Data Validated Status",
         "data": "Validated_Status",
         "render": function render(data, type, row, meta) {
           if (data !== "" && data !== undefined) {
@@ -778,7 +793,7 @@ $(document).ready(function () {
       }, {
         "targets": airline,
         "data": "Airline",
-        "name": "Airline",
+        "name": "Airline Table",
         "orderable": false,
         "searchable": false
       },{

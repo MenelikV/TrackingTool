@@ -127,7 +127,7 @@ module.exports = {
     var keys = Object.keys(config_data)
     var pdf_keys = Object.keys(pdf_data)
     var aircraft_data = {}
-    req.file("file").upload({dirname: "\\\\sfs.corp\\Projects\\ENGINEERING_2\\DDP\\DDP_EV_EG_EP\\PDFs\\"}, async function (err, uploads) {
+    req.file("file").upload(async function (err, uploads) {
       if (uploads === undefined) {
         return res.serverError("Upload did not work")
       }
@@ -211,7 +211,7 @@ module.exports = {
       }
       // Default Value
       aircraft_data["Validated_Status"] = ""
-      aircraft_data["Results_Status"] = "Preliminary"
+      aircraft_data["Results_Status"] = ""
       // Try to open the CTR DataBase, If MSN not found then set fields to defaut
       var CTR_dict = await CtrTot.find({ MSN: aircraft_data["MSN"] })
       if (CTR_dict.length == 1) {
@@ -220,9 +220,10 @@ module.exports = {
         aircraft_data["Delivery_Date"] = CTR_dict.Delivery_Date !== undefined ? CTR_dict.Delivery_Date : ""
       }
       else {
-        aircraft_data["CTR"] = ""
-        aircraft_data["Delivery_Date"] = ""
+        aircraft_data["CTR"] = uploaded_entry["CTR"]
+        aircraft_data["Delivery_Date"] = uploaded_entry["Delivery_Date"]
       }
+      aircraft_data["Commentary"] = uploaded_entry["Commentary"]
       // TRA is filled by hand :/
       aircraft_data["TRA"] = ""
       try{
@@ -262,7 +263,8 @@ module.exports = {
       }
 
       if (upload === undefined) {
-        return res.send("Upload did not work")
+        res.send("Upload did not work")
+        return res.view("/welcome")
       }
 
       var file = upload[0];
@@ -312,7 +314,8 @@ module.exports = {
         verb: 'Update',
         author: req["me"].fullName,
         raw: possible_entry,
-        msg: `${req["me"].fullName} has updated ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`
+        msg: `${req["me"].fullName} has updated ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`,
+        data: `${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`
       });
       return res.send("Sucessful Operation")
     }
@@ -323,7 +326,8 @@ module.exports = {
         verb: 'Creation',
         author: req["me"].fullName,
         raw: data,
-        msg: `${req["me"].fullName} has created ${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`
+        msg: `${req["me"].fullName} has created ${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`,
+        data: `${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`
       });
       // See the whole table with the new entry 
       res.status(200)
@@ -360,7 +364,8 @@ module.exports = {
       verb: 'Edition',
       author: req["me"].fullName,
       raw: req.body,
-      msg: `${req["me"].fullName} has edited ${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`
+      msg: `${req["me"].fullName} has edited ${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`,
+      data: `${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`
     }, req);
     return res.send("Sucessful Operation")
   },
@@ -390,7 +395,8 @@ module.exports = {
         verb: 'Deletion',
         author: req["me"].fullName,
         raw: req.body,
-        msg: `${req["me"].fullName} has deleted ${req.body.Aircraft} - ${req.body.MSN} - ${req.body.Flight}`
+        msg: `${req["me"].fullName} has deleted ${req.body.Aircraft} - ${req.body.MSN} - ${req.body.Flight}`,
+        data: ""
       }, req);
       return res.send("Successful Operation");
     }
