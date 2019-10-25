@@ -159,14 +159,14 @@ $(document).ready(function () {
         }
       }
       var comment = complete_data_table["Commentary"];
-      var delivery_date = complete_data_table["Delivery Date"];
+      var delivery_date = complete_data_table["Delivery_Date"];
       $.internalIdSelection = complete_data_table["id"];
       var modal = $(this);
       modal.find('.modal-body #CTRCheck').prop('checked', ctr);
       modal.find(".modal-body #TRA-input").val(tra);
       modal.find('.modal-body #validatedCombo').val(r_status);
       modal.find('.modal-body #validatedCheck').prop('checked', v_status);
-      modal.find('.modal-body #Delivery-Input').val(moment(delivery_date, "DD-MM-YYYY").format("YYYY-MM-DD"));
+      modal.find('.modal-body #Delivery-Input').val(moment(delivery_date, "DD/MM/YYYY").format("YYYY-MM-DD"));
       modal.find('.modal-body #Comment-input').val(comment);
     });
     $("#available-data tbody").on("click", "tr", function (ev) {
