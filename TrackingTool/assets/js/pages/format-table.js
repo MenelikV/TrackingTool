@@ -6,6 +6,7 @@ $(document).ready(function () {
     // Avoid self notification (werid publish should take that into account)
     $.edition = false
     $.toast_id = 0;
+    $.times = {};
     // Subsribe to the Socket Model
     io.socket.get("/data")
     // On change display a message on the console
@@ -15,13 +16,12 @@ $(document).ready(function () {
         return
       }
       $.toast_id += 1
-      //console.log(msg);
-      // Modal Template 
-      // TODO just now should be updated every minutes for each toasts!
+      $.times[$.toast_id] = new Date;
+      // Toast Template 
       var test = `<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
       <div class="toast-header">
         <strong class="mr-auto">${msg.verb}</strong>
-        <small class="text-muted">just now</small>
+        <small class="text-muted" id="subtitle_${$.toast_id}">just now</small>
         <button type="button" id="close_toast_${$.toast_id}" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -43,11 +43,16 @@ $(document).ready(function () {
         if(raw !== undefined){
           if(raw.length){
             var data_split = raw.split(" - ")
-            // TODO recreate local mapping because it can changes after replacing the columns
-            table.api().column(aircraft_id).search(data_split[0]).column(msn_id).search(data_split[1]).column(flight_id).search(data_split[2]).draw()
+            table.api().column("Aircraft").search(data_split[0]).column("MSN").search(data_split[1]).column("Flight").search(data_split[2]).draw()
           }
         }
       })
+      setInterval(function(){
+        for(let id of Object.keys($.times)){
+          var res = Math.round((new Date - $.times[id])/(60 * 1000)) // Minutes from toast
+          $(`#subtitle_${id}`).text(`${res} min ago`)
+        }
+      }, 60000)
       $("button[id^='close_toast_'").click(function(){
         // Reset Filers when user closes toast
         table.api().search('').columns().search('').draw()

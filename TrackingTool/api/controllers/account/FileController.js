@@ -311,12 +311,12 @@ module.exports = {
       // See the whole table with the new entry 
       res.status(200)
       Data.publish(_.pluck(possible_entry, 'id'), {
-        verb: 'Update',
+        verb: 'Creation',
         author: req["me"].fullName,
         raw: possible_entry,
-        msg: `${req["me"].fullName} has updated ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`,
+        msg: `${req["me"].fullName} has created ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`,
         data: `${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`
-      });
+      }, req);
       return res.send("Sucessful Operation")
     }
     if (possible_entry.length == 0) {
@@ -328,7 +328,7 @@ module.exports = {
         raw: data,
         msg: `${req["me"].fullName} has created ${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`,
         data: `${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`
-      });
+      }, req);
       // See the whole table with the new entry 
       res.status(200)
       return res.send("Sucessful Operation")
