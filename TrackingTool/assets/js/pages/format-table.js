@@ -10,53 +10,59 @@ $(document).ready(function () {
     // Subsribe to the Socket Model
     io.socket.get("/data")
     // On change display a message on the console
+    $("a[id^='toast_'").click(function(){
+      var raw = $(this).data("id")
+      console.log(raw)
+      if(raw !== undefined){
+        if(raw.length){
+          var data_split = raw.split(" - ")
+          table.api().column("Aircraft").search(data_split[0]).column("MSN").search(data_split[1]).column("Flight").search(data_split[2]).draw()
+        }
+      }
+    })
+    $("button[id^='close_toast_'").click(function(){
+      // Reset Filers when user closes toast
+      table.api().search('').columns().search('').draw()
+    })
+    // Timer to refresh the times on toast
+    setInterval(function(){
+      for(let id of Object.keys($.times)){
+        var res = Math.round((new Date - $.times[id])/(60 * 1000)) // Minutes from toast
+        $(`#subtitle_${id}`).text(`${res} min ago`)
+      }
+    }, 60000)
     io.socket.on('data', function (msg) {
       if($.edition){
         $.edition = false
         return
       }
-      $.toast_id += 1
-      $.times[$.toast_id] = new Date;
-      // Toast Template 
-      var test = `<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
-      <div class="toast-header">
-        <strong class="mr-auto">${msg.verb}</strong>
-        <small class="text-muted" id="subtitle_${$.toast_id}">just now</small>
-        <button type="button" id="close_toast_${$.toast_id}" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="toast-body">
-        <a id="toast_${$.toast_id}" data-id="${msg.data}" href="#">${msg.msg}</a>
-      </div>
-    </div>`
-      $("#toaster").append(test);
-      $(".toast").toast('show');
-      $('.toast').on("hidden.bs.toast", function(){
-        //Clean dom after closing them
-        console.log("Remove evrything")
-        $(this).remove()
-      })
-      $("a[id^='toast_'").click(function(){
-        var raw = $(this).data("id")
-        console.log(raw)
-        if(raw !== undefined){
-          if(raw.length){
-            var data_split = raw.split(" - ")
-            table.api().column("Aircraft").search(data_split[0]).column("MSN").search(data_split[1]).column("Flight").search(data_split[2]).draw()
-          }
-        }
-      })
-      setInterval(function(){
-        for(let id of Object.keys($.times)){
-          var res = Math.round((new Date - $.times[id])/(60 * 1000)) // Minutes from toast
-          $(`#subtitle_${id}`).text(`${res} min ago`)
-        }
-      }, 60000)
-      $("button[id^='close_toast_'").click(function(){
-        // Reset Filers when user closes toast
-        table.api().search('').columns().search('').draw()
-      })
+      // If there is a verb attribute, display a toast to inform user
+      if(msg.verb !== ""){
+        $.toast_id += 1
+        $.times[$.toast_id] = new Date;
+        // Toast Template
+        // data-autohide="false" to disable autohide
+        var test = `<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="180000">
+        <div class="toast-header">
+          <strong class="mr-auto">${msg.verb}</strong>
+          <small class="text-muted" id="subtitle_${$.toast_id}">just now</small>
+          <button type="button" id="close_toast_${$.toast_id}" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="toast-body">
+          <a id="toast_${$.toast_id}" data-id="${msg.data}" href="#">${msg.msg}</a>
+        </div>
+      </div>`
+        $("#toaster").append(test);
+        $(".toast").toast('show');
+        $('.toast').on("hidden.bs.toast", function(){
+          //Clean dom after closing them
+          console.log("Remove evrything")
+          $(this).remove()
+        })
+      }
+      // Refresh the table
       $.ajax({
         url: "/api/v1/data",
         method: "POST",
@@ -428,6 +434,7 @@ $(document).ready(function () {
       }, {
         "targets": headers.indexOf("Flight_Owner"),
         "name": "Flight Owner",
+        "title": "Owner",
         "data": "Flight_Owner",
         "width": "5%"
       }, {
@@ -471,6 +478,7 @@ $(document).ready(function () {
       }, {
         "targets": validated_status,
         "name": "Validated Status",
+        "title": "Data Validated Status",
         "data": "Validated_Status",
         "width": "5%",
         "sType": "cbool", // Special type to support custom sorting
@@ -538,6 +546,7 @@ $(document).ready(function () {
         "targets": airline,
         "data": "Airline",
         "name": "Airline",
+        "title": "Airline Table",
         "orderable": false,
         "searchable": false,
         "width": "5%",
@@ -729,7 +738,7 @@ $(document).ready(function () {
         "data": "Flight"
       }, {
         "targets": headers.indexOf("Flight_Owner"),
-        "name": "Owner",
+        "name": "Flight Owner",
         "data": "Flight_Owner"
       }, {
         "targets": headers.indexOf("Fuel_Flowmeters"),
@@ -798,7 +807,7 @@ $(document).ready(function () {
       }, {
         "targets": airline,
         "data": "Airline",
-        "name": "Airline Table",
+        "name": "Airline",
         "orderable": false,
         "searchable": false
       },{

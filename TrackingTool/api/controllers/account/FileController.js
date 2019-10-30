@@ -314,7 +314,7 @@ module.exports = {
         verb: 'Creation',
         author: req["me"].fullName,
         raw: possible_entry,
-        msg: `${req["me"].fullName} has created ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`,
+        msg: `${req["me"].fullName} has added ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`,
         data: `${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`
       }, req);
       return res.send("Sucessful Operation")
@@ -326,7 +326,7 @@ module.exports = {
         verb: 'Creation',
         author: req["me"].fullName,
         raw: data,
-        msg: `${req["me"].fullName} has created ${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`,
+        msg: `${req["me"].fullName} has added ${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`,
         data: `${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`
       }, req);
       // See the whole table with the new entry 
@@ -353,20 +353,44 @@ module.exports = {
     }
     // Escaping for commentary (TODO Validation for other fields as well ?)
     req.body["Commentary"] = _.escape(req.body["Commentary"])
+    var old = await Data.find({"id": req.body["id"]})
+    var _old = old[0]
     // Update Model Entry
     var data = await Data.update({
       "id": req.body["id"]
     }, req.body).fetch()
+    var _data = data[0]
     console.log('Database was updated')
     // Return Sucess If update was good
     res.status(200)
-    Data.publish(_.pluck(data, 'id'), {
-      verb: 'Edition',
-      author: req["me"].fullName,
-      raw: req.body,
-      msg: `${req["me"].fullName} has edited ${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`,
-      data: `${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`
-    }, req);
+    var to_publish = false
+    for(let field of ["Validated_Status", "CTR", "Fuel_Characteristics"]){
+      if(_old[field] != _data[field])
+      {
+        to_publish = true
+      }
+    }
+    if(_old["Results_Status"] != _data["Results_Status"] & _data["Results_Status"] === "Definitive"){
+      to_publish = true
+    }
+    if(to_publish){
+      Data.publish(_.pluck(data, 'id'), {
+        verb: 'Edition',
+        author: req["me"].fullName,
+        raw: req.body,
+        msg: `${req["me"].fullName} has edited ${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`,
+        data: `${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`
+      }, req);
+    }
+    else{
+      Data.publish(_.pluck(data, 'id'), {
+        verb: '',
+        author: req["me"].fullName,
+        raw: req.body,
+        msg: `${req["me"].fullName} has edited ${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`,
+        data: `${data[0].Aircraft} - ${data[0].MSN} - ${data[0].Flight}`
+      }, req);
+    }
     return res.send("Sucessful Operation")
   },
 
