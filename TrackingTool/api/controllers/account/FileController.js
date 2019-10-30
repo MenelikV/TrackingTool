@@ -364,7 +364,7 @@ module.exports = {
     // Return Sucess If update was good
     res.status(200)
     var to_publish = false
-    for(let field of ["Validated_Status", "CTR", "Fuel_Characteristics"]){
+    for(let field of ["Validated_Status", "CTR"]){
       if(_old[field] != _data[field])
       {
         to_publish = true
