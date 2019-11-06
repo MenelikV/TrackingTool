@@ -7,6 +7,7 @@ $(document).ready(function () {
     $.edition = false
     $.toast_id = 0;
     $.times = {};
+    $.colVisCreated = false
     // Subsribe to the Socket Model
     io.socket.get("/data")
     // On change display a message on the console
@@ -93,35 +94,52 @@ $(document).ready(function () {
       e.stopPropagation();
       e.preventDefault();
     });
-    // Detect when user click on a button and hide accordlingly the column
-    $("[id^=button_colVis_]").click(function(e){
-      $(this).toggleClass("active");
-      var table_header = [];
-      table.api().columns().every(function () {
-        table_header.push(this.header().innerText.trim());
-      });
-      var header_to_toggle = e.currentTarget.parentElement.innerText.trim();
-      console.log(header_to_toggle);
-      var idx = table_header.indexOf(header_to_toggle);
-      var visible = $(this).hasClass("active");
-      table.api().column(idx).visible(visible);
-      // Prevent from trigerring the parent
-      e.stopPropagation()
-    })
-    $("[id^=colVis_]").click(function (e) {
-      $(this).find("[id^=button_colVis_]").toggleClass("active");
-      var table_header = [];
-      table.api().columns().every(function () {
-        table_header.push(this.header().innerText.trim());
-      });
-      var header_to_toggle = e.target.innerText.trim();
-      console.log(header_to_toggle);
-      var idx = table_header.indexOf(header_to_toggle);
-      var visible = $(this).find("[id^=button_colVis_]").hasClass("active");
-      table.api().column(idx).visible(visible);
-    });
     // On Show, detect which columns are currently visible
     $("#colVisMenuLiContainer").on("show.bs.dropdown", function () {
+      if($.colVisCreated === false){
+        var not_allowed = ["createdAt", "updatedAt", "id", "Parameters_Validation_id",
+         "Fleet_Follow_Up_id", "Aircraft_Identification_id", "Airline_id", "Tabulated_Results_id"]
+        table.api().columns().every(function(){
+          var header_spaced = this.header().innerText.trim();
+          var header = header_spaced.replace(/ /g, '_');
+          if(not_allowed.indexOf(header) == -1){
+            var template_buttons = ` <a class="dropdown-item nav-drop" href="#" id="colVis_${header}" style="height:30px;display: inline-block;">
+            ${header_spaced}
+            <button type="button" class="btn btn-xs btn-toggle float-right mt-1" data-toggle="button" id="button_colVis_${header}" aria-pressed="true" autocomplete="off">
+              <div class="handle"></div> 
+            </button>
+            </a>` 
+            $("#colVis").append(template_buttons)
+          }
+        })
+        // Detect when user click on a button and hide accordlingly the column
+        $("[id^=button_colVis_]").click(function(e){
+          $(this).toggleClass("active");
+          var table_header = [];
+          table.api().columns().every(function () {
+            table_header.push(this.header().innerText.trim());
+          });
+          var header_to_toggle = e.currentTarget.parentElement.innerText.trim();
+          console.log(header_to_toggle);
+          var idx = table_header.indexOf(header_to_toggle);
+          var visible = $(this).hasClass("active");
+          table.api().column(idx).visible(visible);
+          // Prevent from trigerring the parent
+          e.stopPropagation()
+        })
+        $("[id^=colVis_]").click(function (e) {
+          $(this).find("[id^=button_colVis_]").toggleClass("active");
+          var table_header = [];
+          table.api().columns().every(function () {
+            table_header.push(this.header().innerText.trim());
+          });
+          var header_to_toggle = e.target.innerText.trim();
+          console.log(header_to_toggle);
+          var idx = table_header.indexOf(header_to_toggle);
+          var visible = $(this).find("[id^=button_colVis_]").hasClass("active");
+          table.api().column(idx).visible(visible);
+        });
+      }
       table.api().columns().every(function () {
         var header = this.header().innerText.trim().replace(/ /g, '_');
         var visible = this.visible();
