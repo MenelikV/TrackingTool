@@ -3,16 +3,6 @@
 $(document).ready(function () {
   // Launch DataTable to make the table look nicer, if there is a table to display...
   if ($('#available-data').length) {
-    // Subsribe to the Socket Model
-    io.socket.get("/data")
-    // On change display a message on the console
-    io.socket.on('data', function (msg) {
-      console.log("Page was reloaded because some data has been added to the DataBase")
-      // This is heavy, this may have to change in the future.
-      // Display a modal to tell user DataBase has been updated.
-      // Use MSG in the future
-      document.location.reload(true);
-    });
     // Formatting Available Data
     $.fn.dataTable.moment( 'DD/MM/YYYY' );
     // Control the Column Visibility Toggles 
@@ -61,7 +51,19 @@ $(document).ready(function () {
       });
     });
     var headers = window.SAILS_LOCALS["headers"];
-    // Modify Modal On Show
+    // Modify Delete Modal On Show
+    $("#Deletor").on("show.bs.modal", function(){
+      var row = $("#available-data tr.selected");
+      $.selectedRow = row.closest('tr').index();
+      $.selectedRowDom = row
+      var complete_data_table = table.api().row(row).data();
+      var modal = $(this);
+      modal.find(".modal-body #aircraft").text(complete_data_table["Aircraft"]);
+      modal.find(".modal-body #msn").text(complete_data_table["MSN"]);
+      modal.find(".modal-body #flight").text(complete_data_table["Flight"]);
+      modal.find(".modal-body #row").data("complete", complete_data_table);
+    })
+    // Modify Editor Modal On Show
     $.isSuperADmin = $("#EditButton").length > 0;
     $.selectedRow = undefined;
     $.selectedRowDom = undefined;
@@ -97,9 +99,20 @@ $(document).ready(function () {
       modal.find('.modal-body #Comment-input').val(comment);
     });
     $("#available-data tbody").on("click", "tr", function (ev) {
+      const regex = /^ResultsButton_\d+$/gm;
+      if(regex.exec(ev.target.id) !== null){
+        /* Special Way of showing the modal 
+        This is because, once the user moved the columns, 
+        The click event is not redirected to the button anymore
+        */
+       $.selectedRowDom = $(this).closest("tr");
+       $("#Results").modal("show");
+       return true
+      }
       if ($.isSuperADmin) {
         ev.stopPropagation();
         $("#EditButton").removeAttr("disabled").removeClass("disabled");
+        $("#DeleteButton").removeAttr("disabled").removeClass("disabled");
         $(this).closest("tr").addClass('selected').siblings().removeClass('selected');
         return true;
       }
@@ -108,6 +121,7 @@ $(document).ready(function () {
     $(document).click(function () {
       if ($.isSuperADmin && $("#available-data tr.selected").length) {
         $("#EditButton").attr("disabled", true).addClass("disabled");
+        $("#DeleteButton").attr("disabled", true).addClass("disabled");
         $("#available-data tr.selected").removeClass("selected");
       }
     });
@@ -195,6 +209,35 @@ $(document).ready(function () {
         }
       });
     });
+    $("#dataDelete").submit(function(event){
+      event.preventDefault();
+      var form = $(this);
+      var url = form.attr("action");
+      var test_data = form.find("#row").data("complete")
+      var aicraft = form.find("#aircraft").text();
+      var flight = form.find("#flight").text();
+      var msn = form.find("#msn").text();
+      $.ajax({
+        url:url,
+        method: "POST",
+        data: test_data,
+        success:function(){
+          // Reload the entire page or juste delete the row ?
+          table.api().row($.selectedRowDom).remove().draw();
+          $("#closeDeletorButton").click();
+          $.selectedRow = undefined;
+          $.selectedRowDom = undefined;
+          $.internalIdSelection = undefined;
+        },
+        error: function(){
+          $("#closeDeletorButton").click();
+          alert("Failure during row deletion");
+          $.selectedRow = undefined;
+          $.selectedRowDom = undefined;
+          $.internalIdSelection = undefined;
+        }
+      })
+    })
     // JavaScript Source Data Drawing
     var results_status = headers.indexOf("Results_Status");
     var validated_status = headers.indexOf("Validated_Status");
@@ -375,6 +418,8 @@ $(document).ready(function () {
         "targets": ffu,
         "name": "Fleet Follow Up",
         "data": "Fleet_Follow_Up",
+        "orderable": false,
+        "searchable": false,
         "width": "5%",
         "render": function render(data, type, row, meta) {
           return '<a href="/account/file/download/' + row["Fleet_Follow_Up_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
@@ -383,6 +428,8 @@ $(document).ready(function () {
         "targets": aircraft_ident,
         "name": "Aircraft Identification",
         "data": "Aircraft_Identification",
+        "orderable": false,
+        "searchable": false,
         "width": "5%",
         "render": function render(data, type, row, meta) {
           return '<a href="/account/file/download/' + row["Aircraft_Identification_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
@@ -474,10 +521,11 @@ $(document).ready(function () {
       table.fnDraw();
     }
     // Trigger the Results Modal when the user clicks on the "View Table" Button
+    /*
     $("[id^=ResultsButton_]").click(function () {
       $.selectedRowDom = $(this).closest("tr");
       $("#Results").modal("show");
-    });
+    });*/
     // Results Modal
     $("#Results").on("show.bs.modal", function () {
       var row = $.selectedRowDom;
