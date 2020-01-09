@@ -14,7 +14,7 @@ module.exports = {
             type: "number",
             required: true,
         },
-        Flight_Owner: {
+        Airline: {
             type: "string"
         },
         Flight_Date: {
@@ -78,7 +78,7 @@ module.exports = {
             isIn: ["Preliminary", "Definitive", "Investigation", "In Progress"],
             defaultsTo: "Preliminary"
         },
-        Validated_Status: {
+        Data_Validated_Status: {
             type: "string",
             defaultsTo: ""
         },

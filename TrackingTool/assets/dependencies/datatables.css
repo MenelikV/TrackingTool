@@ -43,6 +43,7 @@ div.dataTables_wrapper div.dataTables_length select {
 }
 div.dataTables_wrapper div.dataTables_filter {
   text-align: right;
+  font-size: 0.9em;
 }
 div.dataTables_wrapper div.dataTables_filter label {
   font-weight: normal;

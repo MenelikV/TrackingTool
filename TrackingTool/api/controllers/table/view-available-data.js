@@ -17,8 +17,8 @@ module.exports = {
 
   fn: async function (inputs, exits) {
      var data = await Data.find();
-     var headers = Data.getHeader()
-     var visible_headers = Data.getVisibleFields()
+     var headers = Data.getHeader();
+     var visible_headers = Data.getVisibleFields();
     return exits.success({data:data, headers:headers, search:false, visible_headers: visible_headers});
   }
 

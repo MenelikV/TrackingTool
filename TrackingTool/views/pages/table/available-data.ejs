@@ -1,4 +1,4 @@
-<div class="jumbotron jumbostyle">
+<div class="table-jumbostyle">
     <br>
     <%if(search){%>
     <h3>Search results for
@@ -9,31 +9,30 @@
     <h5 style="text-decoration: underline;">No results found</h5>
     <%}}  %>
 
-    <%if(data[0] !== undefined && headers !== undefined){%>
-        <div class="container" style="margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; padding-bottom: 10px;">
-            <%if(me.isSuperAdmin || me.isBasicUser){%>
-                <button type="button" id="EditButton" class="btn btn-danger btn-lg mr-5 ml-0 mb-2" data-toggle="modal"
-                    data-target="#Editor" disabled>Edit <i class="fa fa-edit fa-lg" style="color:white"></i></button>
-                <%}%>
-                <%if(me.isSuperAdmin){%>
-                <% console.log("Button should be created")%>
-                <button type="button" id="DeleteButton" class="btn btn-dark btn-lg mr-2 ml-2 mb-2" data-toggle="modal"
-                    data-target="#Deletor" disabled>Delete <i class="fa fa-trash fa-lg" style="color:white"></i></button>
-            <%}%>
-        </div>
+    <%if(headers !== undefined){%>
+    <div>
+    <%if(me.isSuperAdmin || me.isBasicUser){%>
+    <button type="button" id="EditButton" class="btn btn-danger btn-lg ml-0 mb-2" data-toggle="modal"
+      data-target="#Editor" disabled>Edit <i class="fa fa-edit fa-lg" style="color:white"></i></button>
+    <%}%>
+    <%if(me.isSuperAdmin){%>
+    <% console.log("Button should be created")%>
+    <button type="button" id="DeleteButton" class="btn btn-dark btn-lg mr-2 ml-2 mb-2" data-toggle="modal"
+      data-target="#Deletor" disabled>Delete <i class="fa fa-trash fa-lg" style="color:white"></i></button>
+    <%}%>
+    </div>
     
-    <div class="table-responsive">
-        <!--TODO Correct That!-->
+    <div id="table_container">
 
         <table id="available-data" class="display">
             <!-- HEADERS -->
             <thead class="table-primary">
                 <tr>
-                    <% for(var i=0; i < headers.length; i++){ %>
-                    <th scope="col" data-sortable="true" style="width: auto !important">
-                        <%=headers[i].replace(/_/g, ' ')%>
-                    </th>
-                    <%}%>
+                <% for(var i=0; i < headers.length; i++){ %>
+                <th scope="col" data-sortable="true">
+                <%=headers[i].replace(/_/g, ' ')%>
+                </th>
+                <%}%>
                 </tr>
             </thead>
 
@@ -109,8 +108,8 @@
                                     <select class="custom-select" id="validatedCombo" title="Choose an option" required>
                                         <option value="Preliminary">Preliminary</option>
                                         <% if(me.isSuperAdmin){%>
-                                        <option value="Definitive">Definitive</option>
-                                        <%}%>
+        <option value="Definitive">Definitive</option>
+        <%}%>
                                         <option value="Investigation">Investigation</option>
                                     </select>
                                 </div>
@@ -190,5 +189,5 @@
     <%}  %>
 
 
-</div>
-<%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>
+  </div>
+  <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>
