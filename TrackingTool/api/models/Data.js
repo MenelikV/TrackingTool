@@ -69,6 +69,9 @@ module.exports = {
     TRA: {
       type: "string"
     },
+    TRA_Comment: {
+      type: "string"
+    },
     CTR: {
       type: "string",
       defaultsTo: ""

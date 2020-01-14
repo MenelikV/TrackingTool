@@ -1,83 +1,94 @@
 <div id="upload_table_container"">
 
   <form action="/account/file/validate" method="post" id="uploaded">
-    <button type="button" class="btn btn-secondary btn-lg mr-5 ml-0 pb-10" data-toggle="modal" data-target="#exampleModalCenter">Reupload</button>
-    <div class="table-responsive" id="table_container">
-      <table id="upload-results" class="display">
-        <!-- HEADERS -->
-        <thead class="table-primary">
-          <tr>
-            <% for(var i=0; i < headers.length; i++){ %>
-            <th scope="col" data-sortable="true" style="width: auto !important">
-              <%=headers[i].replace(/_/g, ' ')%>
-            </th>
-            <%}%>
+  <button type="button" class="btn btn-secondary btn-lg mr-5 ml-0 pb-10" data-toggle="modal"
+    data-target="#exampleModalCenter">Reupload</button>
+  <div class="table-responsive" id="table_container">
+    <table id="upload-results" class="display">
+      <!-- HEADERS -->
+      <thead class="table-primary">
+        <tr>
+          <% for(var i=0; i < headers.length; i++){ %>
+          <th scope="col" data-sortable="true" style="width: auto !important">
+            <%=headers[i].replace(/_/g, ' ')%>
+          </th>
+          <%}%>
           </tr>
         </thead>
         <!-- BODY -->
         <tbody>
           <% for(var j=0; j < data.length; j++){ %>
-          <tr>
-            <% for(var i=0; i < headers.length; i++){%>
-            <% var pdfHeaders = Data.pdfFields();%>
-            <% if(headers[i] === "Results"){%>
-            <!-- Trigger a modal for the  results table -->
-            <th scope="col" class="text-center" style="width: auto !important" id="ResultsModalButton">
-              <a href="" data-toggle="modal" data-target="#Results">
-                View
-              </a>
-            </th>
-            <%} else if(headers[i] === "Commentary"){%>
-            <!-- Trigger a modal for the  results table -->
-            <th scope="col" class="text-center" style="width: auto !important">
-              <div class="input-group input-group-sm mb-3">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">
-                    <a href="" data-target="#commentaryModal" class="table-text" data-toggle="modal" data-book-id="<%=data[j][correct_header]%>"><i
-                        class="fa fa-pencil fa-lg" style="color:rgb(20, 83, 134)"></i></a>
-                  </span>
-                </div>
-                <textarea disabled id="userComment" class="form-control" aria-label="With textarea"></textarea>
+        <tr>
+          <% for(var i=0; i < headers.length; i++){%>
+          <% var pdfHeaders = Data.pdfFields();%>
+          <% if(headers[i] === "Results"){%>
+          <!-- Trigger a modal for the  results table -->
+          <th scope="col" class="text-center" style="width: auto !important" id="ResultsModalButton">
+            <a href="" data-toggle="modal" data-target="#Results">
+              View
+            </a>
+          </th>
+          <%} else if (headers[i] === "TRA_Comment") {%>
+          <th scope="col" class="text-center" style="width: auto !important" id="tra_button">
+            <a href="" data-toggle="modal" data-target="#TRA">
+              View
+            </a>
+          </th>
+
+          <%} else if(headers[i] === "Commentary"){%>
+          <!-- Trigger a modal for the  results table -->
+          <th scope="col" class="text-center" style="width: auto !important">
+            <div class="input-group input-group-sm mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <a href="" data-target="#commentaryModal" class="table-text" data-toggle="modal"
+                    data-book-id="<%=data[j][correct_header]%>"><i class="fa fa-pencil fa-lg"
+                      style="color:rgb(20, 83, 134)"></i></a>
+                </span>
               </div>
-            </th>
-            <%}  else if(headers[i].replace(/_/g, ' ') === "Delivery Date"){%>
-            <!-- Trigger a modal for the  results table -->
-            <th scope="col" class="text-center" style="width: auto !important">
-              <input type="date" class="form-control" id="deliveryDate">
-            </th>
+              <textarea disabled id="userComment" class="form-control" aria-label="With textarea"></textarea>
+            </div>
+          </th>
+          <%}  else if(headers[i].replace(/_/g, ' ') === "Delivery Date"){%>
+          <!-- Trigger a modal for the  results table -->
+          <th scope="col" class="text-center" style="width: auto !important">
+            <input type="date" class="form-control" id="deliveryDate">
+          </th>
 
 
 
-            <% } else{%>
-            <%if(pdfHeaders.indexOf(headers[i])!==-1){%>
-            <!--This should be a link to a PDF-->
-            <th scope="col" style="width: auto !important; text-align: center; vertical-align: middle;">
-              <% var correct_header = headers[i]+"_id" %>
-              <a href="/account/file/download/<%=data[j][correct_header]%>" target="_blank">View</a>
-              <br>
-              <a href="" data-target="#editModal" class="table-text" data-toggle="modal" data-book-id="<%=data[j][correct_header]%>"><i
-                  class="fa fa-pencil fa-lg" style="color:rgb(20, 83, 134)"></i></a>
-            </th>
-            <%}
+          <% } else{%>
+          <%if(pdfHeaders.indexOf(headers[i])!==-1){%>
+          <!--This should be a link to a PDF-->
+          <th scope="col" style="width: auto !important; text-align: center; vertical-align: middle;">
+            <% var correct_header = headers[i]+"_id" %>
+            <a href="/account/file/download/<%=data[j][correct_header]%>" target="_blank">View</a>
+            <br>
+            <a href="" data-target="#editModal" class="table-text" data-toggle="modal"
+              data-book-id="<%=data[j][correct_header]%>"><i class="fa fa-pencil fa-lg"
+                style="color:rgb(20, 83, 134)"></i></a>
+          </th>
+          <%}
                                   else{%>
-            <th scope="col" style="width: auto !important; text-align: center; vertical-align: middle;" data-header="<%=headers[i]%>">
-              <%=data[j][headers[i]]%>
-            </th>
-            <%}
+          <th scope="col" style="width: auto !important; text-align: center; vertical-align: middle;"
+            data-header="<%=headers[i]%>">
+            <%=data[j][headers[i]]%>
+          </th>
+          <%}
                                   %>
-            <%} %>
-            <%}%>
+          <%} %>
+          <%}%>
           </tr>
           <%}%>
-        </tbody>
-      </table>
-    </div>
+          </tbody>
+    </table>
+  </div>
 
-    </br>
-    <div class="container center-block">
-      <button type="button" id="confirm" class="btn btn-primary ml-auto" style="float: right;" form="uploaded">Confirm
-        &raquo;</button>
-    </div>
+  </br>
+  <div class="container center-block">
+    <button type="button" id="confirm" class="btn btn-primary ml-auto" style="float: right;" form="uploaded">Confirm
+      &raquo;</button>
+  </div>
 
   </form>
 </div>
@@ -95,6 +106,27 @@
         <%-data[0]["Results"]%>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRA modal -->
+<div class="modal fade" id="TRA" tabindex="-1" role="dialog" aria-labelledby="ResultsTitle" aria-hidden="true">
+  <div class="tra-modal modal-dialog modal-dialog-centered" role="document">
+    <div class="tra-modal-content modal-content">
+      <div class="tra-modal-header modal-header">
+        <h5 class="modal-title" id="ResultsTitle">TRA Comment</h5>
+      </div>
+      <hr>
+      <div class="tra-modal-body modal-body" id='TRA_modal_content'>
+        <!-- Display the results Table TODO, Better Styling for the small table-->
+        <% for(let line of data[0]["TRA_Comment"].split(/\r?\n/g)) {%>
+        <p><%=line%></p>
+        <% } %>
+      </div>
+      <div class="tra-modal-footer modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>

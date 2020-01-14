@@ -132,7 +132,7 @@ module.exports = {
     var idendification_data = require("./ident_config.json");
     var pdf_data = require("./pdf_config.json");
     var keys = Object.keys(config_data);
-    var pdf_keys = Object.keys(pdf_data);
+    var pdf_keys = Object.keys(pdf_data); 
     var aircraft_data = {};
     req.file("file").upload({}, async function (err, uploads) {
       if (uploads === undefined) {
@@ -189,7 +189,6 @@ module.exports = {
             return console.log('Could not delete excel file', err);
           }
         });
-
       });
 
       //Before uploading data, check if there already exists a validated entry for this aircraft
@@ -204,7 +203,6 @@ module.exports = {
         }
         //If successful show error message and stop the file upload process
         else if (results.length) {
-          console.log("results:  ",results);
           return res.serverError("Bad entry!");
         } else {
           var criteria = _.pick(aircraft_data, ["Aircraft", "MSN", "Flight"])

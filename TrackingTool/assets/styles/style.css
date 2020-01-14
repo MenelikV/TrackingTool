@@ -59,8 +59,10 @@ input[type="number"] {
   font-size: 0.8em;
 }
 
-.btn.results-button {
+.btn.results-button,
+.btn.tra-button {
   padding: 0;
+  text-transform: capitalize;
 }
 
 .space {
@@ -758,12 +760,12 @@ body {
   align-items: center;
 }
 
-.dash.dash-flex.home-wrapper .btn{
+.dash.dash-flex.home-wrapper .btn {
   padding: 9px;
   font-size: 0.9em;
 }
 
-.dash.dash-flex.home-wrapper .btn:hover{
+.dash.dash-flex.home-wrapper .btn:hover {
   font-weight: bold;
   color: #11368e;
 }
@@ -779,4 +781,52 @@ body {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
+}
+
+#TRA_comment.show,
+#TRA.show {
+  display: flex !important;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.tra-modal {
+  display: flex;
+  flex: 1 1 auto;
+  align-self: center;
+  max-width: 60%;
+  max-height: 60%;
+  border-radius: 10px;
+}
+
+.tra-modal .tra-modal-content {
+  display: flex;
+  flex: 1 1 1px;
+  flex-direction: column;
+  max-width: 100%;
+  padding: 20px;
+}
+
+.tra-modal .tra-modal-content .tra-modal-header {
+  justify-content: center;
+  padding-bottom: 7px;
+  border-bottom: solid #d3d3d3c4 1px;
+}
+
+.tra-modal .tra-modal-content #TRA_content.tra-modal-body,
+.tra-modal .tra-modal-content #TRA_modal_content.tra-modal-body {
+  overflow: auto;
+  font-size: 0.85em;
+  padding: 8px 10px;
+  max-height: 50vh;
+}
+
+.tra-modal .tra-modal-content .tra-modal-body p {
+  margin: 5px 0;
+}
+
+.tra-modal .tra-modal-content .tra-modal-footer {
+  padding-top: 10px;
+  margin: 0;
 }

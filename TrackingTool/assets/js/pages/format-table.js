@@ -4,7 +4,7 @@ $(document).ready(function () {
   // Launch DataTable to make the table look nicer, if there is a table to display...
   if ($('#available-data').length) {
     // Formatting Available Data
-    $.fn.dataTable.moment( 'DD/MM/YYYY' );
+    $.fn.dataTable.moment('DD/MM/YYYY');
     // Control the Column Visibility Toggles 
     // Prevent the dropdown from auto closing when user click inside
     $("#colVis").on("click.bs.dropdown", function (e) {
@@ -12,7 +12,7 @@ $(document).ready(function () {
       e.preventDefault();
     });
     // Detect when user click on a button and hide accordlingly the column
-    $("[id^=button_colVis_]").click(function(e){
+    $("[id^=button_colVis_]").click(function (e) {
       $(this).toggleClass("active");
       var table_header = [];
       table.api().columns().every(function () {
@@ -52,7 +52,7 @@ $(document).ready(function () {
     });
     var headers = window.SAILS_LOCALS["headers"];
     // Modify Delete Modal On Show
-    $("#Deletor").on("show.bs.modal", function(){
+    $("#Deletor").on("show.bs.modal", function () {
       var row = $("#available-data tr.selected");
       $.selectedRow = row.closest('tr').index();
       $.selectedRowDom = row
@@ -106,15 +106,28 @@ $(document).ready(function () {
     });
     $("#available-data tbody").on("click", "tr", function (ev) {
       const regex = /^ResultsButton_\d+$/gm;
-      if(regex.exec(ev.target.id) !== null){
+      let tra_regex = /^TRA_comment__\d+$/gm;
+      if (ev.target.classList.contains("results-button")) {
         /* Special Way of showing the modal 
         This is because, once the user moved the columns, 
         The click event is not redirected to the button anymore
         */
-       $.selectedRowDom = $(this).closest("tr");
-       $("#Results").modal("show");
-       return true
+        $.selectedRowDom = $(this).closest("tr");
+        $("#Results").modal("show");
+        return true;
+      } else if (ev.target.classList.contains("tra-button")) {
+        $.selectedRowDom = $(this).closest("tr");
+        $("#TRA_comment").modal("show");
+        return true;
       }
+
+      // if (tra_regex.exec(ev.target.id) !== null){
+      //   ev.stopPropagation();
+      //   $.selectedRowDom = $(this).closest("tr");
+      //   $("#TRA_comment").modal("show");
+      //   return true;
+      // }
+
       if ($.isSuperADmin) {
         ev.stopPropagation();
         $("#EditButton").removeAttr("disabled").removeClass("disabled");
@@ -215,7 +228,7 @@ $(document).ready(function () {
         }
       });
     });
-    $("#dataDelete").submit(function(event){
+    $("#dataDelete").submit(function (event) {
       event.preventDefault();
       var form = $(this);
       var url = form.attr("action");
@@ -224,10 +237,10 @@ $(document).ready(function () {
       var flight = form.find("#flight").text();
       var msn = form.find("#msn").text();
       $.ajax({
-        url:url,
+        url: url,
         method: "POST",
         data: test_data,
-        success:function(){
+        success: function () {
           // Reload the entire page or juste delete the row ?
           table.api().row($.selectedRowDom).remove().draw();
           $("#closeDeletorButton").click();
@@ -235,7 +248,7 @@ $(document).ready(function () {
           $.selectedRowDom = undefined;
           $.internalIdSelection = undefined;
         },
-        error: function(){
+        error: function () {
           $("#closeDeletorButton").click();
           alert("Failure during row deletion");
           $.selectedRow = undefined;
@@ -266,7 +279,8 @@ $(document).ready(function () {
     var flight_id = headers.indexOf("Flight");
     var comment_id = headers.indexOf("Commentary");
     var dd_id = headers.indexOf("Delivery Date");
-    
+    var tra_comment = headers.indexOf("TRA_Comment");
+
     var table = $('#available-data').dataTable({
       // ServerSide done in another branch of the repo
       serverSide: false,
@@ -337,6 +351,20 @@ $(document).ready(function () {
         "name": "Commentary",
         "width": "5%",
         "data": "Commentary"
+      }, {
+        "targets": tra_comment,
+        "name": "TRA Comment",
+        "data": "TRA_Comment",
+        "orderable": false,
+        "searchable": false,
+        "render": function render(data, type, row, meta) {
+          if (!data) return "";
+          let btn = document.createElement("BUTTON");
+          btn.id = "TRA_" + row["id"];
+          btn.classList.add("btn", "btn-primary", "tra-button");
+          btn.textContent = "View Comment";
+          return btn.outerHTML;
+        }
       }, {
         "targets": headers.indexOf("MSN"),
         "name": "MSN",
@@ -482,7 +510,7 @@ $(document).ready(function () {
         "searchable": false,
         "width": "5%",
         "render": function render(data, type, row, meta) {
-          return '<button type="button" id="ResultsButton_' + row["id"] + '"' + 'class="btn btn-primary results-button" style="text-transform:capitalize" data-toggle="modal" data-target="#Results">View Table </button>';
+          return '<button type="button" id="ResultsButton_' + row["id"] + '"' + 'class="btn btn-primary results-button tra-button" data-toggle="modal" data-target="#Results">View Table </button>';
         }
       }, {
         "targets": tra,
@@ -539,12 +567,55 @@ $(document).ready(function () {
     let datatable_wrap = document.getElementById("available-data_wrapper");
     datatable_wrap.insertBefore(table_wrap, document.getElementById("available-data_info"));
 
-    // Trigger the Results Modal when the user clicks on the "View Table" Button
-    /*
-    $("[id^=ResultsButton_]").click(function () {
-      $.selectedRowDom = $(this).closest("tr");
-      $("#Results").modal("show");
-    });*/
+    //TRA comment modal
+    $("#TRA_comment").on("show.bs.modal", function (e) {
+      var row = $.selectedRowDom;
+      if (row.length === 0) {
+        alert("Did you click somewhere ?");
+      }
+      e.stopPropagation();
+      $.selectedRow = row.closest('tr').index();
+      var full_table_data = table.api().row(row).data();
+      var tra_comment_content = full_table_data["TRA_Comment"];
+
+      let lines = tra_comment_content.split(/\r?\n/g);
+      for (let line of lines) {
+        if (!line) continue;
+        let par = document.createElement("P");
+        par.textContent = line;
+        $("#TRA_content").append(par);
+      }
+    });
+    $("#TRA_comment").on("hide.bs.modal", function () {
+      // Empty the modal on hide
+      $("#TRA_content").empty();
+    });
+
+        //TRA comment modal
+        $("#TRA").on("show.bs.modal", function (e) {
+          var row = $.selectedRowDom;
+          if (row.length === 0) {
+            alert("Did you click somewhere ?");
+          }
+          e.stopPropagation();
+          $.selectedRow = row.closest('tr').index();
+          var full_table_data = table.api().row(row).data();
+          var tra_comment_content = full_table_data["TRA_Comment"];
+    
+          let lines = tra_comment_content.split(/\r?\n/g);
+          for (let line of lines) {
+            if (!line) continue;
+            let par = document.createElement("P");
+            par.textContent = line;
+            $("#TRA_content").append(par);
+          }
+        });
+        $("#TRA").on("hide.bs.modal", function () {
+          // Empty the modal on hide
+          $("#TRA_content").empty();
+        });
+
+
     // Results Modal
     $("#Results").on("show.bs.modal", function () {
       var row = $.selectedRowDom;
@@ -552,11 +623,11 @@ $(document).ready(function () {
         alert("Did you click somewhere ?");
       }
 
-      $.selectedRow = row.closest('tr').index()
-      var complete_data_table = table.api().row(row).data()
-      console.log(complete_data_table)
-      var results_table = complete_data_table["Results"]
-      console.log(results_table)
+      $.selectedRow = row.closest('tr').index();
+      var complete_data_table = table.api().row(row).data();
+      console.log(complete_data_table);
+      var results_table = complete_data_table["Results"];
+      console.log(results_table);
       // insertAfter is not the one to use, maybe append
       $("#TableContainer").append(results_table);
     });
@@ -640,7 +711,7 @@ $(document).ready(function () {
         "orderable": false,
         "searchable": false,
         "data": "Fleet_Follow_Up_id"
-      },{
+      }, {
         "targets": aircraft_ident_id,
         "visible": false,
         "orderable": false,
@@ -655,6 +726,20 @@ $(document).ready(function () {
         "name": "Commentary",
         "data": "Commentary"
       }, {
+        "targets": tra_comment,
+        "name": "TRA Comment",
+        "data": "TRA_Comment",
+        "orderable": false,
+        "searchable": false,
+        "render": function render(data, type, row, meta) {
+          if (!data) return "";
+          let btn = document.createElement("BUTTON");
+          btn.id = "TRA_" + row["id"];
+          btn.classList.add("btn", "btn-primary", "tra-button");
+          btn.textContent = "View Comment";
+          return btn.outerHTML;
+        }
+      },{
         "targets": headers.indexOf("MSN"),
         "name": "MSN",
         "data": "MSN"
@@ -740,7 +825,7 @@ $(document).ready(function () {
         "name": "Airline",
         "orderable": false,
         "searchable": false
-      },{
+      }, {
         "targets": aircraft_ident,
         "data": "Aircraft_Identification",
         "name": "Aircraft_identification",
@@ -764,12 +849,12 @@ $(document).ready(function () {
 // Adding Extension to handle sorting ticks
 
 jQuery.extend(jQuery.fn.dataTableExt.oSort, {
-  "cbool-asc": function(x, y){
+  "cbool-asc": function (x, y) {
     var a = x.length ? x.length : 0
     var b = y.length ? y.length : 0
     return a < b ? -1 : a > b ? 1 : 0;
   },
-  "cbool-desc": function(x, y){
+  "cbool-desc": function (x, y) {
     var a = x.length ? x.length : 0
     var b = y.length ? y.length : 0
     return a < b ? 1 : a > b ? -1 : 0;
