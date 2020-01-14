@@ -1958,11 +1958,9 @@ pre code {
 }
 
 .table-responsive {
-  display: block;
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
 }
 
 .table-responsive > .table-bordered {

@@ -36,20 +36,29 @@ module.exports = {
       res += sails.helpers.tdWrap(data)
       // Beware special formatting
       idx = sails.helpers.columnShift(start_idx)
-      res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(0))
+      if (sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(0)) !== 0) res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(0));
+      else  res += sails.helpers.tdWrap("/");
+
       idx = sails.helpers.columnShift(idx)
-      res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(0))
+
+      if (sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(0)) !== 0) res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(0));
+      else  res += sails.helpers.tdWrap("/");
+
       idx = sails.helpers.columnShift(idx)
       // Mach Formatting, 3 numbers after the 
-      res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(3))
+      if (sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(3)) !== 0) res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(3));
+      else  res += sails.helpers.tdWrap("/");
+
       idx = sails.helpers.columnShift(idx)
       // DSR Formatting
-      res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(2))
+      if (sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(2)) !== 0) res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(2));
+      else  res += sails.helpers.tdWrap("/");
+
       start_idx = sails.helpers.rowShift(start_idx);
       data = input.sheet[start_idx].v;
       res += "</tr>"
     }
-    res+="</table>"
+    res += "</table>"
     exits.success(res);
   },
 }

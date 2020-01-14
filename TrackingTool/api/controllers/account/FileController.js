@@ -13,7 +13,8 @@ module.exports = {
     return res.view("pages/table/upload-results", {
       data: [req.aircraft_data],
       headers: headers,
-      me: req.me})
+      me: req.me
+    })
   },
 
   search: function (req, res) {
@@ -69,31 +70,35 @@ module.exports = {
       } else if (result == undefined) {
         res.send('notfound')
       } else {
-        if (result[0] === undefined) { return res.serverError("Internal Error") }
+        if (result[0] === undefined) {
+          return res.serverError("Internal Error")
+        }
         var path = result[0].path;
         console.log(path)
         // Watermark file Here or not 
         //Including skipper disk
         console.log(result[0].aircraft_id)
-        var status  =  await Data.find({id: result[0].aircraft_id})
-        if(status===undefined){
+        var status = await Data.find({
+          id: result[0].aircraft_id
+        })
+        if (status === undefined) {
           return res.serverError("Unable to find aircraft linked to the file")
-        }
-        else{
-          if(status.length !== 1){return res.serverError("Not able to download this file")}
+        } else {
+          if (status.length !== 1) {
+            return res.serverError("Not able to download this file")
+          }
           console.log(status)
           var rs = status[0].Results_Status
           var vs = status[0].Validated_Status
           var text = ""
-          if(rs === "Preliminary" && vs === "true"){
+          if (rs === "Preliminary" && vs === "true") {
             text = "Preliminary Results"
-          }
-          else{
-            if(!vs.length){
+          } else {
+            if (!vs.length) {
               text = "Non Validated Data"
             }
           }
-          if(text.length){
+          if (text.length) {
             // Watermark PDF
             console.log("PDF Should be Watermarked")
             try {
@@ -102,16 +107,16 @@ module.exports = {
               console.error(error)
             }
           }
-          
+
           var SkipperDisk = require('skipper-disk');
           var fileAdapter = SkipperDisk();
           // Tell the browser we are handling a PDF File
           res.setHeader('Content-Type', 'application/pdf');
           fileAdapter.read(path).on('error', function (err) {
-            res.send('path error');
-          })
+              res.send('path error');
+            })
             .pipe(res);
-          
+
 
         }
       }
@@ -120,14 +125,15 @@ module.exports = {
 
 
   upload: async function (req, res) {
-    var fs = require('fs')
-    var XLSX = require("js-xlsx")
-    var config_data = require("./config.json")
-    var idendification_data = require("./ident_config.json")
-    var pdf_data = require("./pdf_config.json")
-    var keys = Object.keys(config_data)
-    var pdf_keys = Object.keys(pdf_data)
-    var aircraft_data = {}
+
+    var fs = require('fs');
+    var XLSX = require("js-xlsx");
+    var config_data = require("./config.json");
+    var idendification_data = require("./ident_config.json");
+    var pdf_data = require("./pdf_config.json");
+    var keys = Object.keys(config_data);
+    var pdf_keys = Object.keys(pdf_data);
+    var aircraft_data = {};
     req.file("file").upload({}, async function (err, uploads) {
       if (uploads === undefined) {
         return res.serverError("Upload did not work")
@@ -136,9 +142,9 @@ module.exports = {
         return res.serverError('User should only upload 7 files at once');
       }
       // Filter PDF vs XLS* Files
-      var pdf_files = uploads.filter(upload => upload.filename.split(".").pop() == "pdf")
+      var pdf_files = uploads.filter(upload => upload.filename.split(".").pop() == "pdf");
 
-      var xls_files = uploads.filter(upload => upload.filename.split(".").pop().indexOf("xls") !== -1)
+      var xls_files = uploads.filter(upload => upload.filename.split(".").pop().indexOf("xls") !== -1);
       // Handle Excel Files First
       xls_files.forEach(file => {
         for (var k = 0; k < keys.length; k++) {
@@ -151,13 +157,13 @@ module.exports = {
             } catch (error) {
               err = error
             }
-            var sub_keys = Object.keys(config_data[key])
+            var sub_keys = Object.keys(config_data[key]);
             for (var l = 0; l < sub_keys.length; l++) {
               sheet = sub_keys[l];
               if (workbook.SheetNames.includes(sheet) !== -1) {
-                console.log("A WorkSheet has been found!")
-                s = workbook.Sheets[sheet]
-                var info_key = Object.keys(config_data[key][sheet])
+                console.log("A WorkSheet has been found!");
+                s = workbook.Sheets[sheet];
+                var info_key = Object.keys(config_data[key][sheet]);
                 var info = config_data[key][sheet];
                 for (var m = 0; m < info_key.length; m++) {
                   var prop = info_key[m];
@@ -183,73 +189,95 @@ module.exports = {
             return console.log('Could not delete excel file', err);
           }
         });
-      })
-      var criteria = _.pick(aircraft_data, ["Aircraft", "MSN", "Flight"])
-      // Patching Aircraft in case the flight is weighted after
-      if(aircraft_data["Text Weighing"] === "After"){
-        aircraft_data["Weighing"] = "After"
-      }
-      delete aircraft_data["Text_Weighing"]
-      // Add Entry to DataBase now
-      try{
-        var uploaded_entry = await Data.findOrCreate(criteria, criteria)
-      }
-      catch(error){
-        console.log("More than one entry found")
-        return res.serverError(err)
-      }
-      //aircraft_data = {}
-      console.log("Handling PDF Files")
-      for (const file of pdf_files) {
 
-        for (const k of pdf_keys) {
-          if (file.filename.toLowerCase().indexOf(k) !== -1) {
-            aircraft_data[pdf_data[k]] = file.fd
-            // Create a file entry in the Fike DataBase
-            var createdFileEntry = await File.create({
-              filename: k,
-              path: file.fd,
-              aircraft_id: uploaded_entry.id
-            }).fetch()
-            aircraft_data[pdf_data[k] + "_id"] = createdFileEntry.id;
-          }
+      });
+
+      //Before uploading data, check if there already exists a validated entry for this aircraft
+      Data.find({
+        Aircraft: aircraft_data["Aircraft"],
+        MSN: aircraft_data["MSN"],
+        Flight: aircraft_data["Flight"],
+        Validated_Status: true
+      }).exec(async function (err, results) {
+        if (err) {
+          console.error("Error validating entry ", err);
         }
-      }
-      // Default Value
-      aircraft_data["Validated_Status"] = ""
-      aircraft_data["Results_Status"] = "Preliminary"
-      // Try to open the CTR DataBase, If MSN not found then set fields to defaut
-      var CTR_dict = await CtrTot.find({ MSN: aircraft_data["MSN"] })
-      if (CTR_dict.length == 1) {
-        CTR_dict = CTR_dict[0]
-        aircraft_data["CTR"] = CTR_dict.CTR !== undefined ? CTR_dict.CTR : ""
-        aircraft_data["Delivery_Date"] = CTR_dict.Delivery_Date !== undefined ? CTR_dict.Delivery_Date : ""
-      }
-      else {
-        aircraft_data["CTR"] = ""
-        aircraft_data["Delivery_Date"] = ""
-      }
-      // TRA is filled by hand :/
-      aircraft_data["TRA"] = ""
-      try{
-      var data = await Data.update(uploaded_entry).set(aircraft_data).fetch()}
-      catch(error){
-        err = error
-      }
+        //If successful show error message and stop the file upload process
+        else if (results.length) {
+          console.log("results:  ",results);
+          return res.serverError("Bad entry!");
+        } else {
+          var criteria = _.pick(aircraft_data, ["Aircraft", "MSN", "Flight"])
+          // Patching Aircraft in case the flight is weighted after
+          if (aircraft_data["Text Weighing"] === "After") {
+            aircraft_data["Weighing"] = "After"
+          }
+          delete aircraft_data["Text_Weighing"]
+          // Add Entry to DataBase now
+          try {
+            var uploaded_entry = await Data.findOrCreate(criteria, criteria)
+          } catch (error) {
+            console.log("More than one entry found")
+            return res.serverError(err)
+          }
+          //aircraft_data = {}
+          console.log("Handling PDF Files")
+          for (const file of pdf_files) {
+
+            for (const k of pdf_keys) {
+              if (file.filename.toLowerCase().indexOf(k) !== -1) {
+                aircraft_data[pdf_data[k]] = file.fd
+                // Create a file entry in the Fike DataBase
+                var createdFileEntry = await File.create({
+                  filename: k,
+                  path: file.fd,
+                  aircraft_id: uploaded_entry.id
+                }).fetch()
+                aircraft_data[pdf_data[k] + "_id"] = createdFileEntry.id;
+              }
+            }
+          }
+          // Default Value
+          aircraft_data["Validated_Status"] = ""
+          aircraft_data["Results_Status"] = "Preliminary"
+          // Try to open the CTR DataBase, If MSN not found then set fields to defaut
+          var CTR_dict = await CtrTot.find({
+            MSN: aircraft_data["MSN"]
+          })
+          if (CTR_dict.length == 1) {
+            CTR_dict = CTR_dict[0]
+            aircraft_data["CTR"] = CTR_dict.CTR !== undefined ? CTR_dict.CTR : ""
+            aircraft_data["Delivery_Date"] = CTR_dict.Delivery_Date !== undefined ? CTR_dict.Delivery_Date : ""
+          } else {
+            aircraft_data["CTR"] = ""
+            aircraft_data["Delivery_Date"] = ""
+          }
+          // TRA is filled by hand :/
+          aircraft_data["TRA"] = ""
+          try {
+            var data = await Data.update(uploaded_entry).set(aircraft_data).fetch()
+          } catch (error) {
+            err = error
+          }
 
 
-      console.log("Finishing processing Files and redirection")
-      if (err !== undefined && err !== null) {
-        console.log('error uploading files')
-        return res.serverError(err)
-      }
-      console.log("Redirection")
-      // if it was successful redirect and display all uploaded files
-      var headers = Data.getHeader()
-      return res.view("pages/table/upload-results", {
-        data: data,
-        headers: headers,
-        me: req.me})
+          console.log("Finishing processing Files and redirection")
+          if (err !== undefined && err !== null) {
+            console.log('error uploading files')
+            return res.serverError(err)
+          }
+          console.log("Redirection")
+          // if it was successful redirect and display all uploaded files
+          var headers = Data.getHeader()
+          return res.view("pages/table/upload-results", {
+            data: data,
+            headers: headers,
+            me: req.me
+          })
+
+        }
+      })
+
     })
 
   },
@@ -304,7 +332,7 @@ module.exports = {
     var aircraft_data = {}
     aircraft_data["Commentary"] = _.escape(req.body["userCommentary"])
     // Date Formatting if Delivery date field is not empty
-    moment = require("moment")
+    moment = require("moment");
     aircraft_data["Delivery_Date"] = req.body["deliveryDate"].length > 0 ? moment(req.body["deliveryDate"]).format("DD/MM/YYYY") : ''
     var possible_entry = await Data.find(req.body.aircraft)
     if (possible_entry.length == 1) {
@@ -375,14 +403,13 @@ module.exports = {
     })
   },
 
-  delete: async function(req, res){
+  delete: async function (req, res) {
     console.log(req.body);
-    try{
+    try {
       await Data.destroy(req.body)
       res.status(200);
       return res.send("Successful Operation");
-    }
-    catch(error){
+    } catch (error) {
       res.status(500);
       return res.send(error);
     }

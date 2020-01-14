@@ -34,7 +34,7 @@
 </head>
 
 <!-- TABLE LAYOUT -->
-<body class="site">
+<body class="back">
 
   <!-- Navbar Section -->
 
@@ -57,7 +57,7 @@
               <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="colVisMenu" aria-haspopup="true"
                 data-toggle="dropdown" aria-expanded="false" href="">Column Visibility</a>
               <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link" id="colVis" style="width:250px">
-                <% for(let name of visible_headers){%>
+                <% for(let name of visible_headers){%> 
                   <a class="dropdown-item nav-drop" href="#" id='<%="colVis_"+name.replace(/ /g, "_")%>' style="height:30px;display: inline-block;">
                       <%=name%>
                       <button type="button" class="btn btn-xs btn-toggle float-right mt-1" data-toggle="button" id='<%="button_colVis_"+name.replace(/ /g, "_")%>' aria-pressed="true" autocomplete="off">
@@ -129,10 +129,16 @@
   <% } %>
 
   <!-- Start background-->
-  <div class="back">
+  <div class="site">
     <!--  Start body content -->
     <div class="site">
+      
+      <div class="dash dash-flex">
+        <div class="container-fluid">
           <%- body %>
+        </div>
+      </div>
+          
     </div>
     <!-- End body content -->
 

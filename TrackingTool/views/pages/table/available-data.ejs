@@ -1,5 +1,4 @@
 <div class="table-jumbostyle">
-    <br>
     <%if(search){%>
     <h3>Search results for
         <%=msn%>
@@ -16,13 +15,12 @@
       data-target="#Editor" disabled>Edit <i class="fa fa-edit fa-lg" style="color:white"></i></button>
     <%}%>
     <%if(me.isSuperAdmin){%>
-    <% console.log("Button should be created")%>
     <button type="button" id="DeleteButton" class="btn btn-dark btn-lg mr-2 ml-2 mb-2" data-toggle="modal"
       data-target="#Deletor" disabled>Delete <i class="fa fa-trash fa-lg" style="color:white"></i></button>
     <%}%>
     </div>
     
-    <div id="table_container">
+    <div class="table-responsive <%= search ? ' search-table' : ''%>">
 
         <table id="available-data" class="display">
             <!-- HEADERS -->
@@ -30,7 +28,8 @@
                 <tr>
                 <% for(var i=0; i < headers.length; i++){ %>
                 <th scope="col" data-sortable="true">
-                <%=headers[i].replace(/_/g, ' ')%>
+                    
+                <%=headers[i].replace(/_/g, ' ')%> 
                 </th>
                 <%}%>
                 </tr>
@@ -41,24 +40,6 @@
             </tbody>
 
         </table>
-    </div>
-
-    <!-- Add all the modal for the results -->
-    <div class="modal fade" id='Results' tabindex="-1" role="dialog" aria-labelledby="ResultsTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="ResultsTitle">Results Table</h5>
-                </div>
-                <hr>
-                <div class="modal-body" id='TableContainer'>
-                    <!-- Display the results Table TODO, Better Styling for the small table-->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Add a Modal for row edition -->
@@ -108,8 +89,8 @@
                                     <select class="custom-select" id="validatedCombo" title="Choose an option" required>
                                         <option value="Preliminary">Preliminary</option>
                                         <% if(me.isSuperAdmin){%>
-        <option value="Definitive">Definitive</option>
-        <%}%>
+                                        <option value="Definitive">Definitive</option>
+                                        <%}%>
                                         <option value="Investigation">Investigation</option>
                                     </select>
                                 </div>
@@ -118,6 +99,7 @@
                                 </div>
                             </div>
 
+                            <%if(me.isSuperAdmin){%>
                             <div class="form-group row">
                                 <label class="col-sm-2">Validated</label>
                                 <label class="form-check-label">
@@ -125,6 +107,7 @@
                                 </label>
                                 </label>
                             </div>
+                            <%}%>
 
                             <div class="form-group row">
                                 <label class="col-sm-2">CTR</label>
@@ -190,4 +173,21 @@
 
 
   </div>
+<!-- Add all the modal for the results -->
+<div class="modal fade" id='Results' tabindex="-1" role="dialog" aria-labelledby="ResultsTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ResultsTitle">Results Table</h5>
+            </div>
+            <hr>
+            <div class="modal-body" id='TableContainer'>
+                <!-- Display the results Table TODO, Better Styling for the small table-->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
   <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

@@ -17,6 +17,7 @@ table.dataTable {
   max-width: none !important;
   border-collapse: separate !important;
   border-spacing: 0;
+  font-size: 0.84em;
 }
 table.dataTable td,
 table.dataTable th {
@@ -42,7 +43,7 @@ div.dataTables_wrapper div.dataTables_length select {
   display: inline-block;
 }
 div.dataTables_wrapper div.dataTables_filter {
-  text-align: right;
+  text-align: left;
   font-size: 0.9em;
 }
 div.dataTables_wrapper div.dataTables_filter label {

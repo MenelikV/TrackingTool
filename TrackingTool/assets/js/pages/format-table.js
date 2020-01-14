@@ -88,14 +88,20 @@ $(document).ready(function () {
         }
       }
       var comment = complete_data_table["Commentary"];
-      var delivery_date = complete_data_table["Delivery Date"];
+      var delivery_date = complete_data_table["Delivery_Date"];
+      let dates = delivery_date.split("/");
+      let year = parseInt(dates[2]);
+      let month = parseInt(dates[1]) - 1;
+      let day = parseInt(dates[0]);
+      let input_date = moment().year(year).month(month).date(day);
+
       $.internalIdSelection = complete_data_table["id"];
       var modal = $(this);
       modal.find('.modal-body #CTRCheck').prop('checked', ctr);
       modal.find(".modal-body #TRA-input").val(tra);
       modal.find('.modal-body #validatedCombo').val(r_status);
       modal.find('.modal-body #validatedCheck').prop('checked', v_status);
-      modal.find('.modal-body #Delivery-Input').val(moment(delivery_date, "DD-MM-YYYY").format("YYYY-MM-DD"));
+      modal.find('.modal-body #Delivery-Input').val(input_date.format("YYYY-MM-DD"));
       modal.find('.modal-body #Comment-input').val(comment);
     });
     $("#available-data tbody").on("click", "tr", function (ev) {
@@ -260,6 +266,7 @@ $(document).ready(function () {
     var flight_id = headers.indexOf("Flight");
     var comment_id = headers.indexOf("Commentary");
     var dd_id = headers.indexOf("Delivery Date");
+    
     var table = $('#available-data').dataTable({
       // ServerSide done in another branch of the repo
       serverSide: false,
@@ -349,6 +356,7 @@ $(document).ready(function () {
         "targets": headers.indexOf("Flight_Owner"),
         "name": "Flight Owner",
         "data": "Flight_Owner",
+        "title": "Airline",
         "width": "5%"
       }, {
         "targets": headers.indexOf("Fuel_Flowmeters"),
@@ -392,6 +400,7 @@ $(document).ready(function () {
         "targets": validated_status,
         "name": "Validated Status",
         "data": "Validated_Status",
+        "title": "Data Validated Status",
         "width": "5%",
         "sType": "cbool", // Special type to support custom sorting
         "render": function render(data, type, row, meta) {
@@ -458,6 +467,7 @@ $(document).ready(function () {
         "targets": airline,
         "data": "Airline",
         "name": "Airline",
+        "title": "Airline Tables",
         "orderable": false,
         "searchable": false,
         "width": "5%",
@@ -472,7 +482,7 @@ $(document).ready(function () {
         "searchable": false,
         "width": "5%",
         "render": function render(data, type, row, meta) {
-          return '<button type="button" id="ResultsButton_' + row["id"] + '"' + 'class="btn btn-primary" style="text-transform:capitalize" data-toggle="modal" data-target="#Results">View Table </button>';
+          return '<button type="button" id="ResultsButton_' + row["id"] + '"' + 'class="btn btn-primary results-button" style="text-transform:capitalize" data-toggle="modal" data-target="#Results">View Table </button>';
         }
       }, {
         "targets": tra,
@@ -520,6 +530,15 @@ $(document).ready(function () {
       // Draw the table
       table.fnDraw();
     }
+
+    let table_wrap = document.createElement("DIV");
+    table_wrap.classList.add("table-wrapper");
+    let av_table = document.getElementById("available-data");
+    table_wrap.appendChild(av_table);
+
+    let datatable_wrap = document.getElementById("available-data_wrapper");
+    datatable_wrap.insertBefore(table_wrap, document.getElementById("available-data_info"));
+
     // Trigger the Results Modal when the user clicks on the "View Table" Button
     /*
     $("[id^=ResultsButton_]").click(function () {
