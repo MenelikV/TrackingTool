@@ -132,7 +132,7 @@ module.exports = {
     var idendification_data = require("./ident_config.json");
     var pdf_data = require("./pdf_config.json");
     var keys = Object.keys(config_data);
-    var pdf_keys = Object.keys(pdf_data); 
+    var pdf_keys = Object.keys(pdf_data);
     var aircraft_data = {};
     req.file("file").upload({}, async function (err, uploads) {
       if (uploads === undefined) {
@@ -280,6 +280,25 @@ module.exports = {
 
   },
 
+  update_tra_commment: function (req, res) {
+    if (!req.body["flight_data"]) return res.status(500).send();
+
+    //Updating the comment in database
+    Data.update({
+      Aircraft: req.body["flight_data"]["aircraft"],
+      MSN: parseInt(req.body["flight_data"]["msn"]),
+      Flight: parseInt(req.body["flight_data"]["flight"])
+    }).set({
+      TRA_Comment: req.body["tra_comment"]
+    }).exec(function (err, entry) {
+
+      if (err) {
+        res.serverError('Internal Error, could not update' + err)
+      } else {
+        return res.status(200).send(req.body["tra_comment"]);
+      }
+    });
+  },
 
   update: function (req, res) {
     //console.log(req.param('id'))

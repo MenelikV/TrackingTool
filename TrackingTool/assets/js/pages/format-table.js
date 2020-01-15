@@ -232,7 +232,7 @@ $(document).ready(function () {
       event.preventDefault();
       var form = $(this);
       var url = form.attr("action");
-      var test_data = form.find("#row").data("complete")
+      var test_data = form.find("#row").data("complete");
       var aicraft = form.find("#aircraft").text();
       var flight = form.find("#flight").text();
       var msn = form.find("#msn").text();
@@ -257,6 +257,48 @@ $(document).ready(function () {
         }
       })
     })
+
+    //TRA comment update submition
+    $("#update_tra_form").submit(function (event) {
+      event.preventDefault();
+      var form = $(this);
+      var url = form.attr("action");
+      let new_tra_comment = form.find("#TRA_content").val();
+      let flight_data = document.getElementById("TRA_comment").selected_flight;
+      
+      let data = {
+        tra_comment: new_tra_comment,
+        flight_data: flight_data
+      };
+
+      $.ajax({
+        url: url,
+        method: "POST",
+        data: data,
+        success: function (res) {
+          table.api().row($.selectedRowDom).data()["TRA_Comment"] = res;
+
+          $("#close_TRA").click();
+          // Reset global variables
+          table.api().row($.selectedRowDom).invalidate();
+          $.internalIdSelection = undefined;
+          $.selectedRow = undefined;
+          $.selectedRowDom = undefined;
+          // Reload the page, TODO only redraw part of the table, see with an ajax call
+          // location.reload()
+        },
+        error: function () {
+          $("#close_TRA").click();
+          alert("Failure during TRA comment update");
+          $.selectedRow = undefined;
+          $.selectedRowDom = undefined;
+          $.internalIdSelection = undefined;
+        }
+      })
+
+    })
+
+
     // JavaScript Source Data Drawing
     var results_status = headers.indexOf("Results_Status");
     var validated_status = headers.indexOf("Validated_Status");
@@ -578,43 +620,22 @@ $(document).ready(function () {
       var full_table_data = table.api().row(row).data();
       var tra_comment_content = full_table_data["TRA_Comment"];
 
-      let lines = tra_comment_content.split(/\r?\n/g);
-      for (let line of lines) {
-        if (!line) continue;
-        let par = document.createElement("P");
-        par.textContent = line;
-        $("#TRA_content").append(par);
-      }
+      let row_info = {
+        aircraft: full_table_data["Aircraft"],
+        msn: full_table_data["MSN"],
+        flight: full_table_data["Flight"]
+      };
+
+      document.getElementById("TRA_comment").selected_flight = row_info;
+      $("#TRA_content").empty();
+      $("#TRA_content").val(tra_comment_content);
     });
+
     $("#TRA_comment").on("hide.bs.modal", function () {
       // Empty the modal on hide
       $("#TRA_content").empty();
+      document.getElementById("TRA_comment").selected_flight = null;
     });
-
-        //TRA comment modal
-        $("#TRA").on("show.bs.modal", function (e) {
-          var row = $.selectedRowDom;
-          if (row.length === 0) {
-            alert("Did you click somewhere ?");
-          }
-          e.stopPropagation();
-          $.selectedRow = row.closest('tr').index();
-          var full_table_data = table.api().row(row).data();
-          var tra_comment_content = full_table_data["TRA_Comment"];
-    
-          let lines = tra_comment_content.split(/\r?\n/g);
-          for (let line of lines) {
-            if (!line) continue;
-            let par = document.createElement("P");
-            par.textContent = line;
-            $("#TRA_content").append(par);
-          }
-        });
-        $("#TRA").on("hide.bs.modal", function () {
-          // Empty the modal on hide
-          $("#TRA_content").empty();
-        });
-
 
     // Results Modal
     $("#Results").on("show.bs.modal", function () {

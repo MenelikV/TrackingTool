@@ -1,15 +1,15 @@
 <div class="table-jumbostyle">
-    <%if(search){%>
-    <h3>Search results for
-        <%=msn%>
-    </h3>
-    <%if(data[0]==undefined || headers==undefined){%>
+  <%if(search){%>
+  <h3>Search results for
+    <%=msn%>
+  </h3>
+  <%if(data[0]==undefined || headers==undefined){%>
 
-    <h5 style="text-decoration: underline;">No results found</h5>
-    <%}}  %>
+  <h5 style="text-decoration: underline;">No results found</h5>
+  <%}}  %>
 
-    <%if(headers !== undefined){%>
-    <div>
+  <%if(headers !== undefined){%>
+  <div>
     <%if(me.isSuperAdmin || me.isBasicUser){%>
     <button type="button" id="EditButton" class="btn btn-danger btn-lg ml-0 mb-2" data-toggle="modal"
       data-target="#Editor" disabled>Edit <i class="fa fa-edit fa-lg" style="color:white"></i></button>
@@ -22,16 +22,16 @@
     
     <div class="table-responsive <%= search ? ' search-table' : ''%>">
 
-        <table id="available-data" class="display">
-            <!-- HEADERS -->
-            <thead class="table-primary">
-                <tr>
-                <% for(var i=0; i < headers.length; i++){ %>
-                <th scope="col" data-sortable="true">
-                    
-                <%=headers[i].replace(/_/g, ' ')%> 
-                </th>
-                <%}%>
+    <table id="available-data" class="display">
+      <!-- HEADERS -->
+      <thead class="table-primary">
+        <tr>
+          <% for(var i=0; i < headers.length; i++){ %>
+          <th scope="col" data-sortable="true">
+
+            <%=headers[i].replace(/_/g, ' ')%>
+          </th>
+          <%}%>
                 </tr>
             </thead>
 
@@ -89,8 +89,8 @@
                                     <select class="custom-select" id="validatedCombo" title="Choose an option" required>
                                         <option value="Preliminary">Preliminary</option>
                                         <% if(me.isSuperAdmin){%>
-                                        <option value="Definitive">Definitive</option>
-                                        <%}%>
+          <option value="Definitive">Definitive</option>
+          <%}%>
                                         <option value="Investigation">Investigation</option>
                                     </select>
                                 </div>
@@ -100,14 +100,14 @@
                             </div>
 
                             <%if(me.isSuperAdmin){%>
-                            <div class="form-group row">
-                                <label class="col-sm-2">Validated</label>
-                                <label class="form-check-label">
-                                    <input class="form-check-input col-sm-2" type="checkbox" id="validatedCheck">
-                                </label>
-                                </label>
-                            </div>
-                            <%}%>
+          <div class="form-group row">
+            <label class="col-sm-2">Validated</label>
+            <label class="form-check-label">
+              <input class="form-check-input col-sm-2" type="checkbox" id="validatedCheck">
+            </label>
+            </label>
+          </div>
+          <%}%>
 
                             <div class="form-group row">
                                 <label class="col-sm-2">CTR</label>
@@ -173,37 +173,40 @@
 
 
   </div>
-<!-- Add all the modal for the results -->
-<div class="modal fade" id='Results' tabindex="-1" role="dialog" aria-labelledby="ResultsTitle" aria-hidden="true">
+  <!-- Add all the modal for the results -->
+  <div class="modal fade" id='Results' tabindex="-1" role="dialog" aria-labelledby="ResultsTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="ResultsTitle">Results Table</h5>
-            </div>
-            <hr>
-            <div class="modal-body" id='TableContainer'>
-                <!-- Display the results Table TODO, Better Styling for the small table-->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ResultsTitle">Results Table</h5>
         </div>
-    </div> 
-</div>
-
-
-<div class="modal fade" id='TRA_comment' tabindex="-1" role="dialog" aria-labelledby="TRATitle" aria-hidden="true">
-    <div class="tra-modal modal-dialog modal-dialog-centered" role="document">
-        <div class="tra-modal-content modal-content">
-            <div class="tra-modal-header modal-header">
-                <h5 class="modal-title" id="TRATitle">TRA Comment</h5>
-            </div>
-            <div class="tra-modal-body modal-body" id='TRA_content'>
-            </div>
-            <div class="tra-modal-footer modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_TRA">Close</button>
-            </div>
+        <hr>
+        <div class="modal-body" id='TableContainer'>
+          <!-- Display the results Table TODO, Better Styling for the small table-->
         </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
+
+  <form action="/account/file/update_tra_commment" method="post" id="update_tra_form" novalidate>
+    <div class="modal fade" id='TRA_comment' tabindex="-1" role="dialog" aria-labelledby="TRATitle" aria-hidden="true">
+      <div class="tra-modal modal-dialog modal-dialog-centered" role="document">
+        <div class="tra-modal-content modal-content">
+          <div class="tra-modal-header modal-header">
+            <h5 class="modal-title" id="TRATitle">TRA Comment</h5>
+          </div>
+          <textarea class="tra-modal-body modal-body" id='TRA_content'>
+            </textarea>
+          <div class="tra-modal-footer modal-footer">
+            <button type="submit" class="btn btn-success" id="update_tra_submit">Update</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_TRA">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
   <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

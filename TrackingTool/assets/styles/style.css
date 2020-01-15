@@ -822,6 +822,11 @@ body {
   max-height: 50vh;
 }
 
+.tra-modal .tra-modal-content #TRA_content.tra-modal-body{
+  height: 50vh;
+  resize: none;
+}
+
 .tra-modal .tra-modal-content .tra-modal-body p {
   margin: 5px 0;
 }
