@@ -9,7 +9,7 @@ module.exports = {
 
   view: async function (req, res) {
     User.find({
-      isApproved: 'false'
+      isApproved: 'true'
     }).exec(function (err, results) {
 
       if (err) {
@@ -42,17 +42,15 @@ module.exports = {
   reject: async function (req, res) {
     //Approving the user
     User.update({
-      emailAddress: req.param('emailAddress')
+      emailAddress: req.param('emailAddress'),
+      id: req.param('id')
     }).set({
       isApproved: 'rejected'
     }).exec(function (err, updatedUser) {
       if (err) {
-        res.send('could not approve')
+        res.send('could not approve');
       }
-      console.log('rejected!')
-      res.status(200)
-      return res.send("Sucessful Operation")
-
+      return res.status(200).send();
     })
 
   },

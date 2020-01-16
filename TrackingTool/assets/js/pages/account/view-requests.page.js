@@ -26,16 +26,25 @@ $(document).ready(function () {
     });
   });
 
-  $('tbody').on('click', '#reject', function () {
-
+  $('#example').on('click', 'tbody tr button', function () {
     $(this).closest("tr").addClass('selected');
+  })
+
+  $("#reject_user_modal").on('hide.bs.modal', function () {
+    var row = $("#example tr.selected");
+    row.removeClass("selected");
+  })
+
+  $("#reject_user_submit").on('click', function () {
     var row = $("#example tr.selected");
     $.selectedRow = row.closest('tr').index();
     var email = row.find("td").eq(1).text();
     email = email.replace(/\s/g, '');
+    let id = row.closest('tr').attr('id');
     var url = '/account/admin/reject';
     var info = {
-      emailAddress: email
+      emailAddress: email,
+      id: id
     };
 
     $.ajax({
@@ -44,8 +53,11 @@ $(document).ready(function () {
       type: 'POST',
       success: function success() {
         row.remove();
-        id = undefined;
-        console.log('OK');
+        row.removeClass("selected");
+        $("#close_rejection").click();
+        $.internalIdSelection = undefined;
+        $.selectedRow = undefined;
+        $.selectedRowDom = undefined;
       }
     });
   });
@@ -64,7 +76,6 @@ $(document).ready(function () {
     row.find("td").eq(3).empty();
     row.find("td").eq(4).empty();
     row.find("td").eq(2).empty();
-    row.find("td").eq(2).append('<span class="dot"></span>');
 
     var rights = {
       isSuperAdmin: isSuperAdmin,
@@ -77,6 +88,9 @@ $(document).ready(function () {
       data: rights,
       type: 'POST',
       success: function success() {
+        let check = document.createElement("i");
+        check.classList.add("fa", "fa-check", "fa-lg", "green");
+        row.find("td").eq(2).append(check);
         console.log('changed rights');
       }
     });
@@ -96,7 +110,6 @@ $(document).ready(function () {
     row.find("td").eq(2).empty();
     row.find("td").eq(3).empty();
     row.find("td").eq(4).empty();
-    row.find("td").eq(3).append('<span class="dot"></span>');
 
     var rights = {
       isBasicUser: isBasicUser,
@@ -109,6 +122,9 @@ $(document).ready(function () {
       data: rights,
       type: 'POST',
       success: function success() {
+        let check = document.createElement("i");
+        check.classList.add("fa", "fa-check", "fa-lg", "green");
+        row.find("td").eq(3).append(check);
         console.log('changed rights');
       }
     });
@@ -128,7 +144,6 @@ $(document).ready(function () {
     row.find("td").eq(2).empty();
     row.find("td").eq(3).empty();
     row.find("td").eq(4).empty();
-    row.find("td").eq(4).append('<span class="dot"></span>');
 
     var rights = {
       isBasicUser: isBasicUser,
@@ -141,6 +156,9 @@ $(document).ready(function () {
       data: rights,
       type: 'POST',
       success: function success() {
+        let check = document.createElement("i");
+        check.classList.add("fa", "fa-check", "fa-lg", "green");
+        row.find("td").eq(4).append(check);
         console.log('changed rights');
       }
     });

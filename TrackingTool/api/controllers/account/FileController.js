@@ -73,13 +73,19 @@ module.exports = {
     var doc = new Docxtemplater();
     doc.loadZip(zip);
 
-    //set the templateVariables
-    doc.setData({
+    //console.log(JSON.parse(req.query["res"]));
+    let results_obj = JSON.parse(req.query["res"]);
+
+    let dataset = {
       msn: req.query["msn"],
       aircraft: req.query["aircraft"],
       airline: req.query["airline"],
-      flight: req.query["flight"]
-    });
+      flight: req.query["flight"],
+      results_data: results_obj["results_data"]
+    }
+
+    //set the templateVariables
+    doc.setData(dataset);
 
     try {
       // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
@@ -135,7 +141,6 @@ module.exports = {
       });
     });
   },
-
 
   download: async function (req, res) {
     //Finding file through id on the URL and selecting file path

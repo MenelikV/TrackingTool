@@ -8,14 +8,14 @@
   <h5 style="text-decoration: underline;">No results found</h5>
   <%}}  %>
 
-  <%if(headers !== undefined){%>
+  <%if(headers !== undefined && data[0] !== undefined){%>
   <div>
     <%if(me.isSuperAdmin || me.isBasicUser){%>
     <button type="button" id="EditButton" class="btn btn-primary btn-lg ml-0 mb-2" data-toggle="modal"
       data-target="#Editor" disabled>Edit <i class="fa fa-edit fa-lg" style="color:white"></i></button>
 
     <button type="button" id="GenerateButton" class="btn btn-success btn-lg ml-2 mb-2" disabled>
-        Generate DOC  <i class="fa fa-download fa-lg" style="color:white"></i></button>
+      Generate DOC <i class="fa fa-download fa-lg" style="color:white"></i></button>
     <%}%>
     <%if(me.isSuperAdmin){%>
     <button type="button" id="DeleteButton" class="btn btn-danger btn-lg mr-2 ml-2 mb-2" data-toggle="modal"

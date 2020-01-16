@@ -19,7 +19,6 @@ module.exports = {
     },
   },
 
-
   fn: function (input, exits) {
     var res = '<table class="table-bordered"><tr>'
     res += sails.helpers.thWrap("Test n°")

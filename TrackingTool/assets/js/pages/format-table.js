@@ -267,7 +267,7 @@ $(document).ready(function () {
       var url = form.attr("action");
       let new_tra_comment = form.find("#TRA_content").val();
       let flight_data = document.getElementById("TRA_comment").selected_flight;
-      
+
       let data = {
         tra_comment: new_tra_comment,
         flight_data: flight_data
@@ -299,26 +299,49 @@ $(document).ready(function () {
       })
     })
 
-    $("#GenerateButton").on("click", function() {
+    $("#GenerateButton").on("click", function () {
       var row = $("#available-data tr.selected");
       $.selectedRow = row.closest('tr').index();
       $.selectedRowDom = row;
       var row_data = table.api().row(row).data();
 
+      let tmp_div = document.createElement("DIV");
+      tmp_div.innerHTML = row_data["Results"];
+      let table_rows = tmp_div.querySelector("tbody").rows;
+      let headers = table_rows[0].querySelectorAll("th");
+
+      let full_table_content = {};
+      full_table_content["results_data"] = [];
+
+      for (let i = 1; i < table_rows.length; i++) {
+        let key_count = 0;
+        let row_results = {};
+        for (let th of headers) {
+          row_results["key_" + key_count] = table_rows[i].cells[key_count].textContent;
+          key_count++;
+        }
+
+        full_table_content["results_data"].push(row_results);
+      }
+
       let flight_data = {
         aircraft: row_data["Aircraft"],
         msn: row_data["MSN"],
         flight: row_data["Flight"],
-        airline: row_data["Flight_Owner"]
+        airline: row_data["Flight_Owner"],
+        results_content: JSON.stringify(full_table_content)
       };
 
-      var link = document.createElement('a');
-          link.href = "/account/file/generate_doc?aircraft="+encodeURI(flight_data.aircraft)+"&msn="+encodeURI(flight_data.msn)+"&flight="+encodeURI(flight_data.flight)+"&airline="+encodeURI(flight_data.airline);
-          link.target='_blank';
-          document.body.appendChild(link);
 
-          link.click();
-          document.body.removeChild(link);
+      var link = document.createElement('a');
+      link.href = "/account/file/generate_doc?aircraft=" + encodeURI(flight_data.aircraft) + "&msn=" + encodeURI(flight_data.msn) + "&flight=" + encodeURI(flight_data.flight) + "&airline=" + encodeURI(flight_data.airline) + "&res=" + encodeURI(flight_data.results_content);
+      link.target = '_blank';
+      document.body.appendChild(link);
+
+      link.click();
+      document.body.removeChild(link);
+
+
 
       // $.ajax({
       //   url: "/account/file/generate_doc",
@@ -817,7 +840,7 @@ $(document).ready(function () {
           btn.textContent = "View Comment";
           return btn.outerHTML;
         }
-      },{
+      }, {
         "targets": headers.indexOf("MSN"),
         "name": "MSN",
         "data": "MSN"

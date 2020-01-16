@@ -115,6 +115,11 @@ h3.heading {
   margin-top: 20px;
 }
 
+.users-container.jumbostyle {
+  padding: 5px 10px;
+  border-radius: 10px;
+}
+
 .home-inner {
   background-image: url(../images/background_home.png);
   background-size: cover;
@@ -784,7 +789,8 @@ body {
 }
 
 #TRA_comment.show,
-#TRA.show {
+#TRA.show,
+#reject_user_modal.show {
   display: flex !important;
   flex: 1 1 auto;
   align-items: center;
@@ -815,14 +821,21 @@ body {
 }
 
 .tra-modal .tra-modal-content #TRA_content.tra-modal-body,
-.tra-modal .tra-modal-content #TRA_modal_content.tra-modal-body {
+.tra-modal .tra-modal-content #TRA_modal_content.tra-modal-body,
+.tra-modal .tra-modal-content #rejection_content.tra-modal-body {
   overflow: auto;
   font-size: 0.85em;
   padding: 8px 10px;
   max-height: 50vh;
 }
 
-.tra-modal .tra-modal-content #TRA_content.tra-modal-body{
+.tra-modal .tra-modal-content #rejection_content.tra-modal-body {
+  justify-content: center;
+  display: flex;
+  font-size: 1em;
+}
+
+.tra-modal .tra-modal-content #TRA_content.tra-modal-body {
   height: 50vh;
   resize: none;
 }
@@ -834,4 +847,36 @@ body {
 .tra-modal .tra-modal-content .tra-modal-footer {
   padding-top: 10px;
   margin: 0;
+}
+
+.green {
+  color: rgb(11, 175, 11);
+}
+
+
+#example tbody tr {
+  background-color: white;
+}
+
+#example tbody tr td {
+  background-color: none;
+}
+
+#example tbody tr td.privilege {
+  cursor: pointer;
+}
+
+#example tbody tr td.privilege:hover {
+  background-color: rgba(221, 218, 218, 0.17);
+}
+
+#example tbody tr td.revoke button {
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: #f3f3f3;
+}
+
+#example tbody tr td.revoke button:hover {
+  background-color: #ffffff;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }

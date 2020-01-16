@@ -3471,7 +3471,10 @@ tbody.collapse.show {
   -webkit-box-align: stretch;
   -ms-flex-align: stretch;
   align-items: stretch;
-  width: 100%;
+}
+
+.input-group.user-email {
+  width: 30%;
 }
 
 .input-group > .form-control,
