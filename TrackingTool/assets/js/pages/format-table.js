@@ -132,6 +132,7 @@ $(document).ready(function () {
         ev.stopPropagation();
         $("#EditButton").removeAttr("disabled").removeClass("disabled");
         $("#DeleteButton").removeAttr("disabled").removeClass("disabled");
+        $("#GenerateButton").removeAttr("disabled").removeClass("disabled");
         $(this).closest("tr").addClass('selected').siblings().removeClass('selected');
         return true;
       }
@@ -141,6 +142,7 @@ $(document).ready(function () {
       if ($.isSuperADmin && $("#available-data tr.selected").length) {
         $("#EditButton").attr("disabled", true).addClass("disabled");
         $("#DeleteButton").attr("disabled", true).addClass("disabled");
+        $("#GenerateButton").attr("disabled", true).addClass("disabled");
         $("#available-data tr.selected").removeClass("selected");
       }
     });
@@ -295,6 +297,61 @@ $(document).ready(function () {
           $.internalIdSelection = undefined;
         }
       })
+    })
+
+    $("#GenerateButton").on("click", function() {
+      var row = $("#available-data tr.selected");
+      $.selectedRow = row.closest('tr').index();
+      $.selectedRowDom = row;
+      var row_data = table.api().row(row).data();
+
+      let flight_data = {
+        aircraft: row_data["Aircraft"],
+        msn: row_data["MSN"],
+        flight: row_data["Flight"],
+        airline: row_data["Flight_Owner"]
+      };
+
+      var link = document.createElement('a');
+          link.href = "/account/file/generate_doc?aircraft="+encodeURI(flight_data.aircraft)+"&msn="+encodeURI(flight_data.msn)+"&flight="+encodeURI(flight_data.flight)+"&airline="+encodeURI(flight_data.airline);
+          link.target='_blank';
+          document.body.appendChild(link);
+
+          link.click();
+          document.body.removeChild(link);
+
+      // $.ajax({
+      //   url: "/account/file/generate_doc",
+      //   method: "POST",
+      //   data: flight_data,
+      //   success: function (res) {
+      //     console.log(res);
+
+      //     // The actual download
+      //     var blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+      //     var link = document.createElement('a');
+      //     link.href = window.URL.createObjectURL(blob);
+      //     link.download = 'output.docx';
+
+      //     document.body.appendChild(link);
+
+      //     link.click();
+
+      //     document.body.removeChild(link);
+
+      //     // Reset global variables
+      //     table.api().row($.selectedRowDom).invalidate();
+      //     $.internalIdSelection = undefined;
+      //     $.selectedRow = undefined;
+      //     $.selectedRowDom = undefined;
+      //   },
+      //   error: function () {
+      //     alert("Failure DOC generation");
+      //     $.selectedRow = undefined;
+      //     $.selectedRowDom = undefined;
+      //     $.internalIdSelection = undefined;
+      //   }
+      // })
 
     })
 
