@@ -65,6 +65,17 @@ input[type="number"] {
   text-transform: capitalize;
 }
 
+.results-button {
+  border: none;
+  background-color: transparent;
+  color: rgb(98, 166, 255);
+  cursor: pointer;
+}
+
+.results-button:hover {
+  color: rgb(22, 96, 194);
+}
+
 .space {
   padding-top: 2rem;
   padding-bottom: 1rem;
@@ -879,4 +890,20 @@ body {
 #example tbody tr td.revoke button:hover {
   background-color: #ffffff;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+#full_table_container #export_container {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  padding-bottom: 5px;
+}
+
+#full_table_container #export_container select {
+  margin-right: 5px;
+  height: 100%;
+}
+
+#full_table_container #export_container button {
+  margin-left: 5px;
 }

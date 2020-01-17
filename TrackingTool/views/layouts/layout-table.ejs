@@ -34,6 +34,7 @@
 </head>
 
 <!-- TABLE LAYOUT -->
+
 <body class="back">
 
   <!-- Navbar Section -->
@@ -56,28 +57,31 @@
               <!-- data-dropdown is removed on purposes here, it is controlled by JS -->
               <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="colVisMenu" aria-haspopup="true"
                 data-toggle="dropdown" aria-expanded="false" href="">Column Visibility</a>
-              <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link" id="colVis" style="width:250px">
-                <% for(let name of visible_headers){%> 
-                  <a class="dropdown-item nav-drop" href="#" id='<%="colVis_"+name.replace(/ /g, "_")%>' style="height:30px;display: inline-block;">
-                      <%=name%>
-                      <button type="button" class="btn btn-xs btn-toggle float-right mt-1" data-toggle="button" id='<%="button_colVis_"+name.replace(/ /g, "_")%>' aria-pressed="true" autocomplete="off">
-                        <div class="handle"></div> 
-                      </button>
-                  </a>
+              <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link" id="colVis"
+                style="width:250px">
+                <% for(let name of visible_headers){%>
+                <a class="dropdown-item nav-drop" href="#" id='<%="colVis_"+name.replace(/ /g, "_")%>'
+                  style="height:30px;display: inline-block;">
+                  <%=name%>
+                  <button type="button" class="btn btn-xs btn-toggle float-right mt-1" data-toggle="button"
+                    id='<%="button_colVis_"+name.replace(/ /g, "_")%>' aria-pressed="true" autocomplete="off">
+                    <div class="handle"></div>
+                  </button>
+                </a>
                 <%}%>
               </div>
             </li>
 
             <% if(me) { %>
-            <% if(me.isSuperAdmin){%>
-            <div class="nav-item dropdown">
-              <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="header-account-menu-link" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false" href="">Manage</a>
-              <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link">
-                <a class="dropdown-item nav-drop" href="/ctr">CTR / Delivery Date</a>
-              </div>
-            </div>
-            <%}%>
+                <% if(me.isSuperAdmin){%>
+                <div class="nav-item dropdown">
+                  <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="header-account-menu-link"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="">Manage</a>
+                  <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link">
+                    <a class="dropdown-item nav-drop" href="/ctr">CTR / Delivery Date</a>
+                  </div>
+                </div>
+                <%}%>
             <li class="nav-item">
               <a class="nav-item nav-link " href="/contact">Help</a>
             </li>
@@ -93,18 +97,18 @@
                 <a class="dropdown-item nav-drop" href="/account">Settings</a>
                 <a class="dropdown-item nav-drop" href="/logout">Sign out</a>
               </div>
-            </div>
-
-            <%} else { %>
-            <li class="nav-item">
-              <a href="/login" class="nav-link">Log in</a>
-            </li>
-            <li class="nav-item">
-              <a href="/signup" class="nav-link">Sign up</a>
-            </li>
-            <% } %>
-          </ul>
         </div>
+
+        <%} else { %>
+        <li class="nav-item">
+          <a href="/login" class="nav-link">Log in</a>
+        </li>
+        <li class="nav-item">
+          <a href="/signup" class="nav-link">Sign up</a>
+        </li>
+        <% } %>
+        </ul>
+      </div>
       </div>
     </nav>
   </header>
@@ -132,13 +136,13 @@
   <div class="site">
     <!--  Start body content -->
     <div class="site">
-      
+
       <div class="dash dash-flex">
         <div class="container-fluid">
           <%- body %>
         </div>
       </div>
-          
+
     </div>
     <!-- End body content -->
 
@@ -158,7 +162,10 @@
 
   <% /* Delete the global `self` to help avoid client-side bugs.
     (see https://developer.mozilla.org/en-US/docs/Web/API/Window/self) */ %>
-  <script>delete window.self;</script>
+  <script>
+    delete window.self;
+
+  </script>
   <script src="/dependencies/polyfill.min.js"></script>
 
   <% /* Auto-injected «script» tags: */ %>
@@ -183,7 +190,16 @@
   <script src="/dependencies/ColReorder-1.5.0/js/colReorder.foundation.js"></script>
   <script src="/dependencies/ColReorder-1.5.0/js/colReorder.jqueryui.js"></script>
   <script src="/dependencies/ColReorder-1.5.0/js/dataTables.colReorder.js"></script>
+  <script src="/dependencies/Buttons-1.5.4/js/dataTables.buttons.js"></script>
+  <script src="/dependencies/Buttons-1.5.4/js/buttons.jqueryui.js"></script>
+  <script src="/dependencies/Buttons-1.5.4/js/buttons.bootstrap.js"></script>
+  <script src="/dependencies/Buttons-1.5.4/js/buttons.bootstrap4.js"></script>
+  <script src="/dependencies/Buttons-1.5.4/js/buttons.colVis.js"></script>
+  <script src="/dependencies/Buttons-1.5.4/js/buttons.html5.js"></script>
   <script src="/dependencies/datatables.js"></script>
+  <script src="/dependencies/Buttons-1.5.4/js/dataTables.buttons.js"></script>
+  <script src="/dependencies/JSZip-2.5.0/jszip.js"></script>
+  <script src="/dependencies/Buttons-1.5.4/js/buttons.html5.js"></script>
   <script src="/dependencies/parasails.js"></script>
   <script src="/js/cloud.setup.js"></script>
   <script src="/js/components/ajax-button.component.js"></script>

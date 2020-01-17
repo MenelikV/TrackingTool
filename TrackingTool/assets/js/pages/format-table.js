@@ -341,41 +341,6 @@ $(document).ready(function () {
       link.click();
       document.body.removeChild(link);
 
-
-
-      // $.ajax({
-      //   url: "/account/file/generate_doc",
-      //   method: "POST",
-      //   data: flight_data,
-      //   success: function (res) {
-      //     console.log(res);
-
-      //     // The actual download
-      //     var blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-      //     var link = document.createElement('a');
-      //     link.href = window.URL.createObjectURL(blob);
-      //     link.download = 'output.docx';
-
-      //     document.body.appendChild(link);
-
-      //     link.click();
-
-      //     document.body.removeChild(link);
-
-      //     // Reset global variables
-      //     table.api().row($.selectedRowDom).invalidate();
-      //     $.internalIdSelection = undefined;
-      //     $.selectedRow = undefined;
-      //     $.selectedRowDom = undefined;
-      //   },
-      //   error: function () {
-      //     alert("Failure DOC generation");
-      //     $.selectedRow = undefined;
-      //     $.selectedRowDom = undefined;
-      //     $.internalIdSelection = undefined;
-      //   }
-      // })
-
     })
 
 
@@ -632,7 +597,7 @@ $(document).ready(function () {
         "searchable": false,
         "width": "5%",
         "render": function render(data, type, row, meta) {
-          return '<button type="button" id="ResultsButton_' + row["id"] + '"' + 'class="btn btn-primary results-button tra-button" data-toggle="modal" data-target="#Results">View Table </button>';
+          return '<button type="button" id="ResultsButton_' + row["id"] + '"' + 'class="results-button" data-toggle="modal" data-target="#Results"> <i class="fa fa-table fa-lg" data-toggle="modal" data-target="#Results"></i> </button>';
         }
       }, {
         "targets": tra,
@@ -655,7 +620,8 @@ $(document).ready(function () {
       responsive: true,
       bStateSave: true,
       paging: true,
-      dom: 'lBfrtip',
+      dom: 'Bfrtip',
+      //dom: 'lBfrtip',
       fnStateSave: function fnStateSave(settings, data) {
         localStorage.setItem("DataTables_" + window.location.pathname, JSON.stringify(data));
       },
@@ -663,7 +629,24 @@ $(document).ready(function () {
         var data = localStorage.getItem("DataTables_" + window.location.pathname);
         return JSON.parse(data);
       },
-      buttons: []
+      buttons: [{
+        extend: 'excel',
+        text: "Year Review   ",
+        attr: {
+          id: 'export_excel'
+        },
+        exportOptions: {
+          columns: [3, 4, 5, 6, 7, 8, 9, 10],
+          rows: function (idx, data, node) {
+            console.log(idx, data, node);
+            let flight_date = parseInt(data.Flight_Date.split("/")[2]);
+            let selected_date = document.getElementById("year_export_select").value ? parseInt(document.getElementById("year_export_select").value) : moment().year();
+
+            if (flight_date === selected_date) return true;
+            else return false;
+          }
+        },
+      }]
     });
     // Get the data
     var liste = window.SAILS_LOCALS["data"];
@@ -688,6 +671,27 @@ $(document).ready(function () {
 
     let datatable_wrap = document.getElementById("available-data_wrapper");
     datatable_wrap.insertBefore(table_wrap, document.getElementById("available-data_info"));
+
+    let select_export = document.getElementById("year_export_select");
+    let current_year = moment();
+    for (let i = 0; i < 20; i++) {
+      let option = document.createElement("OPTION");
+      option.value = current_year.year();
+      option.textContent = current_year.year();
+      select_export.appendChild(option);
+
+      current_year.add(-1, "years");
+    }
+
+    let export_button = document.getElementById("export_excel");
+    let icon = document.createElement("i");
+    icon.classList.add("fa", "fa-download", "fa-lg");
+    export_button.appendChild(icon);
+
+    let export_container = export_button.parentElement;
+    let new_container = document.getElementById("export_container");
+    new_container.appendChild(export_button);
+    export_container.remove();
 
     //TRA comment modal
     $("#TRA_comment").on("show.bs.modal", function (e) {
@@ -716,6 +720,14 @@ $(document).ready(function () {
       $("#TRA_content").empty();
       document.getElementById("TRA_comment").selected_flight = null;
     });
+
+    $(".fa-table").on("click", function () {
+      console.log("cllic");
+      $(this).closest("tr").addClass('selected');
+      let row = $(this).closest("tr");
+      $.selectedRowDom = row;
+      $("#Results").modal("show");
+    })
 
     // Results Modal
     $("#Results").on("show.bs.modal", function () {
@@ -762,6 +774,25 @@ $(document).ready(function () {
     var dd_id = headers.indexOf("Delivery Date");
     $("#upload-results").DataTable({
       ordering: false,
+      dom:"Bfrtip",
+      buttons: [{
+        extend: 'excel',
+        text: "Year Review   ",
+        attr: {
+          id: 'export_excel'
+        },
+        exportOptions: {
+          columns: [3, 4, 5, 6, 7, 8, 9, 10],
+          rows: function (idx, data, node) {
+            console.log(idx, data, node);
+            let flight_date = parseInt(data.Flight_Date.split("/")[2]);
+            let selected_date = document.getElementById("year_export_select").value ? parseInt(document.getElementById("year_export_select").value) : moment().year();
+
+            if (flight_date === selected_date) return true;
+            else return false;
+          }
+        },
+      }],
       paging: false,
       searching: false,
       columnDefs: [{
