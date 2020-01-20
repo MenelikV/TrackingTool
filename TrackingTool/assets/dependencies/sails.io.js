@@ -44,7 +44,7 @@ return new(b[["Active"].concat("Object").join("X")])("Microsoft.XMLHTTP")}catch(
  * using WebSockets from the browser to talk to your Sails server.
  *
  * For tips and documentation, visit:
- * http://sailsjs.com/documentation/reference/web-sockets/socket-client
+ * http://sailsjs.com/documentation/reference/web-sockets/socket-client 
  * ------------------------------------------------------------------------
  *
  * This file allows you to send and receive socket.io messages to & from Sails

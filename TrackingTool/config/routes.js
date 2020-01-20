@@ -58,11 +58,18 @@ module.exports.routes = {
 
   'GET /account/admin/restore': 'account/AdminController.restore',
 
+  'GET /stats/connect': 'StatsController.connect',
+
   'POST /table/data': 'account/FileController.getData',
 
   'GET /requests': {
     //view: 'pages/account/view-requests',
     controller: 'account/AdminController',
+    action: 'view'
+  },
+
+  'GET /stats': {
+    controller: 'StatsController',
     action: 'view'
   },
 

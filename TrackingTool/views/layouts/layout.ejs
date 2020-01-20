@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="/dependencies/DataTables-1.10.18/css/dataTables.bootstrap4.css">
   <link rel="stylesheet" href="/dependencies/DataTables-1.10.18/css/jquery.dataTables.css">
   <link rel="stylesheet" href="/dependencies/datatables.css">
+  <link rel="stylesheet" href="/dependencies/ChartJS/Chart.css">
   <link rel="stylesheet" href="/dependencies/font-awesome-4/css/font-awesome.css">
   <link rel="stylesheet" href="/styles/importer.css">
   <link rel="stylesheet" href="/styles/style.css">
@@ -70,6 +71,7 @@
               <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link">
                 <% if(me.isSuperAdmin) { %>
                 <a class="dropdown-item nav-drop" href="/requests">Users</a>
+                <a class="dropdown-item nav-drop" href="/stats">View Statistics</a>
                 <% } %>
 
                 <a class="dropdown-item nav-drop" href="/account">Settings</a>
@@ -178,7 +180,9 @@
   <script src="/dependencies/datatables.js"></script>
   <script src="/dependencies/Buttons-1.5.4/js/dataTables.buttons.js"></script>
   <script src="/dependencies/JSZip-2.5.0/jszip.js"></script>
-  <script src="/dependencies/Buttons-1.5.4/js/buttons.html5.js"></script>  
+  <script src="/dependencies/Buttons-1.5.4/js/buttons.html5.js"></script>
+  <script src="/dependencies/ChartJS/Chart.js"></script>
+  <script src="/dependencies/ChartJS/Chart.bundle.js"></script>
   <script src="/dependencies/parasails.js"></script>
   <script src="/js/cloud.setup.js"></script>
   <script src="/js/components/ajax-button.component.js"></script>
@@ -196,6 +200,7 @@
   <script src="/js/pages/entrance/new-password.page.js"></script>
   <script src="/js/pages/format-table.js"></script>
   <script src="/js/pages/homepage.page.js"></script>
+  <script src="/js/pages/statistics.page.js"></script>
   <script src="/js/pages/upload-modal.page.js"></script>
   <script src="/js/pages/table/upload-results.page.js"></script>
   <script src="/js/pages/table/ctr.page.js"></script>

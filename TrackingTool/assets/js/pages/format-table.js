@@ -630,15 +630,49 @@ $(document).ready(function () {
         return JSON.parse(data);
       },
       buttons: [{
-        extend: 'excel',
+        extend: 'excelHtml5',
         text: "Year Review   ",
         attr: {
           id: 'export_excel'
         },
+        customize: function (xlsx) {
+          var sheet = xlsx.xl.worksheets['sheet1.xml'];
+          console.log("excels ", sheet)
+          // Loop over all cells in sheet
+          $('row c', sheet).each(function (index, element) {
+            if (index !== 0 && $('is t', this).text().indexOf("http") === 0) {
+              console.log("!!! ", element)
+              //change the type to `str` which is a formula
+              $(this).attr('t', 'str');
+              //append the concat formula
+              $(this).append('<f>' + 'HYPERLINK("' + $('is t', this).text() + '","' + $('is t', this).text() + '")' + '</f>');
+              //remove the inlineStr
+              $('is', this).remove();
+
+              $(this).attr('s', '4');
+            }
+          });
+
+        },
         exportOptions: {
-          columns: [3, 4, 5, 6, 7, 8, 9, 10],
+          format: {
+            body: function (data, row, column, node) {
+              let link = node.querySelector("a");
+              let status = node.querySelector("i.fa-check");
+
+              if (link) {
+                let link_ref = link.getAttribute("href");
+                return link_ref;
+
+              } else if (status) return true;
+              else return node.textContent;
+            }
+          },
+          columns: function (idx, data, node) {
+            if (node.innerText === "Aircraft" || node.innerText === "MSN" || node.innerText === "Flight" || node.innerText === "Flight Date" || node.innerText === "TRA" || node.innerText === "Data Validated Status") return true;
+            else return false;
+          },
           rows: function (idx, data, node) {
-            console.log(idx, data, node);
             let flight_date = parseInt(data.Flight_Date.split("/")[2]);
             let selected_date = document.getElementById("year_export_select").value ? parseInt(document.getElementById("year_export_select").value) : moment().year();
 
@@ -774,24 +808,14 @@ $(document).ready(function () {
     var dd_id = headers.indexOf("Delivery Date");
     $("#upload-results").DataTable({
       ordering: false,
-      dom:"Bfrtip",
+      dom: "Bfrtip",
       buttons: [{
         extend: 'excel',
-        text: "Year Review   ",
+        text: "Year Review",
         attr: {
-          id: 'export_excel'
-        },
-        exportOptions: {
-          columns: [3, 4, 5, 6, 7, 8, 9, 10],
-          rows: function (idx, data, node) {
-            console.log(idx, data, node);
-            let flight_date = parseInt(data.Flight_Date.split("/")[2]);
-            let selected_date = document.getElementById("year_export_select").value ? parseInt(document.getElementById("year_export_select").value) : moment().year();
-
-            if (flight_date === selected_date) return true;
-            else return false;
-          }
-        },
+          id: 'export_excel',
+          style: "display:none;"
+        }
       }],
       paging: false,
       searching: false,

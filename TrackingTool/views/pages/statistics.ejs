@@ -1,0 +1,10 @@
+<div class="jumbostyle" id="stats_container">
+  <h2>User Connections Chart</h2>
+
+  <% if(stats) { %>
+  <canvas id="user_stats"></canvas>
+  <%}%>
+
+</div>
+
+<%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>
