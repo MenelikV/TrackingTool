@@ -320,7 +320,6 @@ $(document).ready(function () {
           row_results["key_" + key_count] = table_rows[i].cells[key_count].textContent;
           key_count++;
         }
-
         full_table_content["results_data"].push(row_results);
       }
 
@@ -332,17 +331,16 @@ $(document).ready(function () {
         results_content: JSON.stringify(full_table_content)
       };
 
-
       var link = document.createElement('a');
-      link.href = "/account/file/generate_doc?aircraft=" + encodeURI(flight_data.aircraft) + "&msn=" + encodeURI(flight_data.msn) + "&flight=" + encodeURI(flight_data.flight) + "&airline=" + encodeURI(flight_data.airline) + "&res=" + encodeURI(flight_data.results_content);
+      let href = "/account/file/generate_doc?aircraft=" + encodeURI(flight_data.aircraft) + "&msn=" + encodeURI(flight_data.msn) + "&flight=" + encodeURI(flight_data.flight) + "&airline=" + encodeURI(flight_data.airline) + "&res=" + encodeURI(flight_data.results_content);
+      link.href = href;
       link.target = '_blank';
-      document.body.appendChild(link);
-
-      link.click();
-      document.body.removeChild(link);
-
+      $("#template_form").attr("action", href);
     })
 
+    $("#template_form").submit(function (event) {
+      $("#template_modal").modal("hide");
+    })
 
     // JavaScript Source Data Drawing
     var results_status = headers.indexOf("Results_Status");
@@ -446,10 +444,10 @@ $(document).ready(function () {
         "searchable": false,
         "render": function render(data, type, row, meta) {
           if (!data) return "";
-          let btn = document.createElement("BUTTON");
+          let btn = document.createElement("i");
           btn.id = "TRA_" + row["id"];
-          btn.classList.add("btn", "btn-primary", "tra-button");
-          btn.textContent = "View Comment";
+          btn.classList.add("fa", "fa-comment", "tra-button");
+          //btn.textContent = "View Comment";
           return btn.outerHTML;
         }
       }, {
@@ -889,10 +887,10 @@ $(document).ready(function () {
         "searchable": false,
         "render": function render(data, type, row, meta) {
           if (!data) return "";
-          let btn = document.createElement("BUTTON");
+          let btn = document.createElement("i");
           btn.id = "TRA_" + row["id"];
-          btn.classList.add("btn", "btn-primary", "tra-button");
-          btn.textContent = "View Comment";
+          btn.classList.add("fa", "fa-comment", "tra-button");
+          //btn.textContent = "View Comment";
           return btn.outerHTML;
         }
       }, {

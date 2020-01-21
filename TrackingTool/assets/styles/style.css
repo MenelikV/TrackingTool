@@ -65,15 +65,18 @@ input[type="number"] {
   text-transform: capitalize;
 }
 
-.results-button {
+.results-button,
+.fa-comment.tra-button {
   border: none;
   background-color: transparent;
   color: rgb(98, 166, 255);
   cursor: pointer;
 }
 
-.results-button:hover {
-  color: rgb(22, 96, 194);
+.results-button:hover,
+.fa-comment.tra-button:hover,
+.fa.fa-file.fa-lg:hover {
+  color: rgb(22, 96, 194) !important;
 }
 
 .space {

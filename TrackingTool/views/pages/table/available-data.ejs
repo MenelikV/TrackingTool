@@ -14,7 +14,7 @@
     <button type="button" id="EditButton" class="btn btn-success btn-lg ml-0 mb-2" data-toggle="modal"
       data-target="#Editor" disabled>Edit <i class="fa fa-edit fa-lg" style="color:white"></i></button>
 
-    <button type="button" id="GenerateButton" class="btn btn-primary btn-lg ml-2 mb-2" disabled>
+    <button type="button" id="GenerateButton" class="btn btn-primary btn-lg ml-2 mb-2" disabled data-toggle="modal" data-target="#template_modal">
       Generate DOC <i class="fa fa-download fa-lg" style="color:white"></i></button>
     <%}%>
     <%if(me.isSuperAdmin){%>
@@ -191,28 +191,53 @@
         <div class="modal-body" id='TableContainer'>
           <!-- Display the results Table TODO, Better Styling for the small table-->
         </div>
-        <div class="modal-footer">
+        < <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form action="/account/file/update_tra_commment" method="post" id="update_tra_form" novalidate>
+  <div class="modal fade" id='TRA_comment' tabindex="-1" role="dialog" aria-labelledby="TRATitle" aria-hidden="true">
+    <div class="tra-modal modal-dialog modal-dialog-centered" role="document">
+      <div class="tra-modal-content modal-content">
+        <div class="tra-modal-header modal-header">
+          <h5 class="modal-title" id="TRATitle">TRA Comment</h5>
+        </div>
+        <textarea class="tra-modal-body modal-body" id='TRA_content'>
+            </textarea>
+        <div class="tra-modal-footer modal-footer">
+          <button type="submit" class="btn btn-success" id="update_tra_submit">Update</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_TRA">Close</button>
         </div>
       </div>
     </div>
   </div>
+</form>
 
-  <form action="/account/file/update_tra_commment" method="post" id="update_tra_form" novalidate>
-    <div class="modal fade" id='TRA_comment' tabindex="-1" role="dialog" aria-labelledby="TRATitle" aria-hidden="true">
-      <div class="tra-modal modal-dialog modal-dialog-centered" role="document">
-        <div class="tra-modal-content modal-content">
-          <div class="tra-modal-header modal-header">
-            <h5 class="modal-title" id="TRATitle">TRA Comment</h5>
-          </div>
-          <textarea class="tra-modal-body modal-body" id='TRA_content'>
-            </textarea>
-          <div class="tra-modal-footer modal-footer">
-            <button type="submit" class="btn btn-success" id="update_tra_submit">Update</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_TRA">Close</button>
+
+<div class="modal fade" id="template_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="template_title">Select the document template</h5>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-4 text-left">
+            <form action="" method="post" enctype="multipart/form-data" id="template_form">
+              <input type="file" name="file" id="file">
+            </form>
           </div>
         </div>
       </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeTemplate">Close</button>
+        <button type="submit" id="submit_template" form="template_form" class="btn btn-primary">Save changes &raquo;</button>
+      </div>
     </div>
-  </form>
-  <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>
+  </div>
+</div>
+<%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

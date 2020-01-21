@@ -61,21 +61,8 @@ module.exports = {
   },
 
   generate_doc: async function (req, res) {
-    var PizZip = require('pizzip');
-    var Docxtemplater = require('docxtemplater');
-    var fs = require('fs');
-    var path = require('path');
-    //Load the docx file as a binary
-    var content = fs
-      .readFileSync(path.resolve("./assets/", 'ctr_template.docx'), 'binary');
-
-    var zip = new PizZip(content);
-    var doc = new Docxtemplater();
-    doc.loadZip(zip);
-
-    //console.log(JSON.parse(req.query["res"]));
+    //Doc template dataset
     let results_obj = JSON.parse(req.query["res"]);
-
     let dataset = {
       msn: req.query["msn"],
       aircraft: req.query["aircraft"],
@@ -84,62 +71,25 @@ module.exports = {
       results_data: results_obj["results_data"]
     }
 
-    //set the templateVariables
-    doc.setData(dataset);
+    var fs = require('fs');
 
-    try {
-      // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-      doc.render();
-    } catch (error) {
-      // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
-      function replaceErrors(key, value) {
-        if (value instanceof Error) {
-          return Object.getOwnPropertyNames(value).reduce(function (error, key) {
-            error[key] = value[key];
-            return error;
-          }, {});
-        }
-        return value;
-      }
-      console.log(JSON.stringify({
-        error: error
-      }, replaceErrors));
+    req.file("file").upload({}, async function (err, upload) {
+      if (err) return res.serverError("Error on upload ", err);
+      if (upload === undefined) return res.serverError("Upload did not work");
 
-      if (error.properties && error.properties.errors instanceof Array) {
-        const errorMessages = error.properties.errors.map(function (error) {
-          return error.properties.explanation;
-        }).join("\n");
-        console.log('errorMessages', errorMessages);
-        // errorMessages is a humanly readable message looking like this :
-        // 'The tag beginning with "foobar" is unopened'
-      }
-      throw error;
-    }
+      let filled_template = await sails.helpers.fillTemplate(dataset, upload[0].fd, res);
 
-    // buf is a nodejs buffer, you can either write it to a file or do anything else with it.
-    var buf = doc.getZip()
-      .generate({
-        type: 'nodebuffer'
-      });
+      if (filled_template) {
+        fs.unlink(upload[0].fd, function (err) {
+          if (err) {
+            return console.log('Error deleting template from server', err);
+          }
+          //res.status(200).send();
+        });
+      } else return res.serverError("Error during template fill ")
 
-    //Create file from template in .tmp folder
-    let date = new Date();
-    let filename = "CTR_" + req.query["aircraft"] + "_" + req.query["msn"] + '_output-' + date.getTime() + '.docx';
-    fs.writeFileSync(path.resolve("./.tmp/uploads/", filename), buf);
+    })
 
-    //Download created file and delete from folder
-    let donwload_name = "CTR_" + req.query["aircraft"] + "_" + req.query["msn"] + "_" + req.query["flight"] + "_output.docx";
-    res.download(path.resolve("./.tmp/uploads/", filename), donwload_name, function (err) {
-      if (err) {
-        console.error("Problem downloading file", err);
-        return res.serverError();
-      } else fs.unlink(path.resolve("./.tmp/uploads/", filename), function (err_msg) {
-        if (err_msg) {
-          console.error("Problem deleting file ", err_msg);
-          return res.serverError();
-        }
-      });
-    });
   },
 
   download: async function (req, res) {
