@@ -73,6 +73,11 @@ module.exports.routes = {
     action: 'view'
   },
 
+  'GET /subscriptions': {
+    controller: 'NotificationController',
+    action: 'view'
+  },
+
   'GET /files': {
     view: 'pages/account/view-files',
     controller: 'account/FileController',

@@ -157,7 +157,7 @@ module.exports = {
 
 
   upload: async function (req, res) {
-
+    moment = require("moment");
     var fs = require('fs');
     var XLSX = require("js-xlsx");
     var config_data = require("./config.json");
@@ -235,9 +235,9 @@ module.exports = {
         }
         //If successful show error message and stop the file upload process
         else if (results.length) {
-          return res.serverError("Bad entry!");
+          return res.serverError("An entry for this flight has already been validated");
         } else {
-          var criteria = _.pick(aircraft_data, ["Aircraft", "MSN", "Flight"])
+          var criteria = _.pick(aircraft_data, ["Aircraft", "MSN", "Flight"]);
           // Patching Aircraft in case the flight is weighted after
           if (aircraft_data["Text Weighing"] === "After") {
             aircraft_data["Weighing"] = "After"
@@ -245,10 +245,10 @@ module.exports = {
           delete aircraft_data["Text_Weighing"]
           // Add Entry to DataBase now
           try {
-            var uploaded_entry = await Data.findOrCreate(criteria, criteria)
+            var uploaded_entry = await Data.findOrCreate(criteria, criteria);
           } catch (error) {
-            console.log("More than one entry found")
-            return res.serverError(err)
+            console.log("More than one entry found");
+            return res.serverError(err);
           }
           //aircraft_data = {}
           console.log("Handling PDF Files")
@@ -296,6 +296,7 @@ module.exports = {
             console.log('error uploading files')
             return res.serverError(err)
           }
+
           console.log("Redirection")
           // if it was successful redirect and display all uploaded files
           var headers = Data.getHeader()
@@ -377,7 +378,10 @@ module.exports = {
 
   validate: async function (req, res) {
     // Push Data to the server
-    console.log("Some data will be pushed back to the server")
+    console.log("Some data will be pushed back to the server -- ", req.body)
+    let sub_aircraft = req.body["aircraft"]["Aircraft"];
+    let sub_flight_owner = req.body["aircraft"]["Flight_Owner"];
+
     var aircraft_data = {}
     aircraft_data["Commentary"] = _.escape(req.body["userCommentary"])
     // Date Formatting if Delivery date field is not empty
@@ -390,11 +394,11 @@ module.exports = {
         var data = await Data.update(req.body.aircraft, aircraft_data).fetch();
       }
       // See the whole table with the new entry 
-      res.status(200)
+      res.status(200);
       Data.publish(_.pluck(data, 'id'), {
         verb: 'published',
       });
-      return res.send("Sucessful Operation")
+      return res.send("Sucessful Operation");
     }
     if (possible_entry.length == 0) {
       // Create new entry
@@ -402,6 +406,18 @@ module.exports = {
       Data.publish(_.pluck(data, 'id'), {
         verb: 'published',
       });
+
+      let subs_data = await Notification.create({
+        flight_owner: sub_flight_owner,
+        aicraft: sub_aircraft,
+        user_id: req.me["id"],
+        user_name: req.me["fullName"],
+        creation: true,
+        data_id: data.id
+      }).fetch();
+
+      console.log("Created notification: ", subs_data);
+
       // See the whole table with the new entry 
       res.status(200)
       return res.send("Sucessful Operation")
@@ -427,10 +443,30 @@ module.exports = {
     // Escaping for commentary (TODO Validation for other fields as well ?)
     req.body["Commentary"] = _.escape(req.body["Commentary"])
     // Update Model Entry
-    await Data.update({
+    let result_update = false;
+    console.log("body---> ", req.body);
+    if (req.body["prev_result"] !== req.body["Results_Status"]) result_update = true;
+    delete req.body["prev_result"];
+
+    let updated_entry = await Data.update({
       "id": req.body["id"]
-    }, req.body)
-    console.log('Database was updated')
+    }, req.body).fetch();
+
+    console.log("meeee ",req.me)
+    if (result_update) {
+      let subs_data = await Notification.create({
+        flight_owner: updated_entry[0]["Flight_Owner"],
+        aircraft: updated_entry[0]["Aircraft"],
+        user_id: req.me["id"],
+        user_name: req.me["fullName"],
+        creation: false,
+        data_id: updated_entry[0]["id"]
+      }).fetch();
+
+      console.log("Result Status notification: ", subs_data);
+    }
+
+    console.log('Database was updated');
     // Return Sucess If update was good
     res.status(200)
     return res.send("Sucessful Operation")

@@ -39,7 +39,7 @@ $(document).ready(function () {
         scales: {
           yAxes: [{
             ticks: {
-              beginAtZero: true
+              precision: 0
             }
           }]
         }

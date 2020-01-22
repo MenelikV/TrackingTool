@@ -1,0 +1,53 @@
+<div class="jumbostyle" id="rss_container">
+  <div class="rss-header">
+    <h2>Subscriptions feed</h2>
+    <button type="button" id="edit_subs" class="btn btn-success btn-lg ml-0 mb-2" data-toggle="modal"
+      data-target="#subs_modal">Edit subscriptions <i class="fa fa-edit fa-lg" style="color:white"></i></button>
+  </div>
+
+
+  <div id="sub_container" class="sub-container">
+  </div>
+
+</div>
+
+<form action="/subscription/subscribe" method="post" id="edit_subs_form" novalidate>
+  <div class="modal fade" id='subs_modal' tabindex="-1" role="dialog" aria-labelledby="SubsTitle" aria-hidden="true">
+
+    <div class="loader-container" id="loader_cont">
+      <div class="lds-ring loader-ring" id="loader">
+        <div></div>
+      </div>
+    </div>
+
+    <div class="subs-modal modal-dialog modal-dialog-centered" role="document">
+      <div class="subs-modal-content modal-content">
+        <div class="subs-modal-header modal-header">
+          <h5 class="modal-title" id="TRATitle">Subscriptions</h5>
+        </div>
+
+        <div class="subs-modal-body">
+
+          <div id="subs_tabs" class="tabs-container">
+            <label id="aircraft_tab" class="subs-tab active" data-container="aircraft_subs_cont">Aircrafts</label>
+            <label id="owner_tab" class="subs-tab" data-container="owner_subs_cont">Airlines</label>
+          </div>
+
+          <div id="aircraft_subs_cont" class="subs-container active">
+          </div>
+
+          <div id="owner_subs_cont" class="subs-container">
+
+          </div>
+
+
+          <div class="subs-modal-footer modal-footer">
+            <button type="submit" class="btn btn-primary" id="update_subs">Update</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_subs_modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</form>
+
+<%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

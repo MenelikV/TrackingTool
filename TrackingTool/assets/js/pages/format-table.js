@@ -178,6 +178,8 @@ $(document).ready(function () {
         delivery_date = $form.find("#Delivery-Input").val().length > 0 ? moment($form.find("#Delivery-Input").val()).format("DD/MM/YYYY") : "",
         comment = _.escape($form.find('#Comment-input').val()),
         row_data = table.api().row($.selectedRowDom).data();
+      let prev_result_status = row_data["Results_Status"];
+
       row_data["TRA"] = tra;
       row_data["Delivery_Date"] = delivery_date;
       row_data["Results_Status"] = r_status;
@@ -193,7 +195,8 @@ $(document).ready(function () {
           "Validated_Status": v_status,
           "Delivery_Date": delivery_date,
           "Commentary": comment,
-          "id": $.internalIdSelection
+          "id": $.internalIdSelection,
+          "prev_result": prev_result_status
         };
       } else {
         // Basic User Edition
@@ -202,7 +205,8 @@ $(document).ready(function () {
           "TRA": tra,
           "Delivery_Date": delivery_date,
           "Commentary": comment,
-          "id": $.internalIdSelection
+          "id": $.internalIdSelection,
+          "prev_result": prev_result_status
         };
       }
       // Send the data using post
