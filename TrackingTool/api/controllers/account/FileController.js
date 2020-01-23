@@ -412,7 +412,8 @@ module.exports = {
         aicraft: sub_aircraft,
         user_id: req.me["id"],
         user_name: req.me["fullName"],
-        creation: true,
+        modification: null,
+        modificaion_value: null,
         data_id: data.id
       }).fetch();
 
@@ -434,36 +435,54 @@ module.exports = {
 
   edit: async function (req, res) {
     // Put this into an async function
-    console.log("Updating Data Entry")
-    console.log(req.body)
+    //console.log("Updating Data Entry")
+    //console.log(req.body)
     if (req.body["id"] === "" || req.body["id"] === undefined) {
       // TODO Return an error, internal should not be undefined or an empty string
       return res.serverError("The internal id of the to update row was not found")
     }
     // Escaping for commentary (TODO Validation for other fields as well ?)
-    req.body["Commentary"] = _.escape(req.body["Commentary"])
-    // Update Model Entry
+    req.body["Commentary"] = _.escape(req.body["Commentary"]);
+
+    //Check for result status update
     let result_update = false;
-    console.log("body---> ", req.body);
     if (req.body["prev_result"] !== req.body["Results_Status"]) result_update = true;
     delete req.body["prev_result"];
 
+    //Check for validation status update
+    let validation_update = false;
+    if (req.body["prev_validated"] !== req.body["Validated_Status"]) validation_update = true;
+    delete req.body["prev_validated"];
+
+    // Update Model Entry
     let updated_entry = await Data.update({
       "id": req.body["id"]
     }, req.body).fetch();
 
-    console.log("meeee ",req.me)
     if (result_update) {
       let subs_data = await Notification.create({
         flight_owner: updated_entry[0]["Flight_Owner"],
         aircraft: updated_entry[0]["Aircraft"],
         user_id: req.me["id"],
         user_name: req.me["fullName"],
-        creation: false,
+        modification: "result_status",
+        modification_value: req.body["Results_Status"].toLowerCase(),
         data_id: updated_entry[0]["id"]
       }).fetch();
-
       console.log("Result Status notification: ", subs_data);
+    }
+
+    if (validation_update) {
+      let sub_data = await Notification.create({
+        flight_owner: updated_entry[0]["Flight_Owner"],
+        aircraft: updated_entry[0]["Aircraft"],
+        user_id: req.me["id"],
+        user_name: req.me["fullName"],
+        modification: "validated_status",
+        modification_value: (req.body["Validated_Status"]) ? "validated" : "not validated",
+        data_id: updated_entry[0]["id"]
+      }).fetch();
+      console.log("Validated Status notification: ", sub_data);
     }
 
     console.log('Database was updated');

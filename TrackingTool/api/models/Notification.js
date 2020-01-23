@@ -25,8 +25,14 @@ module.exports = {
       type: "string"
     },
 
-    creation: {
-      type: "boolean"
+    modification: {
+      type: "string",
+      allowNull: true
+    },
+
+    modification_value: {
+      type: "string",
+      allowNull: true
     },
 
     data_id: {
@@ -50,4 +56,3 @@ module.exports = {
   },
 
 };
-

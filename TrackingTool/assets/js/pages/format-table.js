@@ -179,6 +179,7 @@ $(document).ready(function () {
         comment = _.escape($form.find('#Comment-input').val()),
         row_data = table.api().row($.selectedRowDom).data();
       let prev_result_status = row_data["Results_Status"];
+      let prev_validated_status = row_data["Validated_Status"];
 
       row_data["TRA"] = tra;
       row_data["Delivery_Date"] = delivery_date;
@@ -196,7 +197,8 @@ $(document).ready(function () {
           "Delivery_Date": delivery_date,
           "Commentary": comment,
           "id": $.internalIdSelection,
-          "prev_result": prev_result_status
+          "prev_result": prev_result_status,
+          "prev_validated": prev_validated_status
         };
       } else {
         // Basic User Edition

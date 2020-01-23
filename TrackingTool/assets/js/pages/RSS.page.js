@@ -15,59 +15,48 @@ $(document).ready(function () {
 
   ////////////////////// FUNCTIONS //////////////////////////////
   function fillNotifications() {
-    let owner_sub_data = window.SAILS_LOCALS["owner_sub"];
-    console.log(owner_sub_data);
-    if (owner_sub_data) {
-      let owner_cont = document.createElement("DIV");
-      owner_cont.id = "owner_container";
-      owner_cont.classList.add("sub-data-container");
-      sub_container.appendChild(owner_cont);
-
-      for (let notification of owner_sub_data) {
-        let notif_container = document.createElement("DIV");
-        notif_container.classList.add("notification-row");
-        notif_container.full_data = notification;
-
-        let notif_div = document.createElement("DIV");
-        notif_div.textContent = notification.user_name;
-        if (notification.creation) notif_div.textContent = notif_div.textContent + " has added a new entry for airline " + notification.flight_owner;
-        else notif_div.textContent = notif_div.textContent + " has modified the result status for airline " + notification.flight_owner;
-
-        let date_span = document.createElement("SPAN");
-        date_span.textContent = moment(notification.createdAt).format("DD/MM/YYYY HH:mm:ss");
-
-        notif_container.appendChild(notif_div);
-        notif_container.appendChild(date_span);
-
-        owner_cont.appendChild(notif_container);
-      }
-    }
-
     let aircraft_sub_data = window.SAILS_LOCALS["aircraft_sub"];
     console.log(aircraft_sub_data);
+    let aircraft_cont = document.getElementById("aircraft_container");
+    if (aircraft_sub_data.length) fillGeneralSubsContainer(aircraft_cont, aircraft_sub_data, "aircraft");
 
-    let aircraft_cont = document.createElement("DIV");
-    aircraft_cont.id = "aircraft_container";
-    aircraft_cont.classList.add("sub-data-container");
-    sub_container.appendChild(aircraft_cont);
+    let owner_sub_data = window.SAILS_LOCALS["owner_sub"];
+    console.log(owner_sub_data);
+    let owner_cont = document.getElementById("owner_container");
+    if (owner_sub_data.length) fillGeneralSubsContainer(owner_cont, owner_sub_data, "flight_owner");
+  }
 
-    for (let notification of aircraft_sub_data) {
+  function fillGeneralSubsContainer(container, data, data_name) {
+    let name_mapping;
+    if (data_name === "flight_owner") name_mapping = "airline"
+    else name_mapping = "aircraft"
+
+    for (let notification of data) {
       let notif_container = document.createElement("DIV");
       notif_container.classList.add("notification-row");
       notif_container.full_data = notification;
 
       let notif_div = document.createElement("DIV");
       notif_div.textContent = notification.user_name;
-      if (notification.creation) notif_div.textContent = notif_div.textContent + " has added a new entry for aircraft " + notification.aircraft;
-      else notif_div.textContent = notif_div.textContent + " has modified the result status for aircraft " + notification.aircraft;
+      if (!notification.modification) notif_div.textContent = notif_div.textContent + " has added a new entry for " + name_mapping + " " + notification[data_name];
+
+      else {
+        let value_span = document.createElement("SPAN");
+        value_span.classList.add(notification.modification_value.replace(/ /g, "-"), "sub-value-span");
+        value_span.textContent = notification.modification_value;
+
+        notif_div.textContent = notif_div.textContent + " has modified the " + notification.modification.replace(/_/g, " ") + " for an " + name_mapping + " " + notification[data_name] + " entry to ";
+        notif_div.appendChild(value_span);
+      }
 
       let date_span = document.createElement("SPAN");
+      date_span.classList.add("sub-date-span")
       date_span.textContent = moment(notification.createdAt).format("DD/MM/YYYY HH:mm:ss");
 
       notif_container.appendChild(notif_div);
       notif_container.appendChild(date_span);
 
-      aircraft_cont.appendChild(notif_container);
+      container.appendChild(notif_container);
     }
   }
 
@@ -150,10 +139,20 @@ $(document).ready(function () {
 
   /////////////////////////// JQUERY ///////////////////////////
 
-  //Tab selection functionality
+  //Modal tab selection functionality
   $("#subs_tabs label").on("click", function () {
     $("#subs_tabs .active").removeClass("active");
     $(".subs-container.active").removeClass("active");
+
+    $(this).addClass("active");
+    let container_id = $(this).data("container");
+    $("#" + container_id).addClass("active");
+  })
+
+  //RSS tab selection
+  $("#rss_tabs label").on("click", function () {
+    $("#rss_tabs .active").removeClass("active");
+    $(".sub-data-container.active").removeClass("active");
 
     $(this).addClass("active");
     let container_id = $(this).data("container");
