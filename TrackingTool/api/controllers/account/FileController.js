@@ -395,17 +395,28 @@ module.exports = {
       }
       // See the whole table with the new entry 
       res.status(200);
-      Data.publish(_.pluck(data, 'id'), {
-        verb: 'published',
-      });
+      Data.publish(_.pluck(possible_entry, 'id'), {
+        verb: 'Creation',
+        author: req["me"].fullName,
+        raw: possible_entry,
+        msg: `${req["me"].fullName} has added ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`,
+        data: `${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`
+      }, req);
+
       return res.send("Sucessful Operation");
+
     }
+
     if (possible_entry.length == 0) {
       // Create new entry
       var data = await Data.create(aircraft_data).fetch();
-      Data.publish(_.pluck(data, 'id'), {
-        verb: 'published',
-      });
+      Data.publish(_.pluck(possible_entry, 'id'), {
+        verb: 'Creation',
+        author: req["me"].fullName,
+        raw: possible_entry,
+        msg: `${req["me"].fullName} has added ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`,
+        data: `${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`
+      }, req);
 
       let subs_data = await Notification.create({
         flight_owner: sub_flight_owner,
@@ -466,10 +477,18 @@ module.exports = {
         user_id: req.me["id"],
         user_name: req.me["fullName"],
         modification: "result_status",
-        modification_value: req.body["Results_Status"].toLowerCase(),
+        modification_value: req.body["Results_Status"],
         data_id: updated_entry[0]["id"]
       }).fetch();
       console.log("Result Status notification: ", subs_data);
+
+      Data.publish(_.pluck(updated_entry, 'id'), {
+        verb: 'Edition',
+        author: req["me"].fullName,
+        raw: updated_entry,
+        msg: `${req["me"].fullName} has modified the results status of ${updated_entry[0].Aircraft} - ${updated_entry[0].MSN} - ${updated_entry[0].Flight}`,
+        data: `${updated_entry[0].Aircraft} - ${updated_entry[0].MSN} - ${updated_entry[0].Flight}`
+      }, req);
     }
 
     if (validation_update) {
@@ -483,6 +502,14 @@ module.exports = {
         data_id: updated_entry[0]["id"]
       }).fetch();
       console.log("Validated Status notification: ", sub_data);
+
+      Data.publish(_.pluck(updated_entry, 'id'), {
+        verb: 'Edition',
+        author: req["me"].fullName,
+        raw: updated_entry,
+        msg: `${req["me"].fullName} has modified the validated status of ${updated_entry[0].Aircraft} - ${updated_entry[0].MSN} - ${updated_entry[0].Flight}`,
+        data: `${updated_entry[0].Aircraft} - ${updated_entry[0].MSN} - ${updated_entry[0].Flight}`
+      }, req);
     }
 
     console.log('Database was updated');

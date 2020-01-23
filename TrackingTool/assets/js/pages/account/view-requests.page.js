@@ -3,8 +3,54 @@
 $(document).ready(function () {
   var table = $('#example').DataTable();
 
-  $('tbody').on('click', '#accept', function () {
+  $("#rss_tabs label").on("click", function () {
+    $("#rss_tabs .active").removeClass("active");
+    $(".sub-data-container.active").removeClass("active");
 
+    $(this).addClass("active");
+    let container_id = $(this).data("container");
+    $("#" + container_id).addClass("active");
+  })
+
+  $("#add_user_submit").on("click", function (event) {
+    var url = "/account/admin/add";
+
+    let fullName = $("#add_fullname").val();
+    let email = $("#add_email").val();
+    let password = $("#add_password").val();
+
+    let isAdmin = false;
+    let isBasic = false;
+
+    let privilege = $("#add_privilege input:checked").val();
+    if (privilege === "isAdmin") isAdmin = true;
+    else if (privilege === "isBasic") isBasic = true;
+
+    // $("#loader_cont").addClass("active");
+    // $('#loader').show();
+
+    let data = {
+      fullName: fullName,
+      emailAddress: email,
+      password: password,
+      emailStatus: 'confirmed',
+      isSuperAdmin: isAdmin,
+      isBasicUser: isBasic,
+      isApproved: true,
+    }
+
+    $.ajax({
+      url: url,
+      method: "POST",
+      data: data,
+      success: function () {
+        location.reload();
+      },
+      error: function () {}
+    })
+  })
+
+  $('tbody').on('click', '#accept', function () {
     $(this).closest("tr").addClass('selected');
     var row = $("#example tr.selected");
     $.selectedRow = row.closest('tr').index();

@@ -179,7 +179,6 @@ $(document).ready(function () {
       method: "POST",
       data: data,
       success: function () {
-        console.log("success!!!!!!");
         location.reload();
       },
       error: function () {}

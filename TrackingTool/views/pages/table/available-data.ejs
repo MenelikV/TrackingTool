@@ -14,7 +14,8 @@
     <button type="button" id="EditButton" class="btn btn-success btn-lg ml-0 mb-2" data-toggle="modal"
       data-target="#Editor" disabled>Edit <i class="fa fa-edit fa-lg" style="color:white"></i></button>
 
-    <button type="button" id="GenerateButton" class="btn btn-primary btn-lg ml-2 mb-2" disabled data-toggle="modal" data-target="#template_modal">
+    <button type="button" id="GenerateButton" class="btn btn-primary btn-lg ml-2 mb-2" disabled data-toggle="modal"
+      data-target="#template_modal">
       Generate DOC <i class="fa fa-download fa-lg" style="color:white"></i></button>
     <%}%>
     <%if(me.isSuperAdmin){%>
@@ -205,10 +206,12 @@
         <div class="tra-modal-header modal-header">
           <h5 class="modal-title" id="TRATitle">TRA Comment</h5>
         </div>
-        <textarea class="tra-modal-body modal-body" id='TRA_content'>
+        <textarea class="tra-modal-body modal-body" id='TRA_content' <% if(!me.isSuperAdmin){%> disabled <%}%> >
             </textarea>
         <div class="tra-modal-footer modal-footer">
+          <% if (me.isSuperAdmin) {%>
           <button type="submit" class="btn btn-success" id="update_tra_submit">Update</button>
+          <%}%>
           <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_TRA">Close</button>
         </div>
       </div>

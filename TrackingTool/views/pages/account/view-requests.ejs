@@ -1,5 +1,4 @@
 <div class="users-container jumbostyle">
-  <br>
   <% if (search == true) { %>
   <h3>Search results for
     <%=email%>
@@ -8,7 +7,14 @@
   <h5 style="text-decoration: underline;">No results found</h5>
   <% } %>
   <% } else {%>
-  <h1>Active Users</h1>
+
+  <div id="users_header" class="users-header">
+    <h1>Active Users</h1>
+    <button id="add_user" class="btn btn-success" type="button" data-toggle="modal" data-target="#add_user_modal">New
+      User</button>
+  </div>
+
+
   <% } %>
   <% if (result[0] !== undefined) { %>
   <table class="table table-striped display" id="example">
@@ -62,7 +68,6 @@
   </table>
   <% } %>
 
-  <br>
   <div>
     <form name="form" id="form" method="post" action="/account/admin/search">
       <div class="input-group user-email md-form form-sm form-2 pl-0">
@@ -93,6 +98,55 @@
       <div class="tra-modal-footer modal-footer">
         <button type="button" class="btn btn-danger" id="reject_user_submit">Reject</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_rejection">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id='add_user_modal' tabindex="-1" role="dialog" aria-labelledby="AddTitle" aria-hidden="true">
+  <div class="tra-modal modal-dialog modal-dialog-centered" role="document">
+    <div class="tra-modal-content modal-content">
+      <div class="tra-modal-header modal-header">
+        <h5 class="modal-title" id="AddTitle">Add new user</h5>
+      </div>
+
+      <div class="tra-modal-body modal-body" id='add_user_content'>
+
+        <div class="input_group">
+          <span>Full Name</span>
+          <input type="text" name="fullName" id="add_fullname">
+        </div>
+
+        <div class="input_group">
+          <span>Email</span>
+          <input type="email" name="email" id="add_email">
+        </div>
+
+        <div class="input_group">
+          <span>Password</span>
+          <input type="password" name="password" id="add_password">
+        </div>
+
+        <div class="input_group">
+          <span>Access Rights</span>
+          <div class="radio_group" id="add_privilege">
+            <label class="radio-label"><input type="radio" name="privilege" value="isAdmin">Admin</label
+              class="radio_label">
+            <label class="radio-label"><input type="radio" name="privilege" value="isBasic">Basic</label>
+            <label class="radio-label"><input type="radio" name="privilege" value="isViewer">Viewer</label>
+          </div>
+        </div>
+
+        <div class="check_group">
+          <span>Is the user external? </span>
+          <input type="checkbox" name="external" id="add_external">
+        </div>
+
+      </div>
+
+      <div class="tra-modal-footer modal-footer">
+        <button type="button" class="btn btn-primary" id="add_user_submit">Confirm</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_add">Cancel</button>
       </div>
     </div>
   </div>

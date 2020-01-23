@@ -23,6 +23,18 @@ module.exports = {
     });
   },
 
+  add: async function (req, res) {
+    console.log("bodyyy", req.body);
+    if (!req.body) return res.serverError();
+    req.body["password"] = await sails.helpers.passwords.hashPassword(req.body["password"]);
+
+    let new_user = await User.create(req.body);
+    if (!new_user) return res.serverError();
+    console.log("created user: ", new_user);
+
+    res.status(200).send();
+  },
+
   approve: async function (req, res) {
     //Approving the user
     User.update({
