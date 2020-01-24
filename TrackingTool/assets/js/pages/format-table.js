@@ -315,6 +315,7 @@ $(document).ready(function () {
       tmp_div.innerHTML = row_data["Results"];
       let table_rows = tmp_div.querySelector("tbody").rows;
       let headers = table_rows[0].querySelectorAll("th");
+      let num_points = table_rows.length - 1;
 
       let full_table_content = {};
       full_table_content["results_data"] = [];
@@ -323,22 +324,26 @@ $(document).ready(function () {
         let key_count = 0;
         let row_results = {};
         for (let th of headers) {
-          row_results["key_" + key_count] = table_rows[i].cells[key_count].textContent;
+          let value = parseFloat(table_rows[i].cells[key_count].textContent);
+          row_results["key_" + key_count] = new Intl.NumberFormat('en-GB').format(value);
           key_count++;
         }
         full_table_content["results_data"].push(row_results);
       }
 
       let flight_data = {
-        aircraft: row_data["Aircraft"],
-        msn: row_data["MSN"],
         flight: row_data["Flight"],
-        airline: row_data["Flight_Owner"],
+        flight_date: row_data["Flight_Date"],
+        fuel_characteristics: row_data["Fuel_Characteristics"].toLowerCase(),
+        fuel_flowmeters: row_data["Fuel_Flowmeters"].toLowerCase(),
+        num_points: num_points,
+        weighing: row_data["Weighing"],
+        data_id: row_data["id"],
         results_content: JSON.stringify(full_table_content)
       };
 
       var link = document.createElement('a');
-      let href = "/account/file/generate_doc?aircraft=" + encodeURI(flight_data.aircraft) + "&msn=" + encodeURI(flight_data.msn) + "&flight=" + encodeURI(flight_data.flight) + "&airline=" + encodeURI(flight_data.airline) + "&res=" + encodeURI(flight_data.results_content);
+      let href = "/account/file/generate_doc?flight=" + encodeURI(flight_data.flight) + "&flight_date=" + encodeURI(flight_data.flight_date) + "&fuel_characteristics=" + encodeURI(flight_data.fuel_characteristics) + "&fuel_flowmeters=" + encodeURI(flight_data.fuel_flowmeters) + "&num_points=" + encodeURI(flight_data.num_points) + "&weighing=" + encodeURI(flight_data.weighing) + "&data_id=" + encodeURI(flight_data.data_id) + "&results_content=" + encodeURI(flight_data.results_content);
       link.href = href;
       link.target = '_blank';
       $("#template_form").attr("action", href);

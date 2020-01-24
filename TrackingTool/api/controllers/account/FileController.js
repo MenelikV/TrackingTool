@@ -18,7 +18,7 @@ module.exports = {
   },
 
   search: function (req, res) {
-    //Search for files by the MSN 
+    //Search for files by the MSN
     var results = Data.find({
       MSN: req.param('msn').toUpperCase()
     }).exec(function (err, results) {
@@ -61,23 +61,82 @@ module.exports = {
   },
 
   generate_doc: async function (req, res) {
-    //Doc template dataset
-    let results_obj = JSON.parse(req.query["res"]);
-    let dataset = {
-      msn: req.query["msn"],
-      aircraft: req.query["aircraft"],
-      airline: req.query["airline"],
-      flight: req.query["flight"],
-      results_data: results_obj["results_data"]
-    }
+    moment = require("moment");
+    //Get results table data
+    let results_obj = JSON.parse(req.query["results_content"]);
 
+    //Get FLHV value
+    let flhv_value = await Data.find({
+      select: "FLHV"
+    }).where({
+      id: req.query["data_id"]
+    });
+    if (!flhv_value) flhv_value = "";
+    else flhv_value = _.pluck(flhv_value, "FLHV")[0];
+
+    //Generate number of points value in word format
+    let num = parseInt(req.query["num_points"]);
+    let numOfPoints_letter = sails.helpers.digitWord(num);
+
+    //Calculation of DSR average and general formatting
+    let dsr_values = _.pluck(results_obj["results_data"], "key_4");
+    dsr_values = dsr_values.map(i => parseFloat(i));
+    let dsr_avg = dsr_values.reduce((a, b) => a + b) / dsr_values.length;
+    dsr_avg = dsr_avg.toFixed(3);
+
+    let comp;
+    let comp_with_model;
+
+    if (dsr_avg > 0) {
+      dsr_avg = "+" + dsr_avg;
+      comp = "better than"
+      comp_with_model = "improved"
+
+    } else if (dsr_avg < 0) {
+      dsr_avg = "-" + dsr_avg;
+      comp = "below than"
+      comp_with_model = "degradaded"
+    } else {
+      comp = "on"
+      comp_with_model = "mantained"
+    }
+    dsr_avg = dsr_avg + "%";
+
+    //Flight date formatting
+    let flight_date = req.query["flight_date"];
+    let dates = flight_date.split("/");
+    flight_date = moment().date(dates[0]).month(dates[1]).year(dates[2]).hour(0).minute(0).second(0);
+    flight_date = flight_date.format("DD MMMM YYYY");
+
+    //Set weighing full sentence value
+    let weighing = req.query["weighing"];
+    if (!weighing) weighing = "";
+    else if (weighing.toLowerCase() === "before") weighing = "The aircraft was weighed before weighing and recorded fuel used (+APU)";
+    else weighing = "The aircraft was weighed after weighing and recorded fuel used (+APU)";
+
+    //Define template dataset
+    let dataset = {
+      FlightNumber: req.query["flight"],
+      NumberOfPoints_Digit: req.query["num_points"],
+      NumberOfPoints_Letter: numOfPoints_letter,
+      FlightDate: flight_date,
+      Fuel_Flowmeters: req.query["fuel_flowmeters"],
+      Fuel_Characteristics: req.query["fuel_characteristics"],
+      FLHV_Value: flhv_value,
+      Weighing: weighing,
+      DSR_Average: dsr_avg,
+      Comp: comp,
+      CompWithModel: comp_with_model,
+      results_data: results_obj["results_data"]
+    };
     var fs = require('fs');
 
     req.file("file").upload({}, async function (err, upload) {
       if (err) return res.serverError("Error on upload ", err);
       if (upload === undefined) return res.serverError("Upload did not work");
 
-      let filled_template = await sails.helpers.fillTemplate(dataset, upload[0].fd, res);
+      let output_name = upload[0].filename.split("_template")[0];
+      let filled_template = await sails.helpers.fillTemplate(dataset, upload[0].fd, res, output_name);
 
       if (filled_template) {
         fs.unlink(upload[0].fd, function (err) {
@@ -86,10 +145,8 @@ module.exports = {
           }
           //res.status(200).send();
         });
-      } else return res.serverError("Error during template fill ")
-
+      } else return res.serverError("Error during template fill ");
     })
-
   },
 
   download: async function (req, res) {
@@ -222,6 +279,8 @@ module.exports = {
           }
         });
       });
+
+      console.log("EXCEL DATA---> ", aircraft_data);
 
       //Before uploading data, check if there already exists a validated entry for this aircraft
       Data.find({

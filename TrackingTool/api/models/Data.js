@@ -92,22 +92,27 @@ module.exports = {
     Delivery_Date: {
       type: "string",
       defaultsTo: ""
+    },
+    FLHV: {
+      type: "number"
     }
   },
   //datastore: "data",
   getHeader: function () {
-    return Object.keys(this.attributes)
+    let headers = Object.keys(this.attributes);
+    headers.splice(headers.indexOf("FLHV"), 1);
+    return headers;
   },
 
   pdfFields: function () {
     return ["Aircraft_Identification", "Airline", "Tabulated_Results", "Parameters_Validation", "Fleet_Follow_Up"]
   },
   getVisibleFields: function () {
-    var visible_headers = Object.keys(this.attributes)
-    for (let name of ["createdAt", "updatedAt", "id", "Aircraft_Identification_id", "Airline_id", "Tabulated_Results_id", "Parameters_Validation_id", "Fleet_Follow_Up_id"]) {
-      visible_headers.splice(visible_headers.indexOf(name), 1)
+    var visible_headers = Object.keys(this.attributes);
+    for (let name of ["createdAt", "updatedAt", "id", "Aircraft_Identification_id", "Airline_id", "Tabulated_Results_id", "Parameters_Validation_id", "Fleet_Follow_Up_id", "FLHV"]) {
+      visible_headers.splice(visible_headers.indexOf(name), 1);
     }
-    visible_headers = visible_headers.map(l => l.replace(/_/g, ' '))
+    visible_headers = visible_headers.map(l => l.replace(/_/g, ' '));
     return visible_headers
   }
 }

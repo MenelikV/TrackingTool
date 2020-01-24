@@ -17,6 +17,9 @@ module.exports = {
     res: {
       type: 'ref',
       required: true
+    },
+    output_name: {
+      type:'string'
     }
   },
 
@@ -76,7 +79,7 @@ module.exports = {
     fs.writeFileSync(path.resolve("./.tmp/uploads/", filename), buf);
 
     //Download created file and delete from folder
-    let donwload_name = "CTR_" + input.doc_dataset["aircraft"] + "_" + input.doc_dataset["msn"] + "_" + input.doc_dataset["flight"] + "_output.docx";
+    let donwload_name = input.output_name + '.docx';
     input.res.download(path.resolve("./.tmp/uploads/", filename), donwload_name, function (err) {
       if (err) {
         console.error("Problem downloading file", err);
