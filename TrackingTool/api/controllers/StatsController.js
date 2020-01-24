@@ -33,13 +33,17 @@ module.exports = {
     })
   },
 
-
   connect: async function (req, res) {
     moment = require("moment");
     let current_date = moment().format("YYYY-MM-DD");
-
     //var io = require('sails.io.js')( require('socket.io-client') );
     let id_user = req.me.id;
+
+    let user_subs = await Subscription.find({
+      select: "id"
+    }).where({
+      user_id: id_user
+    });
 
     Stats.find({
       id_user: id_user,

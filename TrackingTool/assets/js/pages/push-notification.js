@@ -1,15 +1,20 @@
 $(document).ready(function () {
-  // Avoid self notification (werid publish should take that into account)
+  let me = window.SAILS_LOCALS["me"];
+  if (!me) return;
+
   $.edition = false
   $.toast_id = 0;
   $.times = {};
   $.colVisCreated = false
-  // Subsribe to the Socket Model
-  io.socket.get("/data");
+
+  //Call the subscription action via socket
+  io.socket.get("/subscription/subscribeToNotifications", function (resData) {
+
+  });
+
   // On change display a message on the console
   $("a[id^='toast_'").click(function () {
     var raw = $(this).data("id")
-    console.log(raw);
   })
 
   // Timer to refresh the times on toast
@@ -19,12 +24,11 @@ $(document).ready(function () {
       $(`#subtitle_${id}`).text(`${res} min ago`)
     }
   }, 60000)
-  io.socket.on('data', function (msg) {
-    let me = window.SAILS_LOCALS["me"]; 
-    let current_user_name = me.fullName;
 
+  io.socket.on('subscription', function (msg) {
+    let current_user_name = me.fullName;
     //Prevent toast from appearing if not logged in or for user originating it
-    if(!me || msg.author === current_user_name) return;
+    if (msg.author === current_user_name) return;
 
     if ($.edition) {
       $.edition = false

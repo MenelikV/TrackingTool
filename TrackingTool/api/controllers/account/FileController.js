@@ -470,6 +470,19 @@ module.exports = {
       "id": req.body["id"]
     }, req.body).fetch();
 
+    //Generate subscription corresponding ids
+    let sub_ids = await Subscription.find().where({
+      or: [{
+          field_name: "aircraft",
+          field_value: updated_entry[0]["Aircraft"]
+        },
+        {
+          field_name: "flight_owner",
+          field_value: updated_entry[0]["Flight_Owner"]
+        }
+      ]
+    });
+
     if (result_update) {
       let subs_data = await Notification.create({
         flight_owner: updated_entry[0]["Flight_Owner"],
@@ -480,9 +493,9 @@ module.exports = {
         modification_value: req.body["Results_Status"],
         data_id: updated_entry[0]["id"]
       }).fetch();
-      console.log("Result Status notification: ", subs_data);
+      //console.log("Result Status notification: ", subs_data);
 
-      Data.publish(_.pluck(updated_entry, 'id'), {
+      Subscription.publish(_.pluck(sub_ids, 'id'), {
         verb: 'Edition',
         author: req["me"].fullName,
         raw: updated_entry,
@@ -501,9 +514,9 @@ module.exports = {
         modification_value: (req.body["Validated_Status"]) ? "validated" : "not validated",
         data_id: updated_entry[0]["id"]
       }).fetch();
-      console.log("Validated Status notification: ", sub_data);
+      //console.log("Validated Status notification: ", sub_data);
 
-      Data.publish(_.pluck(updated_entry, 'id'), {
+      Subscription.publish(_.pluck(sub_ids, 'id'), {
         verb: 'Edition',
         author: req["me"].fullName,
         raw: updated_entry,

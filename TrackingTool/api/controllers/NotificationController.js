@@ -33,7 +33,6 @@ module.exports = {
       user_id: user_id
     });
 
-    console.log("user subs: ", user_subs);
     let aircraft_subs = [];
     let owner_subs = [];
     for (let i = 0; i < user_subs.length; i++) {
@@ -55,7 +54,6 @@ module.exports = {
       aircraft
     }) => aircraft);
 
-    console.log("ownersubs ",owner_subs)
     let owner_sub_data = await Notification.find({
       or: owner_subs
     });
@@ -63,7 +61,6 @@ module.exports = {
       flight_owner
     }) => flight_owner);
 
-    console.log("----> ", owner_sub_data, aircraft_sub_data)
     return res.view("pages/RSS", {
       me: req.me,
       full_aircrafts: full_aircrafts,
@@ -74,7 +71,5 @@ module.exports = {
       owner_user_sub: owner_subs
     })
   }
-
-
 
 };
