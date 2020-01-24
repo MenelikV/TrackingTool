@@ -930,6 +930,7 @@ body {
   border-radius: 10px;
   padding: 10px;
   flex-direction: column;
+  max-height: 70vh;
 }
 
 #rss_container .rss-header {
@@ -943,6 +944,7 @@ body {
 #rss_container #sub_container {
   display: flex;
   flex: 1 1 auto;
+  height: 100%;
 }
 
 .sub-data-container {
@@ -954,6 +956,7 @@ body {
   border-radius: 5px;
   border-top-left-radius: 0;
   border-top: solid #2e528a 2px;
+  overflow: auto;
 }
 
 .sub-data-container.active {
