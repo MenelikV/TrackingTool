@@ -666,6 +666,7 @@ $(document).ready(function () {
         exportOptions: {
           format: {
             body: function (data, row, column, node) {
+              if(!node) return "";
               let link = node.querySelector("a");
               let status = node.querySelector("i.fa-check");
 
