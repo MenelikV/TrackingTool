@@ -135,7 +135,10 @@ module.exports = {
     for (let key of template_keys) {
       dataset[key.Alias] = alias_keys[key.Name]
     }
-    
+
+    //Results data formatting doesn't change
+    dataset["results_data"] = results_obj["results_data"];
+
     var fs = require('fs');
 
     req.file("file").upload({}, async function (err, upload) {
