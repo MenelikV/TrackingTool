@@ -1,6 +1,6 @@
 $(document).ready(function () {
   let me = window.SAILS_LOCALS["me"];
-  if (!me) return;
+  if (!me) return; 
 
   $.edition = false
   $.toast_id = 0;

@@ -94,7 +94,7 @@ module.exports = {
       defaultsTo: ""
     },
     FLHV: {
-      type: "number"
+      type: "string"
     }
   },
   //datastore: "data",

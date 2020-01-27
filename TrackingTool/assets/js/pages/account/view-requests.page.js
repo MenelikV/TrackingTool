@@ -26,8 +26,8 @@ $(document).ready(function () {
     if (privilege === "isAdmin") isAdmin = true;
     else if (privilege === "isBasic") isBasic = true;
 
-    // $("#loader_cont").addClass("active");
-    // $('#loader').show();
+    $("#loader_cont").addClass("active");
+    $('#loader').show();
 
     let data = {
       fullName: fullName,

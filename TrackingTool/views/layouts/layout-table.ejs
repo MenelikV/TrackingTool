@@ -96,6 +96,8 @@
               <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link">
                 <% if(me.isSuperAdmin) { %>
                 <a class="dropdown-item nav-drop" href="/requests">Users</a>
+                <a class="dropdown-item nav-drop" href="/stats">View Statistics</a>
+                <a class="dropdown-item nav-drop" href="/keys">Template keys</a>
                 <% } %>
 
                 <a class="dropdown-item nav-drop" href="/account">Settings</a>
@@ -147,7 +149,7 @@
           <%- body %>
         </div>
       </div>
-
+      <%- exposeLocalsToBrowser() %>
     </div>
     <!-- End body content -->
 
@@ -215,6 +217,7 @@
   <script src="/js/pages/account/edit-password.page.js"></script>
   <script src="/js/pages/account/edit-profile.page.js"></script>
   <script src="/js/pages/account/view-requests.page.js"></script>
+  <script src="/js/pages/account/edit-keys.page.js"></script>
   <script src="/js/pages/dashboard/welcome.page.js"></script>
   <script src="/js/pages/entrance/confirmed-email.page.js"></script>
   <script src="/js/pages/entrance/forgot-password.page.js"></script>

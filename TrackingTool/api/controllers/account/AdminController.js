@@ -24,15 +24,16 @@ module.exports = {
   },
 
   add: async function (req, res) {
-    console.log("bodyyy", req.body);
-    if (!req.body) return res.serverError();
+    if (!req.body) return res.serverError("No data was received.");
     req.body["password"] = await sails.helpers.passwords.hashPassword(req.body["password"]);
 
-    let new_user = await User.create(req.body);
-    if (!new_user) return res.serverError();
-    console.log("created user: ", new_user);
-
-    res.status(200).send();
+    User.create(req.body).exec(function (err, result) {
+      if (err) console.log("eerroor ", err);
+      else {
+        console.log("created user!");
+        res.status(200).send();
+      }
+    })
   },
 
   approve: async function (req, res) {
@@ -137,7 +138,7 @@ module.exports = {
     var fs = require('fs')
     fs.unlink('assets/images/' + name, function (err) {
       if (err) {
-        return res.serverError('Could not delete file', err);
+        return res.serverError('Could not delete file. ', err);
       }
     });
     req.file("file").upload({
@@ -145,7 +146,7 @@ module.exports = {
       saveAs: name
     }, async function (err, uploads) {
       if (!uploads) {
-        return res.serverError("Upload did not work")
+        return res.serverError("Upload did not work.")
       }
       return res.view('pages/account/account-overview', {
         me: req.me
@@ -168,5 +169,43 @@ module.exports = {
       console.log('ok logo');
     });
     return res.redirect('/');
+  },
+
+
+  view_keys: async function (req, res) {
+    let full_keys = await TemplateKeys.find({
+      select: ["Alias", "Name"]
+    });
+    //full_keys = _.pluck(full_keys, 'Alias');
+    let keys = {};
+    for (let key_data of full_keys) {
+      keys[key_data.Name] = key_data.Alias;
+    }
+
+    console.log("fullkeys---> ", keys);
+    res.view('pages/account/edit-keys', {
+      me: req.me,
+      full_keys: keys
+    })
+  },
+
+  update_keys: async function (req, res) {
+    let update_values = req.body["key_array"];
+    if (!update_values) return res.serverError("There was an issue updating the template keys.");
+
+    /////// KEYS MUST BE CREATED FIRST IN templatekeys.db (Name attribute must not change, only alias) //////
+    for (let i = 0; i < update_values.length; i++) {
+      let current = update_values[i];
+      await TemplateKeys.update({
+        Alias: current.Alias
+      }).where({
+        Name: current.Name
+      })
+    }
+
+    res.send(200);
+
   }
+
+
 }

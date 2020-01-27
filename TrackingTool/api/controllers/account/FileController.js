@@ -114,8 +114,10 @@ module.exports = {
     else if (weighing.toLowerCase() === "before") weighing = "The aircraft was weighed before weighing and recorded fuel used (+APU)";
     else weighing = "The aircraft was weighed after weighing and recorded fuel used (+APU)";
 
-    //Define template dataset
-    let dataset = {
+    let template_keys = await TemplateKeys.find();
+
+    let dataset = {};
+    let alias_keys = {
       FlightNumber: req.query["flight"],
       NumberOfPoints_Digit: req.query["num_points"],
       NumberOfPoints_Letter: numOfPoints_letter,
@@ -128,7 +130,12 @@ module.exports = {
       Comp: comp,
       CompWithModel: comp_with_model,
       results_data: results_obj["results_data"]
-    };
+    }
+
+    for (let key of template_keys) {
+      dataset[key.Alias] = alias_keys[key.Name]
+    }
+    
     var fs = require('fs');
 
     req.file("file").upload({}, async function (err, upload) {
@@ -307,7 +314,7 @@ module.exports = {
             var uploaded_entry = await Data.findOrCreate(criteria, criteria);
           } catch (error) {
             console.log("More than one entry found");
-            return res.serverError(err);
+            return res.serverError();
           }
           //aircraft_data = {}
           console.log("Handling PDF Files")
@@ -353,7 +360,7 @@ module.exports = {
           console.log("Finishing processing Files and redirection")
           if (err !== undefined && err !== null) {
             console.log('error uploading files')
-            return res.serverError(err)
+            return res.serverError(err);
           }
 
           console.log("Redirection")
@@ -452,28 +459,44 @@ module.exports = {
       if (aircraft_data !== possible_entry[0]) {
         var data = await Data.update(req.body.aircraft, aircraft_data).fetch();
       }
+
+
+      //Generate subscription corresponding ids
+      let sub_ids = await Subscription.find().where({
+        or: [{
+            field_name: "aircraft",
+            field_value: possible_entry[0]["Aircraft"]
+          },
+          {
+            field_name: "flight_owner",
+            field_value: possible_entry[0]["Flight_Owner"]
+          }
+        ]
+      });
+
+      console.log("SUB IDS", sub_ids);
+
       // See the whole table with the new entry 
       res.status(200);
-      Data.publish(_.pluck(possible_entry, 'id'), {
+      Subscription.publish(_.pluck(sub_ids, 'id'), {
         verb: 'Creation',
         author: req["me"].fullName,
         raw: possible_entry,
-        msg: `${req["me"].fullName} has added ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`,
+        msg: `${req["me"].fullName} has added a new entry for ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`,
         data: `${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`
       }, req);
 
       return res.send("Sucessful Operation");
-
     }
 
     if (possible_entry.length == 0) {
       // Create new entry
       var data = await Data.create(aircraft_data).fetch();
-      Data.publish(_.pluck(possible_entry, 'id'), {
+      Subscription.publish(_.pluck(sub_ids, 'id'), {
         verb: 'Creation',
         author: req["me"].fullName,
         raw: possible_entry,
-        msg: `${req["me"].fullName} has added ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`,
+        msg: `${req["me"].fullName} has added a new entry for ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`,
         data: `${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`
       }, req);
 
@@ -542,6 +565,8 @@ module.exports = {
       ]
     });
 
+    console.log("RES1VALIDATION UPDATE--->", result_update, validation_update);
+
     if (result_update) {
       let subs_data = await Notification.create({
         flight_owner: updated_entry[0]["Flight_Owner"],
@@ -561,9 +586,7 @@ module.exports = {
         msg: `${req["me"].fullName} has modified the results status of ${updated_entry[0].Aircraft} - ${updated_entry[0].MSN} - ${updated_entry[0].Flight}`,
         data: `${updated_entry[0].Aircraft} - ${updated_entry[0].MSN} - ${updated_entry[0].Flight}`
       }, req);
-    }
-
-    if (validation_update) {
+    } else if (validation_update) {
       let sub_data = await Notification.create({
         flight_owner: updated_entry[0]["Flight_Owner"],
         aircraft: updated_entry[0]["Aircraft"],
@@ -609,10 +632,32 @@ module.exports = {
   delete: async function (req, res) {
     console.log(req.body);
     try {
-      await Data.destroy(req.body)
-      res.status(200);
-      return res.send("Successful Operation");
+      let destroyed_entry = await Data.destroy(req.body).fetch();
+
+      let sub_ids = await Subscription.find().where({
+        or: [{
+            field_name: "aircraft",
+            field_value: destroyed_entry[0]["Aircraft"]
+          },
+          {
+            field_name: "flight_owner",
+            field_value: destroyed_entry[0]["Flight_Owner"]
+          }
+        ]
+      });
+
+      Subscription.publish(_.pluck(sub_ids, 'id'), {
+        verb: 'Deletion',
+        author: req["me"].fullName,
+        raw: destroyed_entry,
+        msg: `${req["me"].fullName} has deleted the entry for ${destroyed_entry[0].Aircraft} - ${destroyed_entry[0].MSN} - ${destroyed_entry[0].Flight}`,
+        data: `${destroyed_entry[0].Aircraft} - ${destroyed_entry[0].MSN} - ${destroyed_entry[0].Flight}`
+      }, req);
+
+      return res.send(200);
+
     } catch (error) {
+      console.log("Error during deletion -> ", error);
       res.status(500);
       return res.send(error);
     }

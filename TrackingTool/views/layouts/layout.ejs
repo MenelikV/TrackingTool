@@ -33,6 +33,7 @@
 </head>
 
 <!-- NAVIGATION LAYOUT-->
+
 <body class="back">
   <!-- Navbar Section -->
 
@@ -54,8 +55,8 @@
             <% if(me) { %>
             <% if(me.isSuperAdmin){%>
             <div class="nav-item dropdown">
-              <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="header-account-menu-link" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false" href="">Manage</a>
+              <a class="nav-link dropdown toggle ml-2 ml-md-0 mr-2 mr-md-0" id="header-account-menu-link"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="">Manage</a>
               <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link">
                 <a class="dropdown-item nav-drop" href="/ctr">CTR / Delivery Date</a>
               </div>
@@ -75,25 +76,26 @@
                 aria-haspopup="true" aria-expanded="false" href="">Account</a>
               <div class="dropdown-menu account-menu" aria-labelledby="header-account-menu-link">
                 <% if(me.isSuperAdmin) { %>
-                <a class="dropdown-item nav-drop" href="/requests">Users</a>
-                <a class="dropdown-item nav-drop" href="/stats">View Statistics</a>
-                <% } %>
-
-                <a class="dropdown-item nav-drop" href="/account">Settings</a>
-                <a class="dropdown-item nav-drop" href="/logout">Sign out</a>
-              </div>
-            </div>
-
-            <%} else { %>
-            <li class="nav-item">
-              <a href="/login" class="nav-link">Log in</a>
-            </li>
-            <li class="nav-item">
-              <a href="/signup" class="nav-link">Sign up</a>
-            </li>
+            <a class="dropdown-item nav-drop" href="/requests">Users</a>
+            <a class="dropdown-item nav-drop" href="/stats">View Statistics</a>
+            <a class="dropdown-item nav-drop" href="/keys">Template keys</a>
             <% } %>
-          </ul>
+
+            <a class="dropdown-item nav-drop" href="/account">Settings</a>
+            <a class="dropdown-item nav-drop" href="/logout">Sign out</a>
         </div>
+      </div>
+
+      <%} else { %>
+      <li class="nav-item">
+        <a href="/login" class="nav-link">Log in</a>
+      </li>
+      <li class="nav-item">
+        <a href="/signup" class="nav-link">Sign up</a>
+      </li>
+      <% } %>
+      </ul>
+      </div>
       </div>
     </nav>
   </header>
@@ -118,14 +120,14 @@
   <% } %>
 
   <!-- Start background-->
-    <!--  Start body content -->
+  <!--  Start body content -->
   <div class="site">
     <div class="dash dash-flex">
       <div class="container-fluid">
         <div id="toaster" class="toaster_container"></div>
         <%- body %>
       </div>
-    </div> 
+    </div>
 
 
     <!-- <div class="back">
@@ -145,13 +147,17 @@
       </div>
     </footer>
     <!-- End of footer -->
+    <%- exposeLocalsToBrowser() %>
   </div>
   <!-- End of background-->
 
 
   <% /* Delete the global `self` to help avoid client-side bugs.
     (see https://developer.mozilla.org/en-US/docs/Web/API/Window/self) */ %>
-  <script>delete window.self;</script>
+  <script>
+    delete window.self;
+
+  </script>
 
   <script src="/dependencies/polyfill.min.js"></script>
 
@@ -199,6 +205,7 @@
   <script src="/js/pages/account/edit-password.page.js"></script>
   <script src="/js/pages/account/edit-profile.page.js"></script>
   <script src="/js/pages/account/view-requests.page.js"></script>
+  <script src="/js/pages/account/edit-keys.page.js"></script>
   <script src="/js/pages/dashboard/welcome.page.js"></script>
   <script src="/js/pages/entrance/confirmed-email.page.js"></script>
   <script src="/js/pages/entrance/forgot-password.page.js"></script>
