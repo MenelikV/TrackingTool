@@ -30,7 +30,7 @@
       <thead class="table-primary">
         <tr>
           <% for(var i=0; i < headers.length; i++){ %>
-          <th scope="col" data-sortable="true">
+          <th scope="col" data-sortable="true" class='<%=headers[i]%>'>
 
             <%=headers[i].replace(/_/g, ' ')%>
           </th>

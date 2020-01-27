@@ -95,6 +95,9 @@ module.exports = {
     },
     FLHV: {
       type: "string"
+    },
+    Trailing_Cone: {
+      type: "string"
     }
   },
   //datastore: "data",

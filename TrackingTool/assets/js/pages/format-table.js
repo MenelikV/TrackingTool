@@ -376,6 +376,7 @@ $(document).ready(function () {
     var comment_id = headers.indexOf("Commentary");
     var dd_id = headers.indexOf("Delivery Date");
     var tra_comment = headers.indexOf("TRA_Comment");
+    var flhv_val = headers.indexOf("FLHV");
 
     var table = $('#available-data').dataTable({
       // ServerSide done in another branch of the repo
@@ -438,17 +439,17 @@ $(document).ready(function () {
         "searchable": false,
         "data": "Aircraft_Identification_id"
       }, {
-        "targets": dd_id,
+        "targets": "Delivery_Date",
         "name": "Delivery Date",
         "width": "5%",
         "data": "Delivery_Date"
       }, {
-        "targets": comment_id,
+        "targets": "Commentary",
         "name": "Commentary",
         "width": "5%",
         "data": "Commentary"
       }, {
-        "targets": tra_comment,
+        "targets": "TRA_Comment",
         "name": "TRA Comment",
         "data": "TRA_Comment",
         "orderable": false,
@@ -462,49 +463,59 @@ $(document).ready(function () {
           return btn.outerHTML;
         }
       }, {
-        "targets": headers.indexOf("MSN"),
+        "targets": "FLHV",
+        "name": "FLHV Value",
+        "data": "FLHV",
+        "orderable": true,
+        "searchable": false,
+        "render": function render(data, type, row, meta) {
+          if (!data) return "";
+          return data;
+        }
+      }, {
+        "targets": "MSN",
         "name": "MSN",
         "data": "MSN",
         "width": "5%"
       }, {
-        "targets": headers.indexOf("Aircraft"),
+        "targets": "Aircraft",
         "name": "Aircraft",
         "data": "Aircraft",
         "width": "5%"
       }, {
-        "targets": headers.indexOf("Flight"),
+        "targets": "Flight",
         "name": "Flight",
         "data": "Flight",
         "width": "5%"
       }, {
-        "targets": headers.indexOf("Flight_Owner"),
+        "targets": "Flight_Owner",
         "name": "Flight Owner",
         "data": "Flight_Owner",
         "title": "Airline",
         "width": "5%"
       }, {
-        "targets": headers.indexOf("Fuel_Flowmeters"),
+        "targets": "Fuel_Flowmeters",
         "name": "Fuel Flowmeters",
         "data": "Fuel_Flowmeters",
         "width": "5%"
       }, {
-        "targets": headers.indexOf('Flight_Date'),
+        "targets": "Flight_Date",
         "name": "Flight Date",
         "data": "Flight_Date",
         "width": "5%"
       }, {
-        "targets": headers.indexOf("Fuel_Characteristics"),
+        "targets": "Fuel_Characteristics",
         "name": "Fuel Characteristics",
         "data": "Fuel_Characteristics",
         "width": "5%"
       }, {
-        "targets": headers.indexOf("Weighing"),
+        "targets": "Weighing",
         "name": "Weighing",
         "data": "Weighing",
         "width": "5%"
       }, {
         // Special Formatting for Validated Status
-        "targets": results_status,
+        "targets": "Results_Status",
         "name": "Results Status",
         "data": "Results_Status",
         "width": "5%",
@@ -521,7 +532,7 @@ $(document).ready(function () {
           }
         }
       }, {
-        "targets": validated_status,
+        "targets": "Validated_Status",
         "name": "Validated Status",
         "data": "Validated_Status",
         "title": "Data Validated Status",
@@ -535,7 +546,7 @@ $(document).ready(function () {
           }
         }
       }, {
-        "targets": ctr_status,
+        "targets": "CTR",
         "name": "CTR",
         "data": "CTR",
         "width": "5%",
@@ -548,7 +559,7 @@ $(document).ready(function () {
           }
         }
       }, {
-        "targets": ffu,
+        "targets": "Fleet_Follow_Up",
         "name": "Fleet Follow Up",
         "data": "Fleet_Follow_Up",
         "orderable": false,
@@ -558,7 +569,7 @@ $(document).ready(function () {
           return '<a href="/account/file/download/' + row["Fleet_Follow_Up_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
         }
       }, {
-        "targets": aircraft_ident,
+        "targets": "Aircraft_Identification",
         "name": "Aircraft Identification",
         "data": "Aircraft_Identification",
         "orderable": false,
@@ -568,7 +579,7 @@ $(document).ready(function () {
           return '<a href="/account/file/download/' + row["Aircraft_Identification_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
         }
       }, {
-        "targets": pv,
+        "targets": "Parameters_Validation",
         "data": "Parameters_Validation",
         "name": "Parameters Validation",
         "orderable": false,
@@ -578,7 +589,7 @@ $(document).ready(function () {
           return '<a href="/account/file/download/' + row["Parameters_Validation_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
         }
       }, {
-        "targets": tr,
+        "targets": "Tabulated_Results",
         "data": "Tabulated_Results",
         "name": "Tabulated Results",
         "orderable": false,
@@ -588,7 +599,7 @@ $(document).ready(function () {
           return '<a href="/account/file/download/' + row["Tabulated_Results_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
         }
       }, {
-        "targets": airline,
+        "targets": "Airline",
         "data": "Airline",
         "name": "Airline",
         "title": "Airline Tables",
@@ -599,7 +610,7 @@ $(document).ready(function () {
           return '<a href="/account/file/download/' + row["Airline_id"] + '"' + ' target="_blank"><i class="fa fa-file fa-lg" style="color:rgb(98, 166, 255)"></i></a>';
         }
       }, {
-        "targets": results,
+        "targets": "Results",
         "data": "Results",
         "name": "Results",
         "orderable": false,
@@ -609,7 +620,7 @@ $(document).ready(function () {
           return '<button type="button" id="ResultsButton_' + row["id"] + '"' + 'class="results-button" data-toggle="modal" data-target="#Results"> <i class="fa fa-table fa-lg" data-toggle="modal" data-target="#Results"></i> </button>';
         }
       }, {
-        "targets": tra,
+        "targets": "TRA",
         "name": "TRA",
         "data": "TRA",
         "width": "5%",
@@ -620,6 +631,15 @@ $(document).ready(function () {
             var linkName = "CRUISE PERFORMANCE " + row["Aircraft"] + " MSN " + row["MSN"] + " FLIGHT " + row["Flight"];
             return '<a href=' + data + ' target="_blank">' + linkName + "</a>";
           }
+        }
+      }, {
+        "targets": "Trailing_Cone",
+        "name": "Trailing Cone",
+        "data": "Trailing_Cone",
+        "width": "5%",
+        "render": function render(data, type, row, meta) {
+          if (!data) return "";
+          return data;
         }
       }],
       bDeferRender: true,
@@ -666,7 +686,7 @@ $(document).ready(function () {
         exportOptions: {
           format: {
             body: function (data, row, column, node) {
-              if(!node) return "";
+              if (!node) return "";
               let link = node.querySelector("a");
               let status = node.querySelector("i.fa-check");
 
@@ -816,6 +836,7 @@ $(document).ready(function () {
     var flight_id = headers.indexOf("Flight");
     var comment_id = headers.indexOf("Commentary");
     var dd_id = headers.indexOf("Delivery Date");
+
     $("#upload-results").DataTable({
       ordering: false,
       dom: "Bfrtip",
@@ -1007,6 +1028,15 @@ $(document).ready(function () {
         "targets": tra,
         "name": "TRA",
         "data": "TRA"
+      }, {
+        "targets": "Trailing_Cone",
+        "name": "Trailing Cone",
+        "data": "Trailing_Cone",
+        "width": "5%",
+        "render": function render(data, type, row, meta) {
+          if (!data) return "";
+          return data;
+        }
       }]
     });
   }
