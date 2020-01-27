@@ -93,7 +93,6 @@ module.exports = {
       comp_with_model = "improved"
 
     } else if (dsr_avg < 0) {
-      dsr_avg = "-" + dsr_avg;
       comp = "below than"
       comp_with_model = "degradaded"
     } else {
