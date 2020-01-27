@@ -93,7 +93,6 @@ module.exports = {
       comp_with_model = "improved"
 
     } else if (dsr_avg < 0) {
-      dsr_avg = "-" + dsr_avg;
       comp = "below than"
       comp_with_model = "degradaded"
     } else {
@@ -135,7 +134,10 @@ module.exports = {
     for (let key of template_keys) {
       dataset[key.Alias] = alias_keys[key.Name]
     }
-    
+
+    //Results data formatting doesn't change
+    dataset["results_data"] = results_obj["results_data"];
+
     var fs = require('fs');
 
     req.file("file").upload({}, async function (err, upload) {
