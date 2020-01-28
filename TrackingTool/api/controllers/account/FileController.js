@@ -81,6 +81,10 @@ module.exports = {
     dsr_values = dsr_values.map(i => parseFloat(i));
     let dsr_avg = dsr_values.reduce((a, b) => a + b) / dsr_values.length;
     dsr_avg = dsr_avg.toFixed(1);
+    // Formatting the values for DSR
+    results_obj["results_data"] = results_obj["results_data"].map(function(d){
+      return {...d, "key_4": parseFloat(d["key_4"]).toFixed(1)+"%"}
+    })
 
     let comp;
     let comp_with_model;
@@ -92,10 +96,10 @@ module.exports = {
 
     } else if (dsr_avg < 0) {
       comp = "below than"
-      comp_with_model = "degradaded"
+      comp_with_model = "degraded"
     } else {
-      comp = "improved"
-      comp_with_model = "mantained"
+      comp = "on"
+      comp_with_model = "improved"
     }
     dsr_avg = dsr_avg + "%";
 
