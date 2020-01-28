@@ -83,6 +83,11 @@ module.exports.routes = {
     action: 'subscribeToNotifications'
   },
 
+  'GET /subscription/socketDisconnect' : {
+    controller: "SubscriptionController",
+    action: 'socketDisconnect'
+  },
+
   'GET /subscriptions': {
     controller: 'NotificationController',
     action: 'view'

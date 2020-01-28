@@ -20,7 +20,8 @@
       "TRA_Comment": "A1"
     },
     "BDR1": {
-      "FLHV": "CZ15"
+      "FLHV": "",
+      "Trailing_Cone": ""
     }
   }
 }

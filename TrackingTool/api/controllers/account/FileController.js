@@ -55,8 +55,6 @@ module.exports = {
         msn: req.param('msn'),
         search: true
       })
-
-
     })
   },
 
@@ -72,9 +70,9 @@ module.exports = {
       id: req.query["data_id"]
     });
     if (!flhv_value) flhv_value = "";
-    else flhv_value = _.pluck(flhv_value, "FLHV")[0];
+    else flhv_value = new Intl.NumberFormat('en-GB').format( _.pluck(flhv_value, "FLHV")[0]);;
 
-    //Generate number of points value in word format
+    //Generate number of points value in word format 
     let num = parseInt(req.query["num_points"]);
     let numOfPoints_letter = sails.helpers.digitWord(num);
 
@@ -82,7 +80,7 @@ module.exports = {
     let dsr_values = _.pluck(results_obj["results_data"], "key_4");
     dsr_values = dsr_values.map(i => parseFloat(i));
     let dsr_avg = dsr_values.reduce((a, b) => a + b) / dsr_values.length;
-    dsr_avg = dsr_avg.toFixed(3);
+    dsr_avg = dsr_avg.toFixed(1);
 
     let comp;
     let comp_with_model;
@@ -96,7 +94,7 @@ module.exports = {
       comp = "below than"
       comp_with_model = "degradaded"
     } else {
-      comp = "on"
+      comp = "improved"
       comp_with_model = "mantained"
     }
     dsr_avg = dsr_avg + "%";
@@ -110,7 +108,8 @@ module.exports = {
     //Set weighing full sentence value
     let weighing = req.query["weighing"];
     if (!weighing) weighing = "";
-    else if (weighing.toLowerCase() === "before") weighing = "The aircraft was weighed before weighing and recorded fuel used (+APU)";
+    else if (weighing.toLowerCase() === "before") weighing = "The aircraft was weighed before weighing and recorded fuel used (+ APU)";
+    else if (weighing.toLowerCase() === "not weighed") weighing = "Contractual weighing and recorded Fuel Used (+ APU)";
     else weighing = "The aircraft was weighed after weighing and recorded fuel used (+APU)";
 
     let template_keys = await TemplateKeys.find();
@@ -266,15 +265,29 @@ module.exports = {
                 for (var m = 0; m < info_key.length; m++) {
                   var prop = info_key[m];
                   if (prop === "Results") {
-                    console.log("Crawling the table")
+                    console.log("Crawling the table");
                     // Getting the info for the table is really diffrenet from the other properties
                     aircraft_data[prop] = sails.helpers.tableCrawler(info[prop], s)
+                  } else if (prop === "FLHV" || prop === "Trailing_Cone") {
+                    //Specify header name regex 
+                    let header = (prop === "FLHV") ? /^lhv/ : /^iopc/;
+                    //Convert current sheet to array of arrays
+                    let array_sheet = XLSX.utils.sheet_to_json(s, {
+                      header: 1
+                    });
+                    //Search the current sheet for the specified header and return value
+                    let prop_value = sails.helpers.searchSheet(array_sheet, header);
+                    if (prop === "Trailing_Cone") {
+                      prop_value = (parseInt(prop_value) === 1) ? "INSTALLED" : "NOT INSTALLED";
+                    }
+                    aircraft_data[prop] = prop_value;
+
                   } else {
-                    console.log("Crawling Data")
+                    console.log("Crawling Data");
                     if (sheet === "identification") {
-                      aircraft_data[prop] = idendification_data[prop][s[info[prop]].v]
+                      aircraft_data[prop] = idendification_data[prop][s[info[prop]].v];
                     } else {
-                      aircraft_data[prop] = s[info[prop]].v
+                      aircraft_data[prop] = s[info[prop]].v;
                     }
                   }
                 }
@@ -289,7 +302,7 @@ module.exports = {
         });
       });
 
-      console.log("EXCEL DATA---> ", aircraft_data);
+      //console.log("EXCEL DATA---> ", aircraft_data);
 
       //Before uploading data, check if there already exists a validated entry for this aircraft
       Data.find({

@@ -138,7 +138,8 @@ module.exports = {
     var fs = require('fs')
     fs.unlink('assets/images/' + name, function (err) {
       if (err) {
-        return res.serverError('Could not delete file. ', err);
+        console.error("error: ",err)
+        return res.serverError('Could not delete file. ');
       }
     });
     req.file("file").upload({

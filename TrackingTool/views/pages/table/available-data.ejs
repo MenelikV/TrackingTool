@@ -97,8 +97,8 @@
                                     <select class="custom-select" id="validatedCombo" title="Choose an option" required>
                                         <option value="Preliminary">Preliminary</option>
                                         <% if(me.isSuperAdmin){%>
-          <option value="Definitive">Definitive</option>
-          <%}%>
+                                        <option value="Definitive">Definitive</option>
+                                        <%}%>
                                         <option value="Investigation">Investigation</option>
                                     </select>
                                 </div>
@@ -106,6 +106,20 @@
                                     Please select a validation option.
                                 </div>
                             </div>
+
+                            <%if (me.isBasicUser || me.isSuperAdmin) {%>
+                              <div class="form-group row">
+                                <label class="col-form-label col-sm-2" id="Trailing_Cone">Trailing Cone</label>
+                                <div class="col-sm-10">
+                                    <select class="custom-select" id="trailingCombo" title="Choose an option" required>
+                                        <option value="INSTALLED">Installed</option>
+                                        <option value="NOT INSTALLED">Not Installed</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <%}%>
+
+
 
                             <%if(me.isSuperAdmin){%>
           <div class="form-group row">

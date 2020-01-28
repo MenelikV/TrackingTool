@@ -87,6 +87,8 @@ $(document).ready(function () {
           r_status = "Investigation";
         }
       }
+
+      let trailing_cone = complete_data_table["Trailing_Cone"];
       var comment = complete_data_table["Commentary"];
       var delivery_date = complete_data_table["Delivery_Date"];
       let dates = delivery_date.split("/");
@@ -103,6 +105,7 @@ $(document).ready(function () {
       modal.find('.modal-body #validatedCheck').prop('checked', v_status);
       modal.find('.modal-body #Delivery-Input').val(input_date.format("YYYY-MM-DD"));
       modal.find('.modal-body #Comment-input').val(comment);
+      modal.find('.modal-body #trailingCombo').val(trailing_cone);
     });
     $("#available-data tbody").on("click", "tr", function (ev) {
       const regex = /^ResultsButton_\d+$/gm;
@@ -169,15 +172,16 @@ $(document).ready(function () {
       });
 
       // Get some values from elements on the page:
-      var $form = $(this),
-        url = $form.attr("action"),
-        ctr = $form.find("#CTRCheck").is(':checked') === true ? "true" : "",
-        tra = $form.find("#TRA-input").val(),
-        r_status = $form.find("#validatedCombo").val(),
-        v_status = $form.find("#validatedCheck").is(':checked') === true ? "true" : "",
-        delivery_date = $form.find("#Delivery-Input").val().length > 0 ? moment($form.find("#Delivery-Input").val()).format("DD/MM/YYYY") : "",
-        comment = _.escape($form.find('#Comment-input').val()),
-        row_data = table.api().row($.selectedRowDom).data();
+      var $form = $(this);
+      var url = $form.attr("action");
+      var ctr = $form.find("#CTRCheck").is(':checked') === true ? "true" : "";
+      var tra = $form.find("#TRA-input").val();
+      var r_status = $form.find("#validatedCombo").val();
+      var v_status = $form.find("#validatedCheck").is(':checked') === true ? "true" : "";
+      var delivery_date = $form.find("#Delivery-Input").val().length > 0 ? moment($form.find("#Delivery-Input").val()).format("DD/MM/YYYY") : "";
+      var comment = _.escape($form.find('#Comment-input').val());
+      let trailing = $form.find("#trailingCombo").val();
+      var row_data = table.api().row($.selectedRowDom).data();
       let prev_result_status = row_data["Results_Status"];
       let prev_validated_status = row_data["Validated_Status"];
 
@@ -187,6 +191,7 @@ $(document).ready(function () {
       row_data["Validated_Status"] = v_status;
       row_data["Commentary"] = comment;
       row_data["CTR"] = ctr;
+      row_data["Trailing_Cone"] = trailing;
       if ($form.find("#validatedCheck").length && $form.find("#validatedCombo").length) {
         //Super Admin Editing
         var data = {
@@ -196,6 +201,7 @@ $(document).ready(function () {
           "Validated_Status": v_status,
           "Delivery_Date": delivery_date,
           "Commentary": comment,
+          "Trailing_Cone": trailing,
           "id": $.internalIdSelection,
           "prev_result": prev_result_status,
           "prev_validated": prev_validated_status
@@ -208,6 +214,7 @@ $(document).ready(function () {
           "Delivery_Date": delivery_date,
           "Commentary": comment,
           "id": $.internalIdSelection,
+          "Trailing_Cone": trailing,
           "prev_result": prev_result_status
         };
       }
@@ -699,7 +706,7 @@ $(document).ready(function () {
             }
           },
           columns: function (idx, data, node) {
-            if (node.innerText === "Aircraft" || node.innerText === "MSN" || node.innerText === "Flight" || node.innerText === "Flight Date" || node.innerText === "TRA" || node.innerText === "Data Validated Status") return true;
+            if (node.innerText === "Aircraft" || node.innerText === "MSN" || node.innerText === "Flight" || node.innerText === "Flight Date" || node.innerText === "TRA" || node.innerText === "Data Validated Status" || node.innerText === "Fuel Flowmeters" || node.innerText === "Airline" || node.innerText === "Trailing Cone") return true;
             else return false;
           },
           rows: function (idx, data, node) {

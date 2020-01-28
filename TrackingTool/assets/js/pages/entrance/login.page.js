@@ -78,8 +78,6 @@ parasails.registerPage('login', {
                 // > to make sure the spinner stays there until the page navigation finishes.)
                 this.syncing = true;
                 window.location = '/';
-                //Send user login notification to server.
-                io.socket.post('/stats/connect', function (resData, jwres) {});
 
               case 2:
               case 'end':
