@@ -13,11 +13,12 @@ module.exports = {
     return res.view("pages/table/upload-results", {
       data: [req.aircraft_data],
       headers: headers,
-      me: req.me})
+      me: req.me
+    })
   },
 
   search: function (req, res) {
-    //Search for files by the MSN 
+    //Search for files by the MSN
     var results = Data.find({
       MSN: req.param('msn').toUpperCase()
     }).exec(function (err, results) {
@@ -54,8 +55,109 @@ module.exports = {
         msn: req.param('msn'),
         search: true
       })
+    })
+  },
 
+  generate_doc: async function (req, res) {
+    moment = require("moment");
+    //Get results table data
+    let results_obj = JSON.parse(req.query["results_content"]);
 
+    //Get FLHV value
+    let flhv_value = await Data.find({
+      select: "FLHV"
+    }).where({
+      id: req.query["data_id"]
+    });
+    if (!flhv_value) flhv_value = "";
+    else flhv_value = new Intl.NumberFormat('en-GB').format( _.pluck(flhv_value, "FLHV")[0]);;
+
+    //Generate number of points value in word format 
+    let num = parseInt(req.query["num_points"]);
+    let numOfPoints_letter = sails.helpers.digitWord(num);
+
+    //Calculation of DSR average and general formatting
+    let dsr_values = _.pluck(results_obj["results_data"], "key_4");
+    dsr_values = dsr_values.map(i => parseFloat(i));
+    let dsr_avg = dsr_values.reduce((a, b) => a + b) / dsr_values.length;
+    dsr_avg = dsr_avg.toFixed(1);
+    // Formatting the values for DSR
+    results_obj["results_data"] = results_obj["results_data"].map(function(d){
+      return {...d, "key_4": parseFloat(d["key_4"]).toFixed(1)+"%"}
+    })
+
+    let comp;
+    let comp_with_model;
+
+    if (dsr_avg > 0) {
+      dsr_avg = "+" + dsr_avg;
+      comp = "better than"
+      comp_with_model = "improved"
+
+    } else if (dsr_avg < 0) {
+      comp = "below than"
+      comp_with_model = "degraded"
+    } else {
+      comp = "on"
+      comp_with_model = "improved"
+    }
+    dsr_avg = dsr_avg + "%";
+
+    //Flight date formatting
+    let flight_date = req.query["flight_date"];
+    let dates = flight_date.split("/");
+    flight_date = moment().date(dates[0]).month(dates[1]).year(dates[2]).hour(0).minute(0).second(0);
+    flight_date = flight_date.format("DD MMMM YYYY");
+
+    //Set weighing full sentence value
+    let weighing = req.query["weighing"];
+    if (!weighing) weighing = "";
+    else if (weighing.toLowerCase() === "before") weighing = "The aircraft was weighed before weighing and recorded fuel used (+ APU)";
+    else if (weighing.toLowerCase() === "not weighed") weighing = "Contractual weighing and recorded Fuel Used (+ APU)";
+    else weighing = "The aircraft was weighed after weighing and recorded fuel used (+APU)";
+
+    let template_keys = await TemplateKeys.find();
+
+    let dataset = {};
+    let alias_keys = {
+      FlightNumber: req.query["flight"],
+      NumberOfPoints_Digit: req.query["num_points"],
+      NumberOfPoints_Letter: numOfPoints_letter,
+      FlightDate: flight_date,
+      Fuel_Flowmeters: req.query["fuel_flowmeters"],
+      Fuel_Characteristics: req.query["fuel_characteristics"],
+      FLHV_Value: flhv_value,
+      Weighing: weighing,
+      DSR_Average: dsr_avg,
+      Comp: comp,
+      CompWithModel: comp_with_model,
+      results_data: results_obj["results_data"]
+    }
+
+    for (let key of template_keys) {
+      dataset[key.Alias] = alias_keys[key.Name]
+    }
+
+    //Results data formatting doesn't change
+    dataset["results_data"] = results_obj["results_data"];
+
+    var fs = require('fs');
+
+    req.file("file").upload({}, async function (err, upload) {
+      if (err) return res.serverError("Error on upload ", err);
+      if (upload === undefined) return res.serverError("Upload did not work");
+
+      let output_name = upload[0].filename.split("_template")[0];
+      let filled_template = await sails.helpers.fillTemplate(dataset, upload[0].fd, res, output_name);
+
+      if (filled_template) {
+        fs.unlink(upload[0].fd, function (err) {
+          if (err) {
+            return console.log('Error deleting template from server', err);
+          }
+          //res.status(200).send();
+        });
+      } else return res.serverError("Error during template fill ");
     })
   },
 
@@ -69,31 +171,35 @@ module.exports = {
       } else if (result == undefined) {
         res.send('notfound')
       } else {
-        if (result[0] === undefined) { return res.serverError("Internal Error") }
+        if (result[0] === undefined) {
+          return res.serverError("Internal Error")
+        }
         var path = result[0].path;
         console.log(path)
         // Watermark file Here or not 
         //Including skipper disk
         console.log(result[0].aircraft_id)
-        var status  =  await Data.find({id: result[0].aircraft_id})
-        if(status===undefined){
+        var status = await Data.find({
+          id: result[0].aircraft_id
+        })
+        if (status === undefined) {
           return res.serverError("Unable to find aircraft linked to the file")
-        }
-        else{
-          if(status.length !== 1){return res.serverError("Not able to download this file")}
-          console.log(status)
-          var rs = status[0].Results_Status
-          var vs = status[0].Validated_Status
-          var text = ""
-          if(rs === "Preliminary" && vs === "true"){
-            text = "Preliminary Results"
+        } else {
+          if (status.length !== 1) {
+            return res.serverError("Not able to download this file")
           }
-          else{
-            if(!vs.length){
-              text = "Non Validated Data"
+          console.log(status)
+          var rs = status[0].Results_Status;
+          var vs = status[0].Validated_Status;
+          var text = "";
+          if (rs === "Preliminary" && vs === "true") {
+            text = "Preliminary Results";
+          } else {
+            if (!vs.length) {
+              text = "Non Validated Data";
             }
           }
-          if(text.length){
+          if (text.length) {
             // Watermark PDF
             console.log("PDF Should be Watermarked")
             try {
@@ -102,16 +208,16 @@ module.exports = {
               console.error(error)
             }
           }
-          
+
           var SkipperDisk = require('skipper-disk');
           var fileAdapter = SkipperDisk();
           // Tell the browser we are handling a PDF File
           res.setHeader('Content-Type', 'application/pdf');
           fileAdapter.read(path).on('error', function (err) {
-            res.send('path error');
-          })
+              res.send('path error');
+            })
             .pipe(res);
-          
+
 
         }
       }
@@ -120,15 +226,16 @@ module.exports = {
 
 
   upload: async function (req, res) {
-    var fs = require('fs')
-    var XLSX = require("js-xlsx")
-    var config_data = require("./config.json")
-    var idendification_data = require("./ident_config.json")
-    var pdf_data = require("./pdf_config.json")
-    var keys = Object.keys(config_data)
-    var pdf_keys = Object.keys(pdf_data)
-    var aircraft_data = {}
-    req.file("file").upload({dirname: "\\\\sfs.corp\\Projects\\ENGINEERING_2\\DDP\\DDP_EV_EG_EP\\PDFs\\"}, async function (err, uploads) {
+    moment = require("moment");
+    var fs = require('fs');
+    var XLSX = require("js-xlsx");
+    var config_data = require("./config.json");
+    var idendification_data = require("./ident_config.json");
+    var pdf_data = require("./pdf_config.json");
+    var keys = Object.keys(config_data);
+    var pdf_keys = Object.keys(pdf_data);
+    var aircraft_data = {};
+    req.file("file").upload({}, async function (err, uploads) {
       if (uploads === undefined) {
         return res.serverError("Upload did not work")
       }
@@ -136,9 +243,9 @@ module.exports = {
         return res.serverError('User should only upload 7 files at once');
       }
       // Filter PDF vs XLS* Files
-      var pdf_files = uploads.filter(upload => upload.filename.split(".").pop() == "pdf")
+      var pdf_files = uploads.filter(upload => upload.filename.split(".").pop() == "pdf");
 
-      var xls_files = uploads.filter(upload => upload.filename.split(".").pop().indexOf("xls") !== -1)
+      var xls_files = uploads.filter(upload => upload.filename.split(".").pop().indexOf("xls") !== -1);
       // Handle Excel Files First
       xls_files.forEach(file => {
         for (var k = 0; k < keys.length; k++) {
@@ -151,26 +258,40 @@ module.exports = {
             } catch (error) {
               err = error
             }
-            var sub_keys = Object.keys(config_data[key])
+            var sub_keys = Object.keys(config_data[key]);
             for (var l = 0; l < sub_keys.length; l++) {
               sheet = sub_keys[l];
               if (workbook.SheetNames.includes(sheet) !== -1) {
-                console.log("A WorkSheet has been found!")
-                s = workbook.Sheets[sheet]
-                var info_key = Object.keys(config_data[key][sheet])
+                console.log("A WorkSheet has been found!");
+                s = workbook.Sheets[sheet];
+                var info_key = Object.keys(config_data[key][sheet]);
                 var info = config_data[key][sheet];
                 for (var m = 0; m < info_key.length; m++) {
                   var prop = info_key[m];
                   if (prop === "Results") {
-                    console.log("Crawling the table")
+                    console.log("Crawling the table");
                     // Getting the info for the table is really diffrenet from the other properties
                     aircraft_data[prop] = sails.helpers.tableCrawler(info[prop], s)
+                  } else if (prop === "FLHV" || prop === "Trailing_Cone") {
+                    //Specify header name regex 
+                    let header = (prop === "FLHV") ? /^lhv/ : /^iopc/;
+                    //Convert current sheet to array of arrays
+                    let array_sheet = XLSX.utils.sheet_to_json(s, {
+                      header: 1
+                    });
+                    //Search the current sheet for the specified header and return value
+                    let prop_value = sails.helpers.searchSheet(array_sheet, header);
+                    if (prop === "Trailing_Cone") {
+                      prop_value = (parseInt(prop_value) === 1) ? "INSTALLED" : "NOT INSTALLED";
+                    }
+                    aircraft_data[prop] = prop_value;
+
                   } else {
-                    console.log("Crawling Data")
+                    console.log("Crawling Data");
                     if (sheet === "identification") {
-                      aircraft_data[prop] = idendification_data[prop][s[info[prop]].v]
+                      aircraft_data[prop] = idendification_data[prop][s[info[prop]].v];
                     } else {
-                      aircraft_data[prop] = s[info[prop]].v
+                      aircraft_data[prop] = s[info[prop]].v;
                     }
                   }
                 }
@@ -183,77 +304,119 @@ module.exports = {
             return console.log('Could not delete excel file', err);
           }
         });
-      })
-      var criteria = _.pick(aircraft_data, ["Aircraft", "MSN", "Flight"])
-      // Patching Aircraft in case the flight is weighted after
-      if(aircraft_data["Text Weighing"] === "After"){
-        aircraft_data["Weighing"] = "After"
-      }
-      delete aircraft_data["Text_Weighing"]
-      // Add Entry to DataBase now
-      try{
-        var uploaded_entry = await Data.findOrCreate(criteria, criteria)
-      }
-      catch(error){
-        console.log("More than one entry found")
-        return res.serverError(err)
-      }
-      //aircraft_data = {}
-      console.log("Handling PDF Files")
-      for (const file of pdf_files) {
+      });
 
-        for (const k of pdf_keys) {
-          if (file.filename.toLowerCase().indexOf(k) !== -1) {
-            aircraft_data[pdf_data[k]] = file.fd
-            // Create a file entry in the Fike DataBase
-            var createdFileEntry = await File.create({
-              filename: k,
-              path: file.fd,
-              aircraft_id: uploaded_entry.id
-            }).fetch()
-            aircraft_data[pdf_data[k] + "_id"] = createdFileEntry.id;
-          }
+      //console.log("EXCEL DATA---> ", aircraft_data);
+
+      //Before uploading data, check if there already exists a validated entry for this aircraft
+      Data.find({
+        Aircraft: aircraft_data["Aircraft"],
+        MSN: aircraft_data["MSN"],
+        Flight: aircraft_data["Flight"],
+        Validated_Status: true
+      }).exec(async function (err, results) {
+        if (err) {
+          console.error("Error validating entry ", err);
         }
-      }
-      // Default Value
-      aircraft_data["Validated_Status"] = ""
-      aircraft_data["Results_Status"] = "Preliminary"
-      // Try to open the CTR DataBase, If MSN not found then set fields to defaut
-      var CTR_dict = await CtrTot.find({ MSN: aircraft_data["MSN"] })
-      if (CTR_dict.length == 1) {
-        CTR_dict = CTR_dict[0]
-        aircraft_data["CTR"] = CTR_dict.CTR !== undefined ? CTR_dict.CTR : ""
-        aircraft_data["Delivery_Date"] = CTR_dict.Delivery_Date !== undefined ? CTR_dict.Delivery_Date : ""
-      }
-      else {
-        aircraft_data["CTR"] = ""
-        aircraft_data["Delivery_Date"] = ""
-      }
-      // TRA is filled by hand :/
-      aircraft_data["TRA"] = ""
-      try{
-      var data = await Data.update(uploaded_entry).set(aircraft_data).fetch()}
-      catch(error){
-        err = error
-      }
+        //If successful show error message and stop the file upload process
+        else if (results.length) {
+          return res.serverError("An entry for this flight has already been validated");
+        } else {
+          var criteria = _.pick(aircraft_data, ["Aircraft", "MSN", "Flight"]);
+          // Patching Aircraft in case the flight is weighted after
+          if (aircraft_data["Text Weighing"] === "After") {
+            aircraft_data["Weighing"] = "After"
+          }
+          delete aircraft_data["Text_Weighing"]
+          // Add Entry to DataBase now
+          try {
+            var uploaded_entry = await Data.findOrCreate(criteria, criteria);
+          } catch (error) {
+            console.log("More than one entry found");
+            return res.serverError();
+          }
+          //aircraft_data = {}
+          console.log("Handling PDF Files")
+          for (const file of pdf_files) {
+
+            for (const k of pdf_keys) {
+              if (file.filename.toLowerCase().indexOf(k) !== -1) {
+                aircraft_data[pdf_data[k]] = file.fd
+                // Create a file entry in the Fike DataBase
+                var createdFileEntry = await File.create({
+                  filename: k,
+                  path: file.fd,
+                  aircraft_id: uploaded_entry.id
+                }).fetch()
+                aircraft_data[pdf_data[k] + "_id"] = createdFileEntry.id;
+              }
+            }
+          }
+          // Default Value
+          aircraft_data["Validated_Status"] = ""
+          aircraft_data["Results_Status"] = "Preliminary"
+          // Try to open the CTR DataBase, If MSN not found then set fields to defaut
+          var CTR_dict = await CtrTot.find({
+            MSN: aircraft_data["MSN"]
+          })
+          if (CTR_dict.length == 1) {
+            CTR_dict = CTR_dict[0]
+            aircraft_data["CTR"] = CTR_dict.CTR !== undefined ? CTR_dict.CTR : ""
+            aircraft_data["Delivery_Date"] = CTR_dict.Delivery_Date !== undefined ? CTR_dict.Delivery_Date : ""
+          } else {
+            aircraft_data["CTR"] = ""
+            aircraft_data["Delivery_Date"] = ""
+          }
+          // TRA is filled by hand :/
+          aircraft_data["TRA"] = ""
+          try {
+            var data = await Data.update(uploaded_entry).set(aircraft_data).fetch()
+          } catch (error) {
+            err = error
+          }
 
 
-      console.log("Finishing processing Files and redirection")
-      if (err !== undefined && err !== null) {
-        console.log('error uploading files')
-        return res.serverError(err)
-      }
-      console.log("Redirection")
-      // if it was successful redirect and display all uploaded files
-      var headers = Data.getHeader()
-      return res.view("pages/table/upload-results", {
-        data: data,
-        headers: headers,
-        me: req.me})
+          console.log("Finishing processing Files and redirection")
+          if (err !== undefined && err !== null) {
+            console.log('error uploading files')
+            return res.serverError(err);
+          }
+
+          console.log("Redirection")
+          // if it was successful redirect and display all uploaded files
+          var headers = Data.getHeader()
+          return res.view("pages/table/upload-results", {
+            data: data,
+            headers: headers,
+            me: req.me
+          })
+
+        }
+      })
+
     })
 
   },
 
+  //Update the TRA comment column in the database
+  update_tra_commment: function (req, res) {
+    if (!req.body["flight_data"]) return res.status(500).send();
+
+    //Updating the comment in database
+    Data.update({
+      Aircraft: req.body["flight_data"]["aircraft"],
+      MSN: parseInt(req.body["flight_data"]["msn"]),
+      Flight: parseInt(req.body["flight_data"]["flight"])
+    }).set({
+      TRA_Comment: req.body["tra_comment"]
+    }).exec(function (err, entry) {
+      if (err) {
+        return res.serverError('Internal Error, could not update' + err)
+      } else {
+        return res.status(200).send(req.body["tra_comment"]);
+      }
+    });
+  },
 
   update: function (req, res) {
     //console.log(req.param('id'))
@@ -300,26 +463,74 @@ module.exports = {
 
   validate: async function (req, res) {
     // Push Data to the server
-    console.log("Some data will be pushed back to the server")
+    console.log("Some data will be pushed back to the server -- ", req.body)
+    let sub_aircraft = req.body["aircraft"]["Aircraft"];
+    let sub_flight_owner = req.body["aircraft"]["Flight_Owner"];
+
     var aircraft_data = {}
     aircraft_data["Commentary"] = _.escape(req.body["userCommentary"])
     // Date Formatting if Delivery date field is not empty
-    moment = require("moment")
+    moment = require("moment");
     aircraft_data["Delivery_Date"] = req.body["deliveryDate"].length > 0 ? moment(req.body["deliveryDate"]).format("DD/MM/YYYY") : ''
     var possible_entry = await Data.find(req.body.aircraft)
     if (possible_entry.length == 1) {
       // Update Entry if there is something new
       if (aircraft_data !== possible_entry[0]) {
-        await Data.update(req.body.aircraft, aircraft_data);
+        var data = await Data.update(req.body.aircraft, aircraft_data).fetch();
       }
+
+
+      //Generate subscription corresponding ids
+      let sub_ids = await Subscription.find().where({
+        or: [{
+            field_name: "aircraft",
+            field_value: possible_entry[0]["Aircraft"]
+          },
+          {
+            field_name: "flight_owner",
+            field_value: possible_entry[0]["Flight_Owner"]
+          }
+        ]
+      });
+
+      console.log("SUB IDS", sub_ids);
+
       // See the whole table with the new entry 
-      res.status(200)
-      return res.send("Sucessful Operation")
+      res.status(200);
+      Subscription.publish(_.pluck(sub_ids, 'id'), {
+        verb: 'Creation',
+        author: req["me"].fullName,
+        raw: possible_entry,
+        msg: `${req["me"].fullName} has added a new entry for ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`,
+        data: `${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`
+      }, req);
+
+      return res.send("Sucessful Operation");
     }
+
     if (possible_entry.length == 0) {
       // Create new entry
-      var a = await Data.create(aircraft_data).fetch();
-      console.log(a)
+      var data = await Data.create(aircraft_data).fetch();
+      Subscription.publish(_.pluck(sub_ids, 'id'), {
+        verb: 'Creation',
+        author: req["me"].fullName,
+        raw: possible_entry,
+        msg: `${req["me"].fullName} has added a new entry for ${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`,
+        data: `${possible_entry[0].Aircraft} - ${possible_entry[0].MSN} - ${possible_entry[0].Flight}`
+      }, req);
+
+      let subs_data = await Notification.create({
+        flight_owner: sub_flight_owner,
+        aicraft: sub_aircraft,
+        user_id: req.me["id"],
+        user_name: req.me["fullName"],
+        modification: null,
+        modificaion_value: null,
+        data_id: data.id
+      }).fetch();
+
+      console.log("Created notification: ", subs_data);
+
       // See the whole table with the new entry 
       res.status(200)
       return res.send("Sucessful Operation")
@@ -336,19 +547,86 @@ module.exports = {
 
   edit: async function (req, res) {
     // Put this into an async function
-    console.log("Updating Data Entry")
-    console.log(req.body)
+    //console.log("Updating Data Entry")
+    //console.log(req.body)
     if (req.body["id"] === "" || req.body["id"] === undefined) {
       // TODO Return an error, internal should not be undefined or an empty string
       return res.serverError("The internal id of the to update row was not found")
     }
     // Escaping for commentary (TODO Validation for other fields as well ?)
-    req.body["Commentary"] = _.escape(req.body["Commentary"])
+    req.body["Commentary"] = _.escape(req.body["Commentary"]);
+
+    //Check for result status update
+    let result_update = false;
+    if (req.body["prev_result"] !== req.body["Results_Status"]) result_update = true;
+    delete req.body["prev_result"];
+
+    //Check for validation status update
+    let validation_update = false;
+    if (req.body["prev_validated"] !== req.body["Validated_Status"]) validation_update = true;
+    delete req.body["prev_validated"];
+
     // Update Model Entry
-    await Data.update({
+    let updated_entry = await Data.update({
       "id": req.body["id"]
-    }, req.body)
-    console.log('Database was updated')
+    }, req.body).fetch();
+
+    //Generate subscription corresponding ids
+    let sub_ids = await Subscription.find().where({
+      or: [{
+          field_name: "aircraft",
+          field_value: updated_entry[0]["Aircraft"]
+        },
+        {
+          field_name: "flight_owner",
+          field_value: updated_entry[0]["Flight_Owner"]
+        }
+      ]
+    });
+
+    console.log("RES1VALIDATION UPDATE--->", result_update, validation_update);
+
+    if (result_update) {
+      let subs_data = await Notification.create({
+        flight_owner: updated_entry[0]["Flight_Owner"],
+        aircraft: updated_entry[0]["Aircraft"],
+        user_id: req.me["id"],
+        user_name: req.me["fullName"],
+        modification: "result_status",
+        modification_value: req.body["Results_Status"],
+        data_id: updated_entry[0]["id"]
+      }).fetch();
+      //console.log("Result Status notification: ", subs_data);
+
+      Subscription.publish(_.pluck(sub_ids, 'id'), {
+        verb: 'Edition',
+        author: req["me"].fullName,
+        raw: updated_entry,
+        msg: `${req["me"].fullName} has modified the results status of ${updated_entry[0].Aircraft} - ${updated_entry[0].MSN} - ${updated_entry[0].Flight}`,
+        data: `${updated_entry[0].Aircraft} - ${updated_entry[0].MSN} - ${updated_entry[0].Flight}`
+      }, req);
+    } else if (validation_update) {
+      let sub_data = await Notification.create({
+        flight_owner: updated_entry[0]["Flight_Owner"],
+        aircraft: updated_entry[0]["Aircraft"],
+        user_id: req.me["id"],
+        user_name: req.me["fullName"],
+        modification: "validated_status",
+        modification_value: (req.body["Validated_Status"]) ? "validated" : "not validated",
+        data_id: updated_entry[0]["id"]
+      }).fetch();
+      //console.log("Validated Status notification: ", sub_data);
+
+      Subscription.publish(_.pluck(sub_ids, 'id'), {
+        verb: 'Edition',
+        author: req["me"].fullName,
+        raw: updated_entry,
+        msg: `${req["me"].fullName} has modified the validated status of ${updated_entry[0].Aircraft} - ${updated_entry[0].MSN} - ${updated_entry[0].Flight}`,
+        data: `${updated_entry[0].Aircraft} - ${updated_entry[0].MSN} - ${updated_entry[0].Flight}`
+      }, req);
+    }
+
+    console.log('Database was updated');
     // Return Sucess If update was good
     res.status(200)
     return res.send("Sucessful Operation")
@@ -370,14 +648,35 @@ module.exports = {
     })
   },
 
-  delete: async function(req, res){
+  delete: async function (req, res) {
     console.log(req.body);
-    try{
-      await Data.destroy(req.body)
-      res.status(200);
-      return res.send("Successful Operation");
-    }
-    catch(error){
+    try {
+      let destroyed_entry = await Data.destroy(req.body).fetch();
+
+      let sub_ids = await Subscription.find().where({
+        or: [{
+            field_name: "aircraft",
+            field_value: destroyed_entry[0]["Aircraft"]
+          },
+          {
+            field_name: "flight_owner",
+            field_value: destroyed_entry[0]["Flight_Owner"]
+          }
+        ]
+      });
+
+      Subscription.publish(_.pluck(sub_ids, 'id'), {
+        verb: 'Deletion',
+        author: req["me"].fullName,
+        raw: destroyed_entry,
+        msg: `${req["me"].fullName} has deleted the entry for ${destroyed_entry[0].Aircraft} - ${destroyed_entry[0].MSN} - ${destroyed_entry[0].Flight}`,
+        data: `${destroyed_entry[0].Aircraft} - ${destroyed_entry[0].MSN} - ${destroyed_entry[0].Flight}`
+      }, req);
+
+      return res.send(200);
+
+    } catch (error) {
+      console.log("Error during deletion -> ", error);
       res.status(500);
       return res.send(error);
     }

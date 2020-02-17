@@ -1,27 +1,27 @@
 {
-    "PERFOTO_[A-Z]\\d{1,5}.xls":
-    {
-        "Results":
-        {
-            "Aircraft":"B4",
-            "MSN": "C4",
-            "Flight": "D4",
-            "Flight_Owner": "E4",
-            "Flight_Date": "F4"
-        }
-    },
-    "identification":
-    {
-        "identification":
-        {
-            "Fuel_Flowmeters": "B23",
-            "Fuel_Characteristics": "B26",
-            "Weighing": "B36",
-            "Text Weighing": "C36"
-        },
-        "premiere_page":
-        {
-            "Results": "B18"
-        }
+  "PERFOTO_[A-Z]\\d{1,5}.xls": {
+    "Results": {
+      "Aircraft": "B4",
+      "MSN": "C4",
+      "Flight": "D4",
+      "Flight_Owner": "E4",
+      "Flight_Date": "F4"
     }
+  },
+  "identification": {
+    "identification": {
+      "Fuel_Flowmeters": "B23",
+      "Fuel_Characteristics": "B26",
+      "Weighing": "B36",
+      "Text Weighing": "C36"
+    },
+    "premiere_page": {
+      "Results": "B18",
+      "TRA_Comment": "A1"
+    },
+    "BDR1": {
+      "FLHV": "",
+      "Trailing_Cone": ""
+    }
+  }
 }

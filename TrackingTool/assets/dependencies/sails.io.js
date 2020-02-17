@@ -44,7 +44,7 @@ return new(b[["Active"].concat("Object").join("X")])("Microsoft.XMLHTTP")}catch(
  * using WebSockets from the browser to talk to your Sails server.
  *
  * For tips and documentation, visit:
- * http://sailsjs.com/documentation/reference/web-sockets/socket-client
+ * http://sailsjs.com/documentation/reference/web-sockets/socket-client 
  * ------------------------------------------------------------------------
  *
  * This file allows you to send and receive socket.io messages to & from Sails
@@ -996,6 +996,31 @@ return new(b[["Active"].concat("Object").join("X")])("Microsoft.XMLHTTP")}catch(
               requestCtx.calledCb = true;
             });
           }
+
+          ////////////// ADD PUSH NOTIFICATION ////////////////
+          if ($("#toaster") && window.SAILS_LOCALS["me"]){
+            var test = `
+            <div class="toast" role="alert" data-autohide="true" aria-live="assertive" aria-atomic="true" data-delay="180000">
+              <div class="toast-header">
+                <strong class="mr-auto">DISCONNECTION</strong>
+                <small class="text-muted">just now</small>
+                <button type="button" class="ml-2 mb-1 close close-toast" aria-label="Close">
+                  &times;
+                </button>
+              </div>
+              <div class="toast-body">
+                <span class="toast-message">The web socket has been disconnected, please refresh the page to continue to receive notifications.</span>
+              </div>
+              </div>`;
+            $("#toaster").prepend(test);
+
+            $(".toast").show();
+            $(".close-toast").on("click", function () {
+            let toast_cont = $(this).closest(".toast");
+            toast_cont.remove();
+            })
+          }
+          ////////////////////////////////////////////////////
 
           consolog('====================================');
           consolog('Socket was disconnected from Sails.');

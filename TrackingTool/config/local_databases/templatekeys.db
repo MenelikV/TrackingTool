@@ -1,0 +1,12 @@
+{"$$indexCreated":{"fieldName":"id","unique":true,"sparse":false}}
+{"createdAt":1580058029968,"updatedAt":1580058029968,"id":1,"Alias":"FlightNumber","Name":"FlightNumber","_id":1}
+{"createdAt":1580058029971,"updatedAt":1580058029971,"id":2,"Alias":"NumberOfPoints_Digit","Name":"NumberOfPoints_Digit","_id":2}
+{"createdAt":1580058029973,"updatedAt":1580058029973,"id":3,"Alias":"NumberOfPoints_Letter","Name":"NumberOfPoints_Letter","_id":3}
+{"createdAt":1580058029975,"updatedAt":1580058029975,"id":4,"Alias":"FlightDate","Name":"FlightDate","_id":4}
+{"createdAt":1580058029977,"updatedAt":1580058029977,"id":5,"Alias":"Fuel_Flowmeters","Name":"Fuel_Flowmeters","_id":5}
+{"createdAt":1580058029979,"updatedAt":1580058029979,"id":6,"Alias":"Fuel_Characteristics","Name":"Fuel_Characteristics","_id":6}
+{"createdAt":1580058029982,"updatedAt":1580058029982,"id":7,"Alias":"FLHV_Value","Name":"FLHV_Value","_id":7}
+{"createdAt":1580058029985,"updatedAt":1580058029985,"id":8,"Alias":"Weighing","Name":"Weighing","_id":8}
+{"createdAt":1580058029987,"updatedAt":1580058029987,"id":9,"Alias":"DSR_Average","Name":"DSR_Average","_id":9}
+{"createdAt":1580058029989,"updatedAt":1580058029989,"id":10,"Alias":"Comp","Name":"Comp","_id":10}
+{"createdAt":1580058029992,"updatedAt":1580058029992,"id":11,"Alias":"CompWithModel","Name":"CompWithModel","_id":11}

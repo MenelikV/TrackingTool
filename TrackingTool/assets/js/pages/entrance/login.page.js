@@ -9,17 +9,26 @@ parasails.registerPage('login', {
     syncing: false,
 
     // Form data
-    formData: {/* … */},
+    formData: {
+      /* … */
+    },
 
     // For tracking client-side validation errors in our form.
     // > Has property set to `true` for each invalid property in `formData`.
-    formErrors: {/* … */},
+    formErrors: {
+      /* … */
+    },
 
     // A set of validation rules for our form.
     // > The form will not be submitted if these are invalid.
     formRules: {
-      emailAddress: { required: true, isEmail: true },
-      password: { required: true }
+      emailAddress: {
+        required: true,
+        isEmail: true
+      },
+      password: {
+        required: true
+      }
     },
 
     // Server error state for the form
@@ -34,7 +43,7 @@ parasails.registerPage('login', {
     _.extend(this, SAILS_LOCALS);
   },
   mounted: function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+    var _ref = _asyncToGenerator( /*#__PURE__*/ regeneratorRuntime.mark(function _callee() {
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -59,7 +68,7 @@ parasails.registerPage('login', {
   methods: {
 
     submittedForm: function () {
-      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+      var _ref2 = _asyncToGenerator( /*#__PURE__*/ regeneratorRuntime.mark(function _callee2() {
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -69,6 +78,8 @@ parasails.registerPage('login', {
                 // > to make sure the spinner stays there until the page navigation finishes.)
                 this.syncing = true;
                 window.location = '/';
+                //Send user login notification to server.
+                io.socket.post('/stats/connect', function (resData, jwres) {});
 
               case 2:
               case 'end':

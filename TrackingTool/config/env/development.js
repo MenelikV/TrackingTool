@@ -19,6 +19,8 @@
  */
 
 var PRODUCTION_CONFIG = require('./production');
+const path = require("path")
+const local_db_folder = path.join(path.dirname(__dirname), "local_databases")
 //--------------------------------------------------------------------------
 // /\  Start with your production config, even if it's just a guess for now,
 // ||  then configure your staging environment afterwards.
@@ -34,7 +36,13 @@ module.exports = Object.assign({}, PRODUCTION_CONFIG, {
       // /\  Hard-code your staging db `url`.
       // ||  (or use system env var: `sails_datastores__default__url`)
       //--------------------------------------------------------------------------
+      adapter: 'sails-disk',
+      dir: local_db_folder
     })
+  }),
+
+  models: Object.assign({}, PRODUCTION_CONFIG.models, {
+    migrate: "alter"
   }),
 
   sockets: Object.assign({}, PRODUCTION_CONFIG.sockets, {
@@ -71,13 +79,13 @@ module.exports = Object.assign({}, PRODUCTION_CONFIG, {
 
   custom: Object.assign({}, PRODUCTION_CONFIG.custom, {
 
-    baseUrl: 'https://staging.example.com',
+    baseUrl: 'http://localhost:1337',
     //--------------------------------------------------------------------------
     // /\  Hard-code the base URL where your staging environment is hosted.
     // ||  (or use system env var: `sails_custom__baseUrl`)
     //--------------------------------------------------------------------------
 
-    internalEmailAddress: 'support+staging@example.com',
+    internalEmailAddress: 'menelik.vero@expleogroup.com',
     //--------------------------------------------------------------------------
     // /\  Hard-code the email address that should receive support/contact form
     // ||  messages in staging (or use `sails_custom__internalEmailAddress`)

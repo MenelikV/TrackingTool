@@ -18,7 +18,7 @@
  * For more best practices and tips, see:
  * https://sailsjs.com/docs/concepts/deployment
  */
-
+const local_db_folder = "\\\\sfs.corp\\Projects\\ENGINEERING_2\\DDP\\DDP_EV_EG_EP\\DBs\\"
 module.exports = {
 
 
@@ -71,7 +71,8 @@ module.exports = {
       *                                                                           *
       ****************************************************************************/
       // ssl: true,
-
+      adapter: 'sails-disk',
+      dir: local_db_folder
     },
 
   },
@@ -371,8 +372,8 @@ module.exports = {
   *                                                                         *
   ***************************************************************************/
   custom: {
-    baseUrl: 'https://example.com',
-    internalEmailAddress: 'support@example.com',
+    baseUrl: 'https://localhost:1337',
+    internalEmailAddress: 'menelik.vero.external@airbus.com',
 
     // mailgunDomain: 'mg.example.com',
     // mailgunSecret: 'key-prod_fake_bd32301385130a0bafe030c',

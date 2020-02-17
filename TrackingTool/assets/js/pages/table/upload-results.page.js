@@ -23,15 +23,17 @@ $(document).ready(function () {
     var flight = $.trim($('[data-header="Flight"]').text())
     var msn = $.trim($('[data-header="MSN"]').text())
     var flightDate = $.trim($('[data-header="Flight_Date"]').text())
-    var Aircraft = $.trim($('[data-header="Aircraft"]').text())
-    var data = {
+    var Aircraft = $.trim($('[data-header="Aircraft"]').text());
+    var flightOwner = $.trim($('[data-header="Flight_Owner"]').text());
+    var data = { 
       deliveryDate: delivery,
       userCommentary: comment,
       aircraft:{
         Aircraft: Aircraft,
         Flight_Date: flightDate,
         MSN: msn,
-        Flight: flight
+        Flight: flight,
+        Flight_Owner: flightOwner
       }
     }
     $.ajax({

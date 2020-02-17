@@ -1958,11 +1958,9 @@ pre code {
 }
 
 .table-responsive {
-  display: block;
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
 }
 
 .table-responsive > .table-bordered {
@@ -3473,7 +3471,10 @@ tbody.collapse.show {
   -webkit-box-align: stretch;
   -ms-flex-align: stretch;
   align-items: stretch;
-  width: 100%;
+}
+
+.input-group.user-email {
+  width: 30%;
 }
 
 .input-group > .form-control,
@@ -5448,6 +5449,7 @@ button.close {
 .modal.show .modal-dialog {
   -webkit-transform: translate(0, 0);
   transform: translate(0, 0);
+  z-index: 3;
 }
 
 .modal-dialog-centered {

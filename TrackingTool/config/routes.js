@@ -58,11 +58,38 @@ module.exports.routes = {
 
   'GET /account/admin/restore': 'account/AdminController.restore',
 
+  'GET /stats/connect': 'StatsController.connect',
+
   'POST /table/data': 'account/FileController.getData',
 
   'GET /requests': {
     //view: 'pages/account/view-requests',
     controller: 'account/AdminController',
+    action: 'view'
+  },
+
+  'GET /stats': {
+    controller: 'StatsController',
+    action: 'view'
+  },
+
+  'GET /keys': {
+    controller: 'account/AdminController',
+    action: 'view_keys'
+  },
+
+  'GET /subscriptions/subscribeToNotifications' : {
+    controller: "SubscriptionController",
+    action: 'subscribeToNotifications'
+  },
+
+  'GET /subscription/socketDisconnect' : {
+    controller: "SubscriptionController",
+    action: 'socketDisconnect'
+  },
+
+  'GET /subscriptions': {
+    controller: 'NotificationController',
     action: 'view'
   },
 

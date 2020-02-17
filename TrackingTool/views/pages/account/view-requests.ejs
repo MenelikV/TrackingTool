@@ -1,5 +1,4 @@
-<div class="jumbotron jumbostyle">
-  <br>
+<div class="users-container jumbostyle">
   <% if (search == true) { %>
   <h3>Search results for
     <%=email%>
@@ -8,9 +7,15 @@
   <h5 style="text-decoration: underline;">No results found</h5>
   <% } %>
   <% } else {%>
-  <h1 class="display4">Pending Requests</h1>
+
+  <div id="users_header" class="users-header">
+    <h1>Active Users</h1>
+    <button id="add_user" class="btn btn-success" type="button" data-toggle="modal" data-target="#add_user_modal">New
+      User</button>
+  </div>
+
+
   <% } %>
-  <br>
   <% if (result[0] !== undefined) { %>
   <table class="table table-striped display" id="example">
     <thead style="background-color: #bfd6f0;">
@@ -20,11 +25,7 @@
         <th class="text-center">Admin</th>
         <th class="text-center">Basic</th>
         <th class="text-center">Viewer</th>
-        <th class="text-center">
-          <% if (search == true) { %>
-          Revoke access
-          <% } %>
-        </th>
+        <th class="text-center">Revoke Access</th>
       </tr>
     </thead>
     <tbody>
@@ -37,34 +38,29 @@
         <td>
           <%= item.emailAddress %>
         </td>
-        <td class="text-center">
+        <td class="text-center privilege">
           <% if(item.isSuperAdmin) { %>
-          <span class="dot"></span>
+          <i class="fa fa-check fa-lg" style="color:#00dd30"></i>
           <%}%>
         </td>
-        <td class="text-center">
+        <td class="text-center privilege">
           <% if(item.isBasicUser) { %>
-          <span class="dot"></span>
+          <i class="fa fa-check fa-lg" style="color:#00dd30"></i>
           <%}%>
         </td>
 
-        <td class="text-center">
+        <td class="text-center privilege">
           <% if(!item.isBasicUser && !item.isSuperAdmin) { %>
-          <span class="dot"></span>
+          <i class="fa fa-check fa-lg" style="color:#00dd30"></i>
           <%}%>
         </td>
 
-        <td class="text-center">
-
-          <% if (search == true) { %>
-          <button id="reject" type="submit"><i class="fa fa-user-times fa-lg" style="color:rgb(240, 99, 99)"></i></button>
-
-          <% }  else {%>
-
-          <button id="accept" type="submit"><i class="fa fa-user-plus fa-lg" style="color:#64aeda"></i></button>
-          <button id="reject" type="submit"><i class="fa fa-user-times fa-lg" style="color:rgb(240, 99, 99)"></i></button>
+        <td class="text-center revoke"> 
+          <button id='reject_"<%= item.id %>"' type="button" data-toggle="modal"
+          data-target="#reject_user_modal">
+          <i class="fa fa-user-times fa-lg" style="color:rgb(240, 99, 99)"></i>
+          </button>
         </td>
-        <%} %>
 
       </tr>
       <% }) %>
@@ -72,16 +68,92 @@
   </table>
   <% } %>
 
-  <br>
-  <div class="row">
-      <form name="form" id="form" method="post" action="/account/admin/search">
-        <div class="input-group md-form form-sm form-2 pl-0">
-          <input class="form-control my-0 py-1 amber-border" type="email" name="user" placeholder="Search by Email" aria-label="Search">
-          <div class="input-group-append">
-            <button type="submit" class="input-group-text amber lighten-3" id="basic-text1"><i class="fa fa-search text-grey"
-                aria-hidden="true"></i></button>
+  <div>
+    <form name="form" id="form" method="post" action="/account/admin/search">
+      <div class="input-group user-email md-form form-sm form-2 pl-0">
+        <input class="form-control my-0 py-1 amber-border" type="email" name="user" placeholder="Search by Email"
+          aria-label="Search">
+        <div class="input-group-append">
+          <button type="submit" class="input-group-text amber lighten-3" id="basic-text1"><i
+              class="fa fa-search text-grey" aria-hidden="true"></i></button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div class="modal fade" id='reject_user_modal' tabindex="-1" role="dialog" aria-labelledby="TRATitle"
+  aria-hidden="true">
+  <div class="tra-modal modal-dialog modal-dialog-centered" role="document">
+    <div class="tra-modal-content modal-content">
+      <div class="tra-modal-header modal-header">
+        <h5 class="modal-title" id="RejectionTitle">Revoke access</h5>
+      </div>
+
+      <div class="tra-modal-body modal-body" id='rejection_content'>
+        <span>Are you sure you want to revoke access privileges from this user?</span>
+      </div>
+
+      <div class="tra-modal-footer modal-footer">
+        <button type="button" class="btn btn-danger" id="reject_user_submit">Reject</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_rejection">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id='add_user_modal' tabindex="-1" role="dialog" aria-labelledby="AddTitle" aria-hidden="true">
+  <div class="loader-container" id="loader_cont">
+    <div class="lds-ring loader-ring" id="loader">
+      <div></div>
+    </div>
+  </div>
+  <div class="tra-modal modal-dialog modal-dialog-centered" role="document">
+    <div class="tra-modal-content modal-content">
+      <div class="tra-modal-header modal-header">
+        <h5 class="modal-title" id="AddTitle">Add new user</h5>
+      </div>
+
+      <div class="tra-modal-body modal-body" id='add_user_content'>
+
+        <div class="input_group">
+          <span>Full Name</span>
+          <input type="text" name="fullName" id="add_fullname">
+        </div>
+
+        <div class="input_group">
+          <span>Email</span>
+          <input type="email" name="email" id="add_email">
+        </div>
+
+        <div class="input_group">
+          <span>Password</span>
+          <input type="password" name="password" id="add_password">
+        </div>
+
+        <div class="input_group">
+          <span>Access Rights</span>
+          <div class="radio_group" id="add_privilege">
+            <label class="radio-label"><input type="radio" name="privilege" value="isAdmin">Admin</label
+              class="radio_label">
+            <label class="radio-label"><input type="radio" name="privilege" value="isBasic">Basic</label>
+            <label class="radio-label"><input type="radio" name="privilege" value="isViewer">Viewer</label>
           </div>
         </div>
-      </form>
+        <%/*
+        <div class="check_group">
+          <span>Is the user external? </span>
+          <input type="checkbox" name="external" id="add_external">
+        </div>
+        */%>
+
+      </div>
+
+      <div class="tra-modal-footer modal-footer">
+        <button type="button" class="btn btn-primary" id="add_user_submit">Confirm</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_add">Cancel</button>
+      </div>
     </div>
+  </div>
 </div>
