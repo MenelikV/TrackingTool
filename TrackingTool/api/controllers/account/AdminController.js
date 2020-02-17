@@ -197,10 +197,13 @@ module.exports = {
     /////// KEYS MUST BE CREATED FIRST IN templatekeys.db (Name attribute must not change, only alias) //////
     for (let i = 0; i < update_values.length; i++) {
       let current = update_values[i];
+      console.log(current);
+      console.log(current.Alias)
+      console.log(current.Name)
       await TemplateKeys.update({
-        Alias: current.Alias
-      }).where({
         Name: current.Name
+      }).set({
+        Alias: current.Alias
       })
     }
 
