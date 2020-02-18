@@ -694,16 +694,19 @@ $(document).ready(function () {
         exportOptions: {
           format: {
             body: function (data, row, column, node) {
-              if (!node) return "";
-              let link = node.querySelector("a");
-              let status = node.querySelector("i.fa-check");
-
+              if (!node) {
+                node = $(`<div>$(data)</div>`);
+              }else{
+                node = $(node);
+              }
+              let link = node.find("a");
+              let status = node.find("i.fa-check");
               if (link) {
-                let link_ref = link.getAttribute("href");
+                let link_ref = link.attr("href");
                 return link_ref;
 
               } else if (status) return true;
-              else return node.textContent;
+              else return node.text();
             }
           },
           columns: function (idx, data, node) {
