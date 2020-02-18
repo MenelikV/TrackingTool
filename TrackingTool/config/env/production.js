@@ -18,7 +18,7 @@
  * For more best practices and tips, see:
  * https://sailsjs.com/docs/concepts/deployment
  */
-const local_db_folder = "\\\\sfs.corp\\Projects\\ENGINEERING_2\\DDP\\DDP_EV_EG_EP\\DBs\\"
+
 module.exports = {
 
 
@@ -71,8 +71,7 @@ module.exports = {
       *                                                                           *
       ****************************************************************************/
       // ssl: true,
-      adapter: 'sails-disk',
-      dir: local_db_folder
+
     },
 
   },

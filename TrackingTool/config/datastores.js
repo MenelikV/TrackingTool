@@ -12,7 +12,7 @@
  * For more information on configuring datastores, check out:
  * https://sailsjs.com/config/datastores
  */
-
+const local_db_folder = "\\\\sfs.corp\\Projects\\ENGINEERING_2\\DDP\\DDP_EV_EG_EP\\DBs\\"
 module.exports.datastores = {
 
 
@@ -48,6 +48,7 @@ module.exports.datastores = {
     *    (See https://sailsjs.com/config/datastores for help.)                 *
     *                                                                          *
     ***************************************************************************/
-
+      adapter: 'sails-disk',
+      dir: local_db_folder
   },
 };
