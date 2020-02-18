@@ -681,11 +681,12 @@ $(document).ready(function () {
               //change the type to `str` which is a formula
               $(this).attr('t', 'str');
               //append the concat formula
-              $(this).append('<f>' + 'HYPERLINK("' + $('is t', this).text() + '","' + $('is t', this).text() + '")' + '</f>');
+              $(this).append(('<f>' + 'HYPERLINK("' + $('is t', this).text() + '","' + $('is t', this).text() + '")' + '</f>').replace(/&(?!amp)/gm, '&amp;'));
               //remove the inlineStr
               $('is', this).remove();
-
+              console.log($(this));
               $(this).attr('s', '4');
+              console.log($(this));
             }
           });
 
