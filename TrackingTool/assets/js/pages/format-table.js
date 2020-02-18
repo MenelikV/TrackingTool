@@ -694,19 +694,19 @@ $(document).ready(function () {
         exportOptions: {
           format: {
             body: function (data, row, column, node) {
-              if (!node) {
-                node = $(`<div>$(data)</div>`);
-              }else{
-                node = $(node);
-              }
-              let link = node.find("a");
-              let status = node.find("i.fa-check");
-              if (link) {
-                let link_ref = link.attr("href");
+              // If the entry has been already show, then a node is defined otherwise, node is undefined but data is not.
+              // Hence we will handle the data, which will always exits
+              var jqnode = $(`<div>${data}</div>`);
+              var link = jqnode.find("a");
+              var status = jqnode.find("i.fa-check");
+              if (link.length) {
+                var link_ref = link.attr("href");
                 return link_ref;
-
-              } else if (status) return true;
-              else return node.text();
+                }
+              else if (status.length) return true;
+              else {
+                return jqnode.text()
+              };
             }
           },
           columns: function (idx, data, node) {
