@@ -624,7 +624,7 @@ $(document).ready(function () {
         "searchable": false,
         "width": "5%",
         "render": function render(data, type, row, meta) {
-          return '<button type="button" id="ResultsButton_' + row["id"] + '"' + 'class="results-button" data-toggle="modal" data-target="#Results"> <i class="fa fa-table fa-lg" data-toggle="modal" data-target="#Results"></i> </button>';
+          return '<button type="button" id="ResultsButton_' + row["id"] + '"' + 'class="results-button" data-toggle="modal" data-target="#Results"> <i class="fa fa-table fa-lg results-button"></i> </button>';
         }
       }, {
         "targets": "TRA",
