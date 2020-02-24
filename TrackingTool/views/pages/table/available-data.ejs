@@ -218,10 +218,10 @@
         <div class="tra-modal-header modal-header">
           <h5 class="modal-title" id="TRATitle">TRA Comment</h5>
         </div>
-        <textarea class="tra-modal-body modal-body" id='TRA_content' <% if(!me.isSuperAdmin){%> disabled <%}%> >
+        <textarea class="tra-modal-body modal-body" id='TRA_content' <% if(!me.isSuperAdmin && !me.isBasicUser){%> disabled <%}%> >
             </textarea>
         <div class="tra-modal-footer modal-footer">
-          <% if (me.isSuperAdmin) {%>
+          <% if (me.isSuperAdmin || me.isBasicUser) {%>
           <button type="submit" class="btn btn-success" id="update_tra_submit">Update</button>
           <%}%>
           <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close_TRA">Close</button>
