@@ -42,10 +42,10 @@ $(document).ready(function () {
 
       else {
         let value_span = document.createElement("SPAN");
-        value_span.classList.add(notification.modification_value.replace(/ /g, "-"), "sub-value-span");
-        value_span.textContent = notification.modification_value;
+        value_span.classList.add(String(notification.modification_value).replace(/ /g, "-"), "sub-value-span");
+        value_span.textContent = String(notification.modification_value);
 
-        notif_div.textContent = notif_div.textContent + " has modified the " + notification.modification.replace(/_/g, " ") + " for an " + name_mapping + " " + notification[data_name] + " entry to ";
+        notif_div.textContent = notif_div.textContent + " has modified the " + String(notification.modification).replace(/_/g, " ") + " for an " + name_mapping + " " + notification[data_name] + " entry to ";
         notif_div.appendChild(value_span);
       }
 
