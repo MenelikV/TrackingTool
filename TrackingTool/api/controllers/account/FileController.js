@@ -282,7 +282,7 @@ module.exports = {
                     //Search the current sheet for the specified header and return value
                     let prop_value = sails.helpers.searchSheet(array_sheet, header);
                     if (prop === "Trailing_Cone") {
-                      prop_value = (parseInt(prop_value) === 1) ? "INSTALLED" : "NOT INSTALLED";
+                      prop_value = (parseInt(prop_value) === 1) ? "NOT INSTALLED" : "INSTALLED";
                     }
                     aircraft_data[prop] = prop_value;
 
