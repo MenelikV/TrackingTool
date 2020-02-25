@@ -38,7 +38,7 @@ $(document).ready(function () {
 
       let notif_div = document.createElement("DIV");
       notif_div.textContent = notification.user_name;
-      if (!notification.modification) notif_div.textContent = notif_div.textContent + " has added a new entry for " + name_mapping + " " + notification[data_name];
+      if (notification.modification_value === null) notif_div.textContent = notif_div.textContent + " has added a new entry for " + name_mapping + " " + notification[data_name];
 
       else {
         let value_span = document.createElement("SPAN");
