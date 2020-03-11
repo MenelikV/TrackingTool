@@ -35,22 +35,22 @@ module.exports = {
       res += sails.helpers.tdWrap(data)
       // Beware special formatting
       idx = sails.helpers.columnShift(start_idx)
-      if (sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(0)) !== 0) res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(0));
+      if ((Number.parseFloat(input.sheet[idx].v).toFixed(0)) !== "NaN") res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(0));
       else  res += sails.helpers.tdWrap("/");
 
       idx = sails.helpers.columnShift(idx)
 
-      if (sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(0)) !== 0) res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(0));
+      if ((Number.parseFloat(input.sheet[idx].v).toFixed(0)) !== "NaN") res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(0));
       else  res += sails.helpers.tdWrap("/");
 
       idx = sails.helpers.columnShift(idx)
       // Mach Formatting, 3 numbers after the 
-      if (sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(3)) !== 0) res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(3));
+      if ((Number.parseFloat(input.sheet[idx].v).toFixed(3)) !== "NaN") res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(3));
       else  res += sails.helpers.tdWrap("/");
 
       idx = sails.helpers.columnShift(idx)
       // DSR Formatting
-      if (sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(2)) !== 0) res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(2));
+      if ((Number.parseFloat(input.sheet[idx].v).toFixed(2)) !== "NaN") res += sails.helpers.tdWrap(Number.parseFloat(input.sheet[idx].v).toFixed(2));
       else  res += sails.helpers.tdWrap("/");
 
       start_idx = sails.helpers.rowShift(start_idx);
