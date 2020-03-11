@@ -32,7 +32,7 @@ module.exports = {
       while (data !== "") {
         res['MSN'].push(data);
         idx = sails.helpers.columnShift(start_idx)
-        res['Delivery_Date'].push(moment(input.sheet[idx].w).format("DD/MM/YYYY"));
+        res['Delivery_Date'].push(moment(input.sheet[idx].w, "MM/DD/YYYY").format("DD/MM/YYYY"));
         idx = sails.helpers.columnShift(idx)
         if(input.sheet[idx].v === "YES"){
           res["CTR"].push("y")
