@@ -62,7 +62,8 @@ module.exports = {
     moment = require("moment");
     //Get results table data
     let results_obj = JSON.parse(req.query["results_content"]);
-
+    // Filter out Nan Values
+    results_obj["results_data"] = results_obj["results_data"].filter(d=>(Math.abs(parseFloat(d.key_4)) > 0)) 
     //Get FLHV value
     let flhv_value = await Data.find({
       select: "FLHV"
@@ -73,8 +74,15 @@ module.exports = {
     else flhv_value = new Intl.NumberFormat('en-GB').format( _.pluck(flhv_value, "FLHV")[0]);;
 
     //Generate number of points value in word format 
-    let num = parseInt(req.query["num_points"]);
-    let numOfPoints_letter = sails.helpers.digitWord(num);
+    try{
+      var num = parseInt(results_obj["results_data"].length);
+      var numOfPoints_letter = sails.helpers.digitWord(num);
+    }
+    catch(error){
+      var num = undefined
+      var numOfPoints_letter = undefined
+      console.error(error)
+    }
 
     //Calculation of DSR average and general formatting
     let dsr_values = _.pluck(results_obj["results_data"], "key_4");
@@ -121,7 +129,7 @@ module.exports = {
     let dataset = {};
     let alias_keys = {
       FlightNumber: req.query["flight"],
-      NumberOfPoints_Digit: req.query["num_points"],
+      NumberOfPoints_Digit: num,
       NumberOfPoints_Letter: numOfPoints_letter,
       FlightDate: flight_date,
       Fuel_Flowmeters: req.query["fuel_flowmeters"],
