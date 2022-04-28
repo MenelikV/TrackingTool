@@ -10,7 +10,7 @@
     "@sailshq/socket.io-redis": "^5.2.0",
     "acorn": "^6.0.4",
     "ajv": "^6.6.1",
-    "async": "2.0.1",
+    "async": "2.6.4",
     "cryptiles": ">=4.1.2",
     "deep-extend": ">=0.5.1",
     "docxtemplater": "^3.16.4",
