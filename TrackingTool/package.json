@@ -21,7 +21,7 @@
     "js-xlsx": "^0.8.22",
     "jszip": "^3.1.5",
     "mailgun-js": "^0.22.0",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "opencollective": "^1.0.3",
     "pizzip": "^3.0.6",
     "polyfill": "^0.1.0",
