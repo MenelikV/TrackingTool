@@ -19,7 +19,7 @@
     "https-proxy-agent": ">=2.2.0",
     "hummus": "^1.0.95",
     "js-xlsx": "^0.8.22",
-    "jszip": "^3.1.5",
+    "jszip": "^3.7.0",
     "mailgun-js": "^0.22.0",
     "moment": "^2.22.2",
     "opencollective": "^1.0.3",
