@@ -29,7 +29,7 @@
     "sails-hook-apianalytics": "^2.0.0",
     "sails-hook-organics": "^0.15.0",
     "sails-hook-orm": "^2.1.1",
-    "sails-hook-sockets": "^1.4.0",
+    "sails-hook-sockets": "^2.0.3",
     "sails-postgresql": "^1.0.1"
   },
   "devDependencies": {
